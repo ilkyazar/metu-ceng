@@ -4,6 +4,7 @@
 #include "Material.h"
 #include "Shape.h"
 #include "tinyxml2.h"
+#include "Image.h"
 
 using namespace tinyxml2;
 
@@ -13,12 +14,27 @@ using namespace tinyxml2;
  */
 void Scene::renderScene(void)
 {
-	/***********************************************
-     *                                             *
-	 * TODO: Implement this function               *
-     *                                             *
-     ***********************************************
-	 */
+	Color color;
+	color.red = this->backgroundColor.x;
+	color.grn = this->backgroundColor.y;
+	color.blu = this->backgroundColor.z;
+
+	for (int cameraIndex = 0; cameraIndex < cameras.size(); cameraIndex++) {
+		int id = cameras[cameraIndex]->id;
+		const char* outputImgName = this->cameras[cameraIndex]->imageName;
+		int nx = this->cameras[cameraIndex]->imgPlane.nx;
+		int ny = this->cameras[cameraIndex]->imgPlane.ny;
+
+		Image* outputImage = new Image(nx, ny);
+
+		for (int i = 0; i < nx; i++) {
+			for (int j = 0; j < ny; j++) {
+				outputImage->setPixelValue(j, i, color);
+			}
+		}
+
+		outputImage->saveImage(outputImgName);
+	}
 }
 
 // Parses XML file. 

@@ -1,4 +1,5 @@
 #include "Camera.h"
+#include <cstring>
 
 Camera::Camera(int id,                      // Id of the camera
                const char* imageName,       // Name of the output PPM file 
@@ -14,6 +15,9 @@ Camera::Camera(int id,                      // Id of the camera
      we need to implement this
      ***********************************************
 	 */
+      this->id = id;
+      std::strcpy(this->imageName, imageName);      
+      this->imgPlane = imgPlane;
 }
 
 /* Takes coordinate of an image pixel as row and col, and
