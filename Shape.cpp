@@ -18,12 +18,10 @@ Sphere::Sphere(void)
 Sphere::Sphere(int id, int matIndex, int cIndex, float R)
     : Shape(id, matIndex)
 {
-	/***********************************************
-     *                                             *
-	 * TODO: Implement this function               *
-     *                                             *
-     ***********************************************
-	 */
+	this->id = id;
+    this->matIndex = matIndex;
+    this->cIndex = cIndex;
+    this->R = R;
 }
 
 /* Sphere-ray intersection routine. You will implement this. 
@@ -31,12 +29,11 @@ Note that ReturnVal structure should hold the information related to the interse
 You should to declare the variables in ReturnVal structure you think you will need. It is in defs.h file. */
 ReturnVal Sphere::intersect(const Ray & ray) const
 {
-	/***********************************************
-     *                                             *
-	 * TODO: Implement this function               *
-     *                                             *
-     ***********************************************
-	 */
+    Vector3f o = ray.origin;
+    Vector3f d = ray.direction;
+
+    Vector3f v = o - cIndex;
+    //change this to Eigen
 }
 
 Triangle::Triangle(void)

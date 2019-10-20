@@ -33,6 +33,8 @@ public:
 
 private:
 	// Write any other stuff here
+	int cIndex;
+	float R;
 };
 
 // Class for triangle
