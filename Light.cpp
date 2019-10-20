@@ -8,6 +8,7 @@ PointLight::PointLight(const Vector3f & position, const Vector3f & intensity)
 
 // Compute the contribution of light at point p using the
 // inverse square law formula
+// what is the formula
 Vector3f PointLight::computeLightContribution(const Vector3f& p)
 {
 	/***********************************************
