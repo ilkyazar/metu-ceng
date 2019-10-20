@@ -11,6 +11,7 @@ Camera::Camera(int id,                      // Id of the camera
      *                                             *
 	 * TODO: Implement this function               *
      *                                             *
+     we need to implement this
      ***********************************************
 	 */
 }
