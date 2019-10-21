@@ -1,6 +1,8 @@
 #include "Shape.h"
 #include "Scene.h"
+#include <Eigen/Dense>
 #include <cstdio>
+#include <math.h>
 
 Shape::Shape(void)
 {
@@ -29,11 +31,33 @@ Note that ReturnVal structure should hold the information related to the interse
 You should to declare the variables in ReturnVal structure you think you will need. It is in defs.h file. */
 ReturnVal Sphere::intersect(const Ray & ray) const
 {
-    Vector3f o = ray.origin;
-    Vector3f d = ray.direction;
+    ReturnVal returnVal;
 
-    Vector3f v = o - cIndex;
-    //change this to Eigen
+    Eigen::Vector3f o(ray.origin.x, ray.origin.y, ray.origin.z );
+    Eigen::Vector3f d(ray.direction.x, ray.direction.y, ray.direction.z);
+
+    Eigen::Vector3f center = (pScene->vertices[this->cIndex-1].x, pScene->vertices[this->cIndex-1].y, pScene->vertices[this->cIndex-1].z)
+
+    Eigen::Vector3f v = o - center;
+
+    float b = 2 * v.dot(d);
+    float c = v.dot(v) - this->R * this->R;
+    float delta = b*b - 4*c;
+
+    if (delta < 0)
+        returnVal.isIntersect = false;
+    
+    else{
+
+        float t1 = (-b - sqrt(delta))/2;
+        float t2 = (-b + sqrt(delta))/2;
+
+        float t = (t1 < t2) ? t1 : t2;
+        returnVal.intersectCoord =  o + t*d;
+        //returnVal.normalVec = ??
+        returnVal.isIntersect = true;
+    }
+    return returnVal;
 }
 
 Triangle::Triangle(void)

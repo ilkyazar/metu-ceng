@@ -9,12 +9,9 @@ for example, coordinate of the intersection point, surface normal at the interse
 Think about the variables you will need for this purpose and declare them here inside of this structure. */
 typedef struct ReturnVal
 {
-	/***********************************************
-     *                                             *
-	 * TODO: Implement this structure              *
-     *                                             *
-     ***********************************************
-	 */
+	bool isIntersect;
+	Eigen::Vector3f intersectCoord;
+	Eigen::Vector3f normalVec;
 } ReturnVal;
 
 /* 3 dimensional vector holding floating point numbers.
