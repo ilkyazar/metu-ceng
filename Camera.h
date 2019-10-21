@@ -3,6 +3,8 @@
 
 #include "Ray.h"
 #include "defs.h"
+#include "Vector.h"
+#include <iostream>
 
 // Structure for holding variables related to the image plane
 typedef struct ImagePlane
@@ -34,9 +36,11 @@ public:
 	Ray getPrimaryRay(int row, int col) const;
 
 private:
-    //
-	// You can add member functions and variables here
-    //
+    Vector3f pos;
+    Vector3f gaze;
+    Vector3f up;
+
+    
 };
 
 #endif

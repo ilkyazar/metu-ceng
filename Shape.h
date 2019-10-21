@@ -4,7 +4,7 @@
 #include <vector>
 #include "Ray.h"
 #include "defs.h"
-
+#include "Vector.h"
 using namespace std;
 
 // Base class for any shape object
@@ -20,7 +20,8 @@ public:
     Shape(int id, int matIndex); // Constructor
 
 private:
-	// Write any other stuff here
+	
+	
 };
 
 // Class for sphere

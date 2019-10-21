@@ -1,6 +1,5 @@
 #include "Shape.h"
 #include "Scene.h"
-#include <Eigen/Dense>
 #include <cstdio>
 #include <math.h>
 
@@ -33,27 +32,30 @@ ReturnVal Sphere::intersect(const Ray & ray) const
 {
     ReturnVal returnVal;
 
-    Eigen::Vector3f o(ray.origin.x, ray.origin.y, ray.origin.z );
-    Eigen::Vector3f d(ray.direction.x, ray.direction.y, ray.direction.z);
+    Vector o(ray.origin.x, ray.origin.y, ray.origin.z);
+    Vector d(ray.direction.x, ray.direction.y, ray.direction.z);
 
-    Eigen::Vector3f center = (pScene->vertices[this->cIndex-1].x, pScene->vertices[this->cIndex-1].y, pScene->vertices[this->cIndex-1].z)
+    Vector center(pScene->vertices[this->cIndex-1].x, pScene->vertices[this->cIndex-1].y, pScene->vertices[this->cIndex-1].z);
 
-    Eigen::Vector3f v = o - center;
+    Vector v = o - center;
 
+    float a = d.dot(d);
     float b = 2 * v.dot(d);
     float c = v.dot(v) - this->R * this->R;
-    float delta = b*b - 4*c;
 
-    if (delta < 0)
+    float delta = (b*b) - (4*a*c);
+
+    if (delta < pScene->intTestEps){
         returnVal.isIntersect = false;
-    
+    }
+
     else{
 
-        float t1 = (-b - sqrt(delta))/2;
-        float t2 = (-b + sqrt(delta))/2;
+        float t1 = (-b - sqrt(delta))/(2*a);
+        float t2 = (-b + sqrt(delta))/(2*a);
 
         float t = (t1 < t2) ? t1 : t2;
-        returnVal.intersectCoord =  o + t*d;
+        returnVal.intersectCoord = o + d * t;
         //returnVal.normalVec = ??
         returnVal.isIntersect = true;
     }

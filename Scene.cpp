@@ -15,9 +15,6 @@ using namespace tinyxml2;
 void Scene::renderScene(void)
 {
 	Color color;
-	color.red = this->backgroundColor.x;
-	color.grn = this->backgroundColor.y;
-	color.blu = this->backgroundColor.z;
 
 	for (int cameraIndex = 0; cameraIndex < cameras.size(); cameraIndex++) {
 		int id = cameras[cameraIndex]->id;
@@ -29,6 +26,17 @@ void Scene::renderScene(void)
 
 		for (int i = 0; i < nx; i++) {
 			for (int j = 0; j < ny; j++) {
+				Ray primaryRay = cameras[cameraIndex]->getPrimaryRay(i, j);
+
+				color.red = this->backgroundColor.x;
+				color.grn = this->backgroundColor.y;
+				color.blu = this->backgroundColor.z;
+
+				if (this->objects[0]->intersect(primaryRay).isIntersect) {
+					color.red = 255;
+					color.grn = 255;
+					color.blu = 255;
+				}
 				outputImage->setPixelValue(j, i, color);
 			}
 		}
