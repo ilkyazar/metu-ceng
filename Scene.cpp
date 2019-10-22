@@ -32,11 +32,15 @@ void Scene::renderScene(void)
 				color.grn = this->backgroundColor.y;
 				color.blu = this->backgroundColor.z;
 
-				if (this->objects[0]->intersect(primaryRay).isIntersect) {
-					color.red = 255;
-					color.grn = 255;
-					color.blu = 255;
+
+				for (int objIndex = 0; objIndex < this->objects.size(); objIndex++) {
+					if (this->objects[objIndex]->intersect(primaryRay).isIntersect) {
+						color.red = 255;
+						color.grn = 255;
+						color.blu = 255;
+					}
 				}
+
 				outputImage->setPixelValue(j, i, color);
 			}
 		}

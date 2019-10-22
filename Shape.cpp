@@ -75,6 +75,12 @@ Triangle::Triangle(int id, int matIndex, int p1Index, int p2Index, int p3Index)
      *                                             *
      ***********************************************
 	 */
+	this->id = id;
+    this->matIndex = matIndex;
+    this->p1Index = p1Index;
+    this->p2Index = p2Index;
+    this->p3Index = p2Index;
+
 }
 
 /* Triangle-ray intersection routine. You will implement this. 
@@ -88,6 +94,10 @@ ReturnVal Triangle::intersect(const Ray & ray) const
      *                                             *
      ***********************************************
 	 */
+    ReturnVal returnVal;
+    returnVal.isIntersect = false;
+    return returnVal;
+
 }
 
 Mesh::Mesh()
@@ -103,6 +113,9 @@ Mesh::Mesh(int id, int matIndex, const vector<Triangle>& faces)
      *                                             *
      ***********************************************
 	 */
+	this->id = id;
+    this->matIndex = matIndex;
+
 }
 
 /* Mesh-ray intersection routine. You will implement this. 
@@ -116,4 +129,8 @@ ReturnVal Mesh::intersect(const Ray & ray) const
      *                                             *
      ***********************************************
 	 */
+    ReturnVal returnVal;
+    returnVal.isIntersect = false;
+    return returnVal;
+
 }

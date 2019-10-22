@@ -48,6 +48,9 @@ public:
 
 private:
 	// Write any other stuff here
+	int p1Index;
+	int p2Index;
+	int p3Index;
 };
 
 // Class for mesh
