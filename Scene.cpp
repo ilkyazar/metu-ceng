@@ -5,7 +5,7 @@
 #include "Shape.h"
 #include "tinyxml2.h"
 #include "Image.h"
-
+#include <limits>
 using namespace tinyxml2;
 
 /* 
@@ -32,13 +32,32 @@ void Scene::renderScene(void)
 				color.grn = this->backgroundColor.y;
 				color.blu = this->backgroundColor.z;
 
+				float t_min = std::numeric_limits<int>::max();
 
 				for (int objIndex = 0; objIndex < this->objects.size(); objIndex++) {
-					if (this->objects[objIndex]->intersect(primaryRay).isIntersect) {
-						color.red = 255;
-						color.grn = 255;
-						color.blu = 255;
+					ReturnVal returnVal = this->objects[objIndex]->intersect(primaryRay);
+					if (returnVal.isIntersect) {
+						Vector3f p;
+						p.x = returnVal.intersectCoord.x;
+						p.y = returnVal.intersectCoord.y;
+						p.z = returnVal.intersectCoord.z;
+						if (primaryRay.gett(p) < t_min) {
+							t_min = primaryRay.gett(p);
+							/*
+							color.red = this->ambientLight.x * this->materials[this->objects[objIndex]->matIndex-1]->ambientRef.r;
+							color.grn = this->ambientLight.y * this->materials[this->objects[objIndex]->matIndex-1]->ambientRef.g;
+							color.blu = this->ambientLight.z * this->materials[this->objects[objIndex]->matIndex-1]->ambientRef.b;
+							*/
+							color.red = this->ambientLight.x * this->materials[this->objects[objIndex]->matIndex-1]->ambientRef.r + 100;
+							color.grn = this->ambientLight.y * this->materials[this->objects[objIndex]->matIndex-1]->ambientRef.g + 100;
+							color.blu = this->ambientLight.z * this->materials[this->objects[objIndex]->matIndex-1]->ambientRef.b + 100;							
+							
+						}
 					}
+
+					//for (int lightIndex = 0; lightIndex < this->lights.size(); lightIndex++) {
+
+					//}
 				}
 
 				outputImage->setPixelValue(j, i, color);

@@ -63,6 +63,7 @@ public:
 
 private:
 	// Write any other stuff here
+	vector<Triangle> faces;
 };
 
 #endif

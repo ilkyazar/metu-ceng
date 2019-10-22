@@ -69,12 +69,6 @@ Triangle::Triangle(void)
 Triangle::Triangle(int id, int matIndex, int p1Index, int p2Index, int p3Index)
     : Shape(id, matIndex)
 {
-	/***********************************************
-     *                                             *
-	 * TODO: Implement this function               *
-     *                                             *
-     ***********************************************
-	 */
 	this->id = id;
     this->matIndex = matIndex;
     this->p1Index = p1Index;
@@ -98,8 +92,8 @@ ReturnVal Triangle::intersect(const Ray & ray) const
     n = (a - b).cross(c - b);
 
     Vector d(ray.direction.x, ray.direction.y, ray.direction.z);
-    if (d.dot(n) == 0) { // Triangle object and ray is parallel to each other.
-        std::cout << "parallel " << d.dot(n) << std::endl;
+    if (d.dot(n) < pScene->intTestEps) { // Triangle object and ray is parallel to each other.
+        //std::cout << "parallel " << d.dot(n) << std::endl;
         returnVal.isIntersect = false;
     }
 
@@ -109,10 +103,11 @@ ReturnVal Triangle::intersect(const Ray & ray) const
     Vector3f point = ray.getPoint(t);
     Vector p(point.x, point.y, point.z);
 
-    if (((c-a).cross(p-a)).dot(n) > 0 &&
-        ((a-b).cross(p-b)).dot(n) > 0 &&
-        ((b-c).cross(p-c)).dot(n) > 0) {
+    if (((c-a).cross(p-a)).dot(n) > pScene->intTestEps &&
+        ((a-b).cross(p-b)).dot(n) > pScene->intTestEps&&
+        ((b-c).cross(p-c)).dot(n) > pScene->intTestEps) {
             returnVal.isIntersect = true;
+            returnVal.intersectCoord = p;
         }
     else {
         returnVal.isIntersect = false;
@@ -127,14 +122,9 @@ Mesh::Mesh()
 Mesh::Mesh(int id, int matIndex, const vector<Triangle>& faces)
     : Shape(id, matIndex)
 {
-	/***********************************************
-     *                                             *
-	 * TODO: Implement this function               *
-     *                                             *
-     ***********************************************
-	 */
 	this->id = id;
     this->matIndex = matIndex;
+    this->faces = faces;
 
 }
 
@@ -143,14 +133,14 @@ Note that ReturnVal structure should hold the information related to the interse
 You should to declare the variables in ReturnVal structure you think you will need. It is in defs.h file. */
 ReturnVal Mesh::intersect(const Ray & ray) const
 {
-	/***********************************************
-     *                                             *
-	 * TODO: Implement this function               *
-     *                                             *
-     ***********************************************
-	 */
-    ReturnVal returnVal;
-    returnVal.isIntersect = false;
-    return returnVal;
+    ReturnVal returnValTri, returnValMesh;
+    returnValMesh.isIntersect = false;
 
+    for (int triIndex = 0; triIndex < this->faces.size(); triIndex++) {
+        returnValTri = this->faces[triIndex].intersect(ray);
+        if (returnValTri.isIntersect){
+            returnValMesh.isIntersect = true;
+        } 
+    }
+    return returnValMesh;
 }
