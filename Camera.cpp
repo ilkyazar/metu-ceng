@@ -28,7 +28,7 @@ Ray Camera::getPrimaryRay(int col, int row) const
      Vector zero_vec(0, 0, 0);
      Vector q, m, u, v, d;
 
-     u = up_vec.cross(gaze_vec);
+     u = up_vec.cross(zero_vec - gaze_vec);
      m = pos_vec + gaze_vec * this->imgPlane.distance;
      q = m +  (u * this->imgPlane.left) + (up_vec * this->imgPlane.top); 
 

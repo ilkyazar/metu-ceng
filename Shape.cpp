@@ -79,7 +79,7 @@ Triangle::Triangle(int id, int matIndex, int p1Index, int p2Index, int p3Index)
     this->matIndex = matIndex;
     this->p1Index = p1Index;
     this->p2Index = p2Index;
-    this->p3Index = p2Index;
+    this->p3Index = p3Index;
 
 }
 
@@ -88,16 +88,36 @@ Note that ReturnVal structure should hold the information related to the interse
 You should to declare the variables in ReturnVal structure you think you will need. It is in defs.h file. */
 ReturnVal Triangle::intersect(const Ray & ray) const
 {
-	/***********************************************
-     *                                             *
-	 * TODO: Implement this function               *
-     *                                             *
-     ***********************************************
-	 */
     ReturnVal returnVal;
-    returnVal.isIntersect = false;
-    return returnVal;
+    
+    Vector n;
+    Vector a(pScene->vertices[this->p1Index - 1].x, pScene->vertices[this->p1Index - 1].y, pScene->vertices[this->p1Index - 1].z);
+    Vector b(pScene->vertices[this->p2Index - 1].x, pScene->vertices[this->p2Index - 1].y, pScene->vertices[this->p2Index - 1].z);
+    Vector c(pScene->vertices[this->p3Index - 1].x, pScene->vertices[this->p3Index - 1].y, pScene->vertices[this->p3Index - 1].z);
 
+    n = (a - b).cross(c - b);
+
+    Vector d(ray.direction.x, ray.direction.y, ray.direction.z);
+    if (d.dot(n) == 0) { // Triangle object and ray is parallel to each other.
+        std::cout << "parallel " << d.dot(n) << std::endl;
+        returnVal.isIntersect = false;
+    }
+
+    Vector o(ray.origin.x, ray.origin.y, ray.origin.z);
+
+    float t = (a - o).dot(n) / d.dot(n);
+    Vector3f point = ray.getPoint(t);
+    Vector p(point.x, point.y, point.z);
+
+    if (((c-a).cross(p-a)).dot(n) > 0 &&
+        ((a-b).cross(p-b)).dot(n) > 0 &&
+        ((b-c).cross(p-c)).dot(n) > 0) {
+            returnVal.isIntersect = true;
+        }
+    else {
+        returnVal.isIntersect = false;
+    }
+    return returnVal;
 }
 
 Mesh::Mesh()
