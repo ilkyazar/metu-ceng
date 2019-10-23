@@ -45,6 +45,15 @@ public:
 	Triangle(void);	// Constructor
 	Triangle(int id, int matIndex, int p1Index, int p2Index, int p3Index);	// Constructor
 	ReturnVal intersect(const Ray & ray) const; // Will take a ray and return a structure related to the intersection information. You will implement this. 
+	int getp1() const {
+		return this->p1Index-1;
+	};
+	int getp2() const {
+		return this->p2Index-1;
+	};
+	int getp3() const {
+		return this->p3Index-1;
+	};
 
 private:
 	// Write any other stuff here

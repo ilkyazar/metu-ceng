@@ -27,43 +27,38 @@ void Scene::renderScene(void)
 		for (int i = 0; i < nx; i++) {
 			for (int j = 0; j < ny; j++) {
 				Ray primaryRay = cameras[cameraIndex]->getPrimaryRay(i, j);
-
-				color.red = this->backgroundColor.x;
-				color.grn = this->backgroundColor.y;
-				color.blu = this->backgroundColor.z;
-
 				float t_min = std::numeric_limits<int>::max();
-
+				bool obj = false;
+				int obj_i;
 				for (int objIndex = 0; objIndex < this->objects.size(); objIndex++) {
 					ReturnVal returnVal = this->objects[objIndex]->intersect(primaryRay);
-					if (returnVal.isIntersect) {
+					if (returnVal.isIntersect == true) {
 						Vector3f p;
 						p.x = returnVal.intersectCoord.x;
 						p.y = returnVal.intersectCoord.y;
 						p.z = returnVal.intersectCoord.z;
 						if (primaryRay.gett(p) < t_min) {
 							t_min = primaryRay.gett(p);
-							/*
-							color.red = this->ambientLight.x * this->materials[this->objects[objIndex]->matIndex-1]->ambientRef.r;
-							color.grn = this->ambientLight.y * this->materials[this->objects[objIndex]->matIndex-1]->ambientRef.g;
-							color.blu = this->ambientLight.z * this->materials[this->objects[objIndex]->matIndex-1]->ambientRef.b;
-							*/
-							color.red = this->ambientLight.x * this->materials[this->objects[objIndex]->matIndex-1]->ambientRef.r + 100;
-							color.grn = this->ambientLight.y * this->materials[this->objects[objIndex]->matIndex-1]->ambientRef.g + 100;
-							color.blu = this->ambientLight.z * this->materials[this->objects[objIndex]->matIndex-1]->ambientRef.b + 100;							
-							
+							obj = true;
+							obj_i = objIndex;
 						}
 					}
-
-					//for (int lightIndex = 0; lightIndex < this->lights.size(); lightIndex++) {
-
-					//}
 				}
 
-				outputImage->setPixelValue(j, i, color);
+				if (obj) {
+					color.red = this->ambientLight.x * this->materials[this->objects[obj_i]->matIndex-1]->ambientRef.r + 100;
+					color.grn = this->ambientLight.y * this->materials[this->objects[obj_i]->matIndex-1]->ambientRef.g + 100;
+					color.blu = this->ambientLight.z * this->materials[this->objects[obj_i]->matIndex-1]->ambientRef.b + 100;
+					outputImage->setPixelValue(j, i, color);
+				}
+				else {
+					color.red = this->backgroundColor.x;
+					color.grn = this->backgroundColor.y;
+					color.blu = this->backgroundColor.z;				
+					outputImage->setPixelValue(j, i, color);
+				}				
 			}
 		}
-
 		outputImage->saveImage(outputImgName);
 	}
 }

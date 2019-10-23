@@ -2,6 +2,7 @@
 #include "Scene.h"
 #include <cstdio>
 #include <math.h>
+#include <limits>
 
 Shape::Shape(void)
 {
@@ -83,36 +84,57 @@ You should to declare the variables in ReturnVal structure you think you will ne
 ReturnVal Triangle::intersect(const Ray & ray) const
 {
     ReturnVal returnVal;
-    
     Vector n;
-    Vector a(pScene->vertices[this->p1Index - 1].x, pScene->vertices[this->p1Index - 1].y, pScene->vertices[this->p1Index - 1].z);
-    Vector b(pScene->vertices[this->p2Index - 1].x, pScene->vertices[this->p2Index - 1].y, pScene->vertices[this->p2Index - 1].z);
-    Vector c(pScene->vertices[this->p3Index - 1].x, pScene->vertices[this->p3Index - 1].y, pScene->vertices[this->p3Index - 1].z);
+    Vector v0(pScene->vertices[this->p1Index - 1].x, pScene->vertices[this->p1Index - 1].y, pScene->vertices[this->p1Index - 1].z);
+    Vector v1(pScene->vertices[this->p2Index - 1].x, pScene->vertices[this->p2Index - 1].y, pScene->vertices[this->p2Index - 1].z);
+    Vector v2(pScene->vertices[this->p3Index - 1].x, pScene->vertices[this->p3Index - 1].y, pScene->vertices[this->p3Index - 1].z);
+    n = (v1-v0).cross(v2-v0);
+    float d = n.dot(v0);
+    Vector origin(ray.origin.x, ray.origin.y, ray.origin.z);
+    Vector direction(ray.direction.x, ray.direction.y, ray.direction.z);
 
-    n = (a - b).cross(c - b);
-
-    Vector d(ray.direction.x, ray.direction.y, ray.direction.z);
-    if (d.dot(n) < pScene->intTestEps) { // Triangle object and ray is parallel to each other.
-        //std::cout << "parallel " << d.dot(n) << std::endl;
-        returnVal.isIntersect = false;
-    }
-
-    Vector o(ray.origin.x, ray.origin.y, ray.origin.z);
-
-    float t = (a - o).dot(n) / d.dot(n);
+    float t = (n.dot(origin) + d) / n.dot(direction); 
     Vector3f point = ray.getPoint(t);
     Vector p(point.x, point.y, point.z);
 
-    if (((c-a).cross(p-a)).dot(n) > pScene->intTestEps &&
-        ((a-b).cross(p-b)).dot(n) > pScene->intTestEps&&
-        ((b-c).cross(p-c)).dot(n) > pScene->intTestEps) {
-            returnVal.isIntersect = true;
-            returnVal.intersectCoord = p;
-        }
-    else {
+    if (fabs(direction.dot(n)) < pScene->intTestEps) { // ray and the triagnle are parallel
         returnVal.isIntersect = false;
+        return returnVal;
     }
+    if (t < 0) { // the triangle is behind 
+        returnVal.isIntersect = false;
+        return returnVal;
+    }
+
+    Vector c;
+    Vector edge0 = v1 - v0;
+    Vector vp0 = p - v0;
+    c = edge0.cross(vp0);
+    if (n.dot(c) < 0) {
+        returnVal.isIntersect = false;
+        return returnVal;
+    }
+
+    Vector edge1 = v2 - v1;
+    Vector vp1 = p - v1;
+    c = edge1.cross(vp1);
+    if (n.dot(c) < 0) {
+        returnVal.isIntersect = false;
+        return returnVal;
+    }
+
+    Vector edge2 = v0 - v2;
+    Vector vp2 = p - v2;
+    c = edge2.cross(vp2);
+    if (n.dot(c) < 0) {
+        returnVal.isIntersect = false;
+        return returnVal;
+    }
+
+    returnVal.isIntersect = true;
+    returnVal.intersectCoord = p;
     return returnVal;
+
 }
 
 Mesh::Mesh()
@@ -137,9 +159,84 @@ ReturnVal Mesh::intersect(const Ray & ray) const
     returnValMesh.isIntersect = false;
 
     for (int triIndex = 0; triIndex < this->faces.size(); triIndex++) {
-        returnValTri = this->faces[triIndex].intersect(ray);
-        if (returnValTri.isIntersect){
+        Vector v0(pScene->vertices[this->faces[triIndex].getp1()].x,
+                  pScene->vertices[this->faces[triIndex].getp1()].y,
+                  pScene->vertices[this->faces[triIndex].getp1()].z);
+
+        Vector v1(pScene->vertices[this->faces[triIndex].getp2()].x,
+                  pScene->vertices[this->faces[triIndex].getp2()].y,
+                  pScene->vertices[this->faces[triIndex].getp2()].z);
+
+        Vector v2(pScene->vertices[this->faces[triIndex].getp3()].x,
+                  pScene->vertices[this->faces[triIndex].getp3()].y,
+                  pScene->vertices[this->faces[triIndex].getp3()].z);
+
+        //returnValTri = pScene->vertices[triIndex][0].intersect(ray);
+
+        ReturnVal returnValTri;
+        Vector n;
+
+        n = (v1-v0).cross(v2-v0);
+        float d = n.dot(v0);
+        Vector origin(ray.origin.x, ray.origin.y, ray.origin.z);
+        Vector direction(ray.direction.x, ray.direction.y, ray.direction.z);
+
+        float t = (n.dot(origin) + d) / n.dot(direction); 
+        Vector3f point = ray.getPoint(t);
+        Vector p(point.x, point.y, point.z);
+
+        if (fabs(direction.dot(n)) < pScene->intTestEps) { // ray and the triagnle are parallel
+            returnValTri.isIntersect = false;
+        }
+        if (t < 0) { // the triangle is behind 
+            returnValTri.isIntersect = false;
+        }
+
+        Vector c;
+        Vector edge0 = v1 - v0;
+        Vector vp0 = p - v0;
+        c = edge0.cross(vp0);
+        if (n.dot(c) < 0) {
+            returnValTri.isIntersect = false;
+        }
+
+        Vector edge1 = v2 - v1;
+        Vector vp1 = p - v1;
+        c = edge1.cross(vp1);
+        if (n.dot(c) < 0) {
+            returnValTri.isIntersect = false;
+        }
+
+        Vector edge2 = v0 - v2;
+        Vector vp2 = p - v2;
+        c = edge2.cross(vp2);
+        if (n.dot(c) < 0) {
+            returnValTri.isIntersect = false;
+        }
+
+        returnValTri.isIntersect = true;
+        returnValTri.intersectCoord = p;
+
+
+
+
+
+
+
+
+
+
+
+
+
+        float t_min = std::numeric_limits<int>::max();
+        Vector3f interCoord;
+        interCoord.x = returnValTri.intersectCoord.x;
+        interCoord.y = returnValTri.intersectCoord.y;
+        interCoord.z = returnValTri.intersectCoord.z;
+        if (returnValTri.isIntersect && ray.gett(interCoord) < t_min){
             returnValMesh.isIntersect = true;
+            t_min = ray.gett(interCoord);
         } 
     }
     return returnValMesh;
