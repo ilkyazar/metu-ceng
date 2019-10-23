@@ -4,7 +4,7 @@
 #include <vector>
 #include "Ray.h"
 #include "defs.h"
-#include "Vector.h"
+
 using namespace std;
 
 // Base class for any shape object
@@ -20,8 +20,7 @@ public:
     Shape(int id, int matIndex); // Constructor
 
 private:
-	
-	
+	// Write any other stuff here
 };
 
 // Class for sphere
@@ -29,13 +28,11 @@ class Sphere: public Shape
 {
 public:
 	Sphere(void);	// Constructor
-	Sphere(int id, int matIndex, int cIndex, float R);	// Constructor
+	Sphere(int id, int matIndex, int cIndex, float R, vector<Vector3f> *vertices);	// Constructor
 	ReturnVal intersect(const Ray & ray) const;	// Will take a ray and return a structure related to the intersection information. You will implement this. 
 
 private:
 	// Write any other stuff here
-	int cIndex;
-	float R;
 };
 
 // Class for triangle
@@ -43,23 +40,11 @@ class Triangle: public Shape
 {
 public:
 	Triangle(void);	// Constructor
-	Triangle(int id, int matIndex, int p1Index, int p2Index, int p3Index);	// Constructor
+	Triangle(int id, int matIndex, int p1Index, int p2Index, int p3Index, vector<Vector3f> *vertices);	// Constructor
 	ReturnVal intersect(const Ray & ray) const; // Will take a ray and return a structure related to the intersection information. You will implement this. 
-	int getp1() const {
-		return this->p1Index-1;
-	};
-	int getp2() const {
-		return this->p2Index-1;
-	};
-	int getp3() const {
-		return this->p3Index-1;
-	};
 
 private:
 	// Write any other stuff here
-	int p1Index;
-	int p2Index;
-	int p3Index;
 };
 
 // Class for mesh
@@ -67,12 +52,11 @@ class Mesh: public Shape
 {
 public:
 	Mesh(void);	// Constructor
-	Mesh(int id, int matIndex, const vector<Triangle>& faces);	// Constructor
+	Mesh(int id, int matIndex, const vector<Triangle>& faces, vector<int> *pIndices, vector<Vector3f> *vertices);	// Constructor
 	ReturnVal intersect(const Ray & ray) const; // Will take a ray and return a structure related to the intersection information. You will implement this. 
 
 private:
 	// Write any other stuff here
-	vector<Triangle> faces;
 };
 
 #endif

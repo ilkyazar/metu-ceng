@@ -4,8 +4,7 @@
 #include "Material.h"
 #include "Shape.h"
 #include "tinyxml2.h"
-#include "Image.h"
-#include <limits>
+
 using namespace tinyxml2;
 
 /* 
@@ -14,53 +13,12 @@ using namespace tinyxml2;
  */
 void Scene::renderScene(void)
 {
-	Color color;
-
-	for (int cameraIndex = 0; cameraIndex < cameras.size(); cameraIndex++) {
-		int id = cameras[cameraIndex]->id;
-		const char* outputImgName = this->cameras[cameraIndex]->imageName;
-		int nx = this->cameras[cameraIndex]->imgPlane.nx;
-		int ny = this->cameras[cameraIndex]->imgPlane.ny;
-
-		Image* outputImage = new Image(nx, ny);
-
-		for (int i = 0; i < nx; i++) {
-			for (int j = 0; j < ny; j++) {
-				Ray primaryRay = cameras[cameraIndex]->getPrimaryRay(i, j);
-				float t_min = std::numeric_limits<int>::max();
-				bool obj = false;
-				int obj_i;
-				for (int objIndex = 0; objIndex < this->objects.size(); objIndex++) {
-					ReturnVal returnVal = this->objects[objIndex]->intersect(primaryRay);
-					if (returnVal.isIntersect == true) {
-						Vector3f p;
-						p.x = returnVal.intersectCoord.x;
-						p.y = returnVal.intersectCoord.y;
-						p.z = returnVal.intersectCoord.z;
-						if (primaryRay.gett(p) < t_min) {
-							t_min = primaryRay.gett(p);
-							obj = true;
-							obj_i = objIndex;
-						}
-					}
-				}
-
-				if (obj) {
-					color.red = this->ambientLight.x * this->materials[this->objects[obj_i]->matIndex-1]->ambientRef.r + 100;
-					color.grn = this->ambientLight.y * this->materials[this->objects[obj_i]->matIndex-1]->ambientRef.g + 100;
-					color.blu = this->ambientLight.z * this->materials[this->objects[obj_i]->matIndex-1]->ambientRef.b + 100;
-					outputImage->setPixelValue(j, i, color);
-				}
-				else {
-					color.red = this->backgroundColor.x;
-					color.grn = this->backgroundColor.y;
-					color.blu = this->backgroundColor.z;				
-					outputImage->setPixelValue(j, i, color);
-				}				
-			}
-		}
-		outputImage->saveImage(outputImgName);
-	}
+	/***********************************************
+     *                                             *
+	 * TODO: Implement this function               *
+     *                                             *
+     ***********************************************
+	 */
 }
 
 // Parses XML file. 
@@ -217,7 +175,7 @@ Scene::Scene(const char *xmlPath)
 		objElement = pObject->FirstChildElement("Radius");
 		eResult = objElement->QueryFloatText(&R);
 
-		objects.push_back(new Sphere(id, matIndex, cIndex, R));
+		objects.push_back(new Sphere(id, matIndex, cIndex, R, &vertices));
 
 		pObject = pObject->NextSiblingElement("Sphere");
 	}
@@ -239,7 +197,7 @@ Scene::Scene(const char *xmlPath)
 		str = objElement->GetText();
 		sscanf(str, "%d %d %d", &p1Index, &p2Index, &p3Index);
 
-		objects.push_back(new Triangle(id, matIndex, p1Index, p2Index, p3Index));
+		objects.push_back(new Triangle(id, matIndex, p1Index, p2Index, p3Index, &vertices));
 
 		pObject = pObject->NextSiblingElement("Triangle");
 	}
@@ -256,6 +214,7 @@ Scene::Scene(const char *xmlPath)
 		int cursor = 0;
 		int vertexOffset = 0;
 		vector<Triangle> faces;
+		vector<int> *meshIndices = new vector<int>;
 
 		eResult = pObject->QueryIntAttribute("id", &id);
 		objElement = pObject->FirstChildElement("Material");
@@ -280,10 +239,13 @@ Scene::Scene(const char *xmlPath)
 				while(str[cursor] == ' ' || str[cursor] == '\t' || str[cursor] == '\n')
 					cursor++;
 			}
-			faces.push_back(*(new Triangle(-1, matIndex, p1Index, p2Index, p3Index)));
+			faces.push_back(*(new Triangle(-1, matIndex, p1Index, p2Index, p3Index, &vertices)));
+			meshIndices->push_back(p1Index);
+			meshIndices->push_back(p2Index);
+			meshIndices->push_back(p3Index);
 		}
 
-		objects.push_back(new Mesh(id, matIndex, faces));
+		objects.push_back(new Mesh(id, matIndex, faces, meshIndices, &vertices));
 
 		pObject = pObject->NextSiblingElement("Mesh");
 	}
