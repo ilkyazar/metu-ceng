@@ -32,7 +32,9 @@ public:
 	ReturnVal intersect(const Ray & ray) const;	// Will take a ray and return a structure related to the intersection information. You will implement this. 
 
 private:
-	// Write any other stuff here
+	int cIndex;
+	float R;
+	vector<Vector3f> *vertices;
 };
 
 // Class for triangle
@@ -44,7 +46,10 @@ public:
 	ReturnVal intersect(const Ray & ray) const; // Will take a ray and return a structure related to the intersection information. You will implement this. 
 
 private:
-	// Write any other stuff here
+	int p1Index;
+	int p2Index;
+	int p3Index;
+	vector<Vector3f> *vertices;
 };
 
 // Class for mesh
@@ -56,7 +61,9 @@ public:
 	ReturnVal intersect(const Ray & ray) const; // Will take a ray and return a structure related to the intersection information. You will implement this. 
 
 private:
-	// Write any other stuff here
+	vector<Triangle> faces;
+	vector<int> *pIndices;
+	vector<Vector3f> *vertices;
 };
 
 #endif

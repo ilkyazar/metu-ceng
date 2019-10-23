@@ -1,6 +1,7 @@
 #ifndef _DEFS_H_
 #define _DEFS_H_
 
+#include "Vector.h"
 class Scene;
 
 /* Structure to hold return value from ray intersection routine. 
@@ -9,12 +10,9 @@ for example, coordinate of the intersection point, surface normal at the interse
 Think about the variables you will need for this purpose and declare them here inside of this structure. */
 typedef struct ReturnVal
 {
-	/***********************************************
-     *                                             *
-	 * TODO: Implement this structure              *
-     *                                             *
-     ***********************************************
-	 */
+	bool isIntersect;
+	Vector intersectCoord;
+	Vector normalVec;
 } ReturnVal;
 
 /* 3 dimensional vector holding floating point numbers.

@@ -34,9 +34,9 @@ public:
 	Ray getPrimaryRay(int row, int col) const;
 
 private:
-    //
-	// You can add member functions and variables here
-    //
+    Vector3f pos;
+    Vector3f gaze;
+    Vector3f up;
 };
 
 #endif
