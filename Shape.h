@@ -50,6 +50,10 @@ private:
 	int p2Index;
 	int p3Index;
 	vector<Vector3f> *vertices;
+	float det(float a, float b, float c, float d, float e, float f, float g, float h, float i) const{
+		float det = a * ( e*i - h*f ) + b * ( g*f - d*i ) + c * ( d*h - e*g );
+		return det;
+	}
 };
 
 // Class for mesh

@@ -84,59 +84,40 @@ Note that ReturnVal structure should hold the information related to the interse
 You should to declare the variables in ReturnVal structure you think you will need. It is in defs.h file. */
 ReturnVal Triangle::intersect(const Ray & ray) const
 {
-	ReturnVal returnVal;
+    ReturnVal returnVal;
     Vector n;
     Vector v0(pScene->vertices[this->p1Index - 1].x, pScene->vertices[this->p1Index - 1].y, pScene->vertices[this->p1Index - 1].z);
     Vector v1(pScene->vertices[this->p2Index - 1].x, pScene->vertices[this->p2Index - 1].y, pScene->vertices[this->p2Index - 1].z);
     Vector v2(pScene->vertices[this->p3Index - 1].x, pScene->vertices[this->p3Index - 1].y, pScene->vertices[this->p3Index - 1].z);
     n = (v1-v0).cross(v2-v0);
-    //float d = n.dot(v0);
-    Vector origin(ray.origin.x, ray.origin.y, ray.origin.z);
-    Vector direction(ray.direction.x, ray.direction.y, ray.direction.z);
 
-    //float t = (n.dot(origin) + d) / n.dot(direction); 
-    float t = n.dot(v0 - origin) / direction.dot(n);
-    
-    Vector3f point = ray.getPoint(t);
+    float a = v0.x - v1.x,
+          b = v0.y - v1.y,
+          c = v0.z - v1.z,
+          d = v0.x - v2.x,
+          e = v0.y - v2.y,
+          f = v0.z - v2.z,
+          g = ray.direction.x,
+          h = ray.direction.y,
+          i = ray.direction.z,
+          j = v0.x - ray.origin.x,
+          k = v0.y - ray.origin.y,
+          l = v0.z - ray.origin.z;
 
-    Vector p(point.x, point.y, point.z);
+    float A = this->det(a, b, c, d, e, f, g, h, i);
+    float beta = (this->det(j, k, l, d, e, f, g, h, i))/A;
+    float gamma = (this->det(a, b, c, j, k, l, g, h, i))/A;
+    float t = (this->det(a, b, c, d, e, f, j, k, l))/A;
 
-    if (/*fabs(direction.dot(n)) < pScene->intTestEps*/ direction.dot(n) == 0) { // ray and the triangle are parallel
-        returnVal.isIntersect = false;
-        return returnVal;
+    if(beta + gamma <= 1 && beta >=0 && gamma >= 0 && t >= pScene->intTestEps ){ //intersects
+        Vector3f point = ray.getPoint(t);
+        Vector p(point.x, point.y, point.z);
+        returnVal.isIntersect = true;
+        returnVal.intersectCoord = p;    
     }
-    if (t < 0) { // the triangle is behind 
+    else{
         returnVal.isIntersect = false;
-        return returnVal;
     }
-
-    Vector c;
-    Vector edge0 = v1 - v0;
-    Vector vp0 = p - v0;
-    c = edge0.cross(vp0);
-    if (n.dot(c) <= 0) {
-        returnVal.isIntersect = false;
-        return returnVal;
-    }
-
-    Vector edge1 = v2 - v1;
-    Vector vp1 = p - v1;
-    c = edge1.cross(vp1);
-    if (n.dot(c) <= 0) {
-        returnVal.isIntersect = false;
-        return returnVal;
-    }
-
-    Vector edge2 = v0 - v2;
-    Vector vp2 = p - v2;
-    c = edge2.cross(vp2);
-    if (n.dot(c) <= 0) {
-        returnVal.isIntersect = false;
-        return returnVal;
-    }
-
-    returnVal.isIntersect = true;
-    returnVal.intersectCoord = p;
     return returnVal;
 }
 
