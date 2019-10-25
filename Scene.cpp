@@ -83,9 +83,9 @@ void Scene::renderScene(void)
 
 							cos_diffuse = (0 - w_i.dot(returnVal.normalVec)) / (w_i.getMagnitude() * returnVal.normalVec.getMagnitude());
 
-							diffuse.red = contr * 1;
-							diffuse.grn = this->materials[this->objects[o]->matIndex-1]->diffuseRef.g * cos_diffuse * contr;
-							diffuse.blu = this->materials[this->objects[o]->matIndex-1]->diffuseRef.b * cos_diffuse * contr;
+							diffuse.red = contr.x * this->materials[this->objects[o]->matIndex-1]->diffuseRef.r * cos_diffuse;
+							diffuse.grn = contr.y * this->materials[this->objects[o]->matIndex-1]->diffuseRef.g * cos_diffuse;
+							diffuse.blu = contr.z * this->materials[this->objects[o]->matIndex-1]->diffuseRef.b * cos_diffuse;
 							color.red += diffuse.red;
 							color.grn += diffuse.grn;
 							color.blu += diffuse.blu;
