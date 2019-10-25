@@ -10,10 +10,10 @@ PointLight::PointLight(const Vector3f & position, const Vector3f & intensity)
 // inverse square law formula
 Vector3f PointLight::computeLightContribution(const Vector3f& p)
 {
-	/***********************************************
-     *                                             *
-	 * TODO: Implement this function               *
-     *                                             *
-     ***********************************************
-	 */
+    std::cout << this->intensity.x << " " << this->intensity.y << " " << this->intensity.z << std::endl;
+    Vector3f vec;
+    vec.x = 0;
+    vec.y = 0;
+    vec.z = 0;
+    return vec;
 }

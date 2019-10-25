@@ -2,6 +2,7 @@
 #define _LIGHT_H_
 
 #include "defs.h"
+#include <iostream>
 
 using namespace std;
 

@@ -25,17 +25,18 @@ void Scene::renderScene(void)
 		int ny = this->cameras[cameraIndex]->imgPlane.ny;
 
 		Image* outputImage = new Image(nx, ny);
+		Ray primaryRay;
+		Vector3f p;
 
 		for (int i = 0; i < nx; i++) {
 			for (int j = 0; j < ny; j++) {
-				Ray primaryRay = cameras[cameraIndex]->getPrimaryRay(i, j);
+				primaryRay = cameras[cameraIndex]->getPrimaryRay(i, j);
 				float t_min = std::numeric_limits<int>::max();
 				bool obj = false;
 				int obj_i;
 				for (int objIndex = 0; objIndex < this->objects.size(); objIndex++) {
 					ReturnVal returnVal = this->objects[objIndex]->intersect(primaryRay);
 					if (returnVal.isIntersect == true) {
-						Vector3f p;
 						p.x = returnVal.intersectCoord.x;
 						p.y = returnVal.intersectCoord.y;
 						p.z = returnVal.intersectCoord.z;
@@ -48,9 +49,34 @@ void Scene::renderScene(void)
 				}
 
 				if (obj) {
-					color.red = this->ambientLight.x * this->materials[this->objects[obj_i]->matIndex-1]->ambientRef.r + 100;
-					color.grn = this->ambientLight.y * this->materials[this->objects[obj_i]->matIndex-1]->ambientRef.g + 100;
-					color.blu = this->ambientLight.z * this->materials[this->objects[obj_i]->matIndex-1]->ambientRef.b + 100;
+					Color ambient;
+					ambient.red = this->ambientLight.x * this->materials[this->objects[obj_i]->matIndex-1]->ambientRef.r;
+					ambient.grn = this->ambientLight.y * this->materials[this->objects[obj_i]->matIndex-1]->ambientRef.g;
+					ambient.blu = this->ambientLight.z * this->materials[this->objects[obj_i]->matIndex-1]->ambientRef.b;					
+
+					color = ambient;
+
+					for (int l = 0; l < this->lights.size(); l++) {
+						// compute the shadow ray s from intersectCoord to l
+						Vector3f shadowRayOrigin, shadowRayDirection;
+						shadowRayOrigin.x = p.x + this->shadowRayEps * primaryRay.direction.x;
+						shadowRayOrigin.y = p.y + this->shadowRayEps * primaryRay.direction.y;
+						shadowRayOrigin.z = p.z + this->shadowRayEps * primaryRay.direction.z;
+						shadowRayDirection.x = this->lights[l]->position.x - p.x;
+						shadowRayDirection.y = this->lights[l]->position.y - p.y;
+						shadowRayDirection.z = this->lights[l]->position.z - p.z;
+						Ray shadowRay(shadowRayOrigin, shadowRayDirection);
+
+						for (int o = 0; o < this->objects.size(); o++) {
+							// if s intersects the o before the light source, continue loop, because point is in shadow
+							ReturnVal returnVal = this->objects[o]->intersect(shadowRay);
+							if (returnVal.isIntersect) continue;
+							color.red += 500;
+							color.grn += 500;
+							color.blu += 500;
+						}
+						// color += diffuse + specular
+					}
 					outputImage->setPixelValue(j, i, color);
 				}
 				else {
