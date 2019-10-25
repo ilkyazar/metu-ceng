@@ -71,9 +71,9 @@ void Scene::renderScene(void)
 							// if s intersects the o before the light source, continue loop, because point is in shadow
 							ReturnVal returnVal = this->objects[o]->intersect(shadowRay);
 							if (returnVal.isIntersect) continue;
-							color.red += 500;
-							color.grn += 500;
-							color.blu += 500;
+							color.red -= 500;
+							color.grn -= 500;
+							color.blu -= 500;
 						}
 						// color += diffuse + specular
 					}
