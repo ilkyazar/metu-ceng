@@ -27,6 +27,7 @@ void Scene::renderScene(void)
 		Image* outputImage = new Image(nx, ny);
 		Ray primaryRay;
 		Vector3f p;
+		ReturnVal returnVal;
 
 		for (int i = 0; i < nx; i++) {
 			for (int j = 0; j < ny; j++) {
@@ -35,7 +36,7 @@ void Scene::renderScene(void)
 				bool obj = false;
 				int obj_i;
 				for (int objIndex = 0; objIndex < this->objects.size(); objIndex++) {
-					ReturnVal returnVal = this->objects[objIndex]->intersect(primaryRay);
+					returnVal = this->objects[objIndex]->intersect(primaryRay);
 					if (returnVal.isIntersect == true) {
 						p.x = returnVal.intersectCoord.x;
 						p.y = returnVal.intersectCoord.y;
@@ -49,7 +50,8 @@ void Scene::renderScene(void)
 				}
 
 				if (obj) {
-					Color ambient;
+					Color ambient, diffuse, specular;
+					float cos_diffuse, cos_specular;
 					ambient.red = this->ambientLight.x * this->materials[this->objects[obj_i]->matIndex-1]->ambientRef.r;
 					ambient.grn = this->ambientLight.y * this->materials[this->objects[obj_i]->matIndex-1]->ambientRef.g;
 					ambient.blu = this->ambientLight.z * this->materials[this->objects[obj_i]->matIndex-1]->ambientRef.b;					
@@ -66,16 +68,29 @@ void Scene::renderScene(void)
 						shadowRayDirection.y = this->lights[l]->position.y - p.y;
 						shadowRayDirection.z = this->lights[l]->position.z - p.z;
 						Ray shadowRay(shadowRayOrigin, shadowRayDirection);
-
+						
 						for (int o = 0; o < this->objects.size(); o++) {
 							// if s intersects the o before the light source, continue loop, because point is in shadow
-							ReturnVal returnVal = this->objects[o]->intersect(shadowRay);
-							if (returnVal.isIntersect) continue;
-							color.red -= 500;
-							color.grn -= 500;
-							color.blu -= 500;
+							ReturnVal returnVal_ray = this->objects[o]->intersect(shadowRay);
+							if (returnVal_ray.isIntersect &&
+								shadowRay.gett(p) < primaryRay.gett(p)) {
+								continue;
+							}
+							// color += diffuse + specular
+							Vector3f contribution = this->lights[l]->computeLightContribution(p);
+							Vector contr(contribution. x, contribution.y, contribution.z);
+							Vector w_i(this->lights[l]->position.x - p.x, this->lights[l]->position.y - p.y, this->lights[l]->position.z - p.z);
+
+							cos_diffuse = (0 - w_i.dot(returnVal.normalVec)) / (w_i.getMagnitude() * returnVal.normalVec.getMagnitude());
+
+							diffuse.red = contr * 1;
+							diffuse.grn = this->materials[this->objects[o]->matIndex-1]->diffuseRef.g * cos_diffuse * contr;
+							diffuse.blu = this->materials[this->objects[o]->matIndex-1]->diffuseRef.b * cos_diffuse * contr;
+							color.red += diffuse.red;
+							color.grn += diffuse.grn;
+							color.blu += diffuse.blu;
 						}
-						// color += diffuse + specular
+						
 					}
 					outputImage->setPixelValue(j, i, color);
 				}

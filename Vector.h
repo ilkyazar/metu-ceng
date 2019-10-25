@@ -1,6 +1,7 @@
 #ifndef _VECTOR_H_
 #define _VECTOR_H_
 #include <iostream> 
+#include <math.h>
 
 class Vector {
     public:
@@ -13,10 +14,10 @@ class Vector {
         Vector operator+ (Vector const &v1);
         Vector operator- (Vector const &v1);
         Vector operator* (float scalar);
+        Vector operator/ (float scalar);
         Vector cross (Vector const &v1) ;
         float dot(Vector const &v1);
-
-    
+        float getMagnitude();
 };
 
 #endif

@@ -44,14 +44,19 @@ Vector Vector::operator* (float scalar){
     return v2;
 }
 
+Vector Vector::operator/ (float scalar){
+    Vector v;
+    v.x = this->x / scalar;
+    v.y = this->y / scalar;
+    v.z = this->z / scalar;
+    return v;
+}
+
 Vector Vector::cross(Vector const &v1){
     Vector v3;
     v3.x = (this->y * v1.z) - (this->z * v1.y);
     v3.y = (this->x * v1.z) - (this->z * v1.x);
     v3.z = (this->x * v1.y) - (this->y * v1.x);
-    //std::cout << "v1.x" << v1.x << " " << this->x << std::endl;
-    //std::cout << "v1.y" << v1.y << " " << this->y << std::endl;
-    //std::cout << "v1.z" << v1.z << " " << this->z << std::endl;
 
     return v3;
 }
@@ -59,4 +64,9 @@ Vector Vector::cross(Vector const &v1){
 float Vector::dot(Vector const &v1){
     float result = v1.x * this->x + v1.y * this->y + v1.z * this->z;
     return result;
+}
+
+float Vector::getMagnitude() {
+    float magn = sqrt(pow(this->x, 2) + pow(this->y, 2) + pow(this->z, 2));
+    return magn;
 }
