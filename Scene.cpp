@@ -4,12 +4,116 @@
 #include "Material.h"
 #include "Shape.h"
 #include "tinyxml2.h"
-#include "Image.h"
 #include <cstring>
 #include <limits>
 
 using namespace tinyxml2;
 
+Ray Scene::computeShadowRay(Vector3f p, Ray viewingRay, Vector3f lightPosition) {
+	Vector3f shadowRayOrigin, shadowRayDirection;
+	shadowRayOrigin.x = p.x + this->shadowRayEps * viewingRay.direction.x;
+	shadowRayOrigin.y = p.y + this->shadowRayEps * viewingRay.direction.y;
+	shadowRayOrigin.z = p.z + this->shadowRayEps * viewingRay.direction.z;
+	shadowRayDirection.x = lightPosition.x - p.x;
+	shadowRayDirection.y = lightPosition.y - p.y;
+	shadowRayDirection.z = lightPosition.z - p.z;
+	Ray shadowRay(shadowRayOrigin, shadowRayDirection);
+	return shadowRay;
+}
+
+Color Scene::traverseLights(Vector3f p, ReturnVal returnVal, int objIndex, Ray viewingRay) {
+	Color color;
+	Vector3f diffuse, ambient, specular;
+	Material* material;
+	material = this->materials[this->objects[objIndex]->matIndex-1];
+
+	ambient.r = this->ambientLight.x * material->ambientRef.r;
+	ambient.g = this->ambientLight.y * material->ambientRef.g;
+	ambient.b = this->ambientLight.z * material->ambientRef.b;
+
+	for (int l = 0; l < this->lights.size(); l++) {
+		Vector3f lightPosition = this->lights[l]->position;
+		Ray shadowRay = this->computeShadowRay(p, viewingRay, lightPosition);
+
+		for (int o = 0; o < this->objects.size(); o++) {
+			ReturnVal shadowRayReturnVal = this->objects[o]->intersect(shadowRay);
+
+			if (shadowRayReturnVal.isIntersect &&
+				shadowRay.gett(p) < viewingRay.gett(p)) {
+				continue;
+			}
+		}
+
+		Vector w_i(lightPosition.x - p.x, lightPosition.y - p.y, lightPosition.z - p.z);
+		w_i = w_i.normalize(w_i);
+
+		Vector3f irradiance = this->lights[l]->computeLightContribution(p);
+		
+		Vector3f diffuseRefCoeff = material->diffuseRef;
+
+		Vector N = returnVal.normalVec;
+		N = N.normalize(N);
+		float cos_diffuse = max(0.f, w_i.dot(N));
+
+		diffuse.r = diffuseRefCoeff.x * cos_diffuse * irradiance.x;
+		diffuse.g = diffuseRefCoeff.y * cos_diffuse * irradiance.y;
+		diffuse.b = diffuseRefCoeff.z * cos_diffuse * irradiance.z;
+
+		Vector h;
+		Vector w_o(-viewingRay.direction.x, -viewingRay.direction.y, -viewingRay.direction.z);
+		w_o = w_o.normalize(w_o);
+		h = (w_i + w_o) / (w_i + w_o).getMagnitude();
+
+		float cos_specular = pow(max(0.f, N.dot(h)), material->phongExp);
+
+		Vector3f specularRefCoeff = material->specularRef;
+
+		specular.r = specularRefCoeff.r * cos_specular * irradiance.x;
+		specular.g = specularRefCoeff.g * cos_specular * irradiance.y;
+		specular.b = specularRefCoeff.b * cos_specular * irradiance.z;
+
+	}
+
+	color.channel[0] = (ambient.r + diffuse.r + specular.r) > 255 ? 255 : (ambient.r + diffuse.r + specular.r);
+	color.channel[1] = (ambient.g + diffuse.g + specular.g) > 255 ? 255 : (ambient.g + diffuse.g + specular.g);
+	color.channel[2] = (ambient.b + diffuse.b + specular.b) > 255 ? 255 : (ambient.b + diffuse.b + specular.b);
+	//std::cout << "color = " << static_cast<unsigned>(color.red) << " " << static_cast<unsigned>(color.grn) << " " << static_cast<unsigned>(color.blu) << std::endl;
+	return color;
+}
+
+Color Scene::traverseObjects(int i, int j, int cameraIndex) {
+
+	float t_min = std::numeric_limits<int>::max();
+	Ray primaryRay = cameras[cameraIndex]->getPrimaryRay(i, j);
+	bool rayIntersectedWithObj = false;
+	Color color;
+	Vector3f p;
+	
+	for (int obj = 0; obj < this->objects.size(); obj++) {
+		ReturnVal returnVal = this->objects[obj]->intersect(primaryRay);
+		if (returnVal.isIntersect) {
+			Vector3f p_temp;
+			p_temp.x = returnVal.intersectCoord.x;
+			p_temp.y = returnVal.intersectCoord.y;
+			p_temp.z = returnVal.intersectCoord.z;	
+
+			if (primaryRay.gett(p_temp) < t_min) {
+				t_min = primaryRay.gett(p_temp);
+				rayIntersectedWithObj = true;
+				p = p_temp;
+				color = this->traverseLights(p, returnVal, obj, primaryRay);
+			}
+		}
+	}
+
+	if (rayIntersectedWithObj == false) {
+		color.red = this->backgroundColor.x;
+		color.grn = this->backgroundColor.y;
+		color.blu = this->backgroundColor.z;
+	}
+
+	return color;
+}
 /* 
  * Must render the scene from each camera's viewpoint and create an image.
  * You can use the methods of the Image class to save the image as a PPM file. 
@@ -19,103 +123,20 @@ void Scene::renderScene(void)
 	Color color;
 
 	for (int cameraIndex = 0; cameraIndex < cameras.size(); cameraIndex++) {
-		int id = cameras[cameraIndex]->id;
 		const char* outputImgName = this->cameras[cameraIndex]->imageName;
 		int nx = this->cameras[cameraIndex]->imgPlane.nx;
 		int ny = this->cameras[cameraIndex]->imgPlane.ny;
 
 		Image* outputImage = new Image(nx, ny);
-		Ray primaryRay;
-		Vector3f p;
-		ReturnVal returnVal;
 
 		for (int i = 0; i < nx; i++) {
-			for (int j = 0; j < ny; j++) {
-				primaryRay = cameras[cameraIndex]->getPrimaryRay(i, j);
-				float t_min = std::numeric_limits<int>::max();
-				bool obj = false;
-				int obj_i;
-				for (int objIndex = 0; objIndex < this->objects.size(); objIndex++) {
-					returnVal = this->objects[objIndex]->intersect(primaryRay);
-					if (returnVal.isIntersect == true) {
-						Vector3f p_temp;
-						p_temp.x = returnVal.intersectCoord.x;
-						p_temp.y = returnVal.intersectCoord.y;
-						p_temp.z = returnVal.intersectCoord.z;
-						if (primaryRay.gett(p_temp) < t_min) {
-							p = p_temp;
-							t_min = primaryRay.gett(p);
-							obj = true;
-							obj_i = objIndex;
-						}
-					}
-				}
-
-				if (obj) {
-					Vector3f ambient, diffuse, specular;
-					float cos_diffuse, cos_specular;
-					ambient.r = this->ambientLight.x * this->materials[this->objects[obj_i]->matIndex-1]->ambientRef.r;
-					ambient.g = this->ambientLight.y * this->materials[this->objects[obj_i]->matIndex-1]->ambientRef.g;
-					ambient.b = this->ambientLight.z * this->materials[this->objects[obj_i]->matIndex-1]->ambientRef.b;					
-
-					color.red = ambient.r;
-					color.grn = ambient.g;
-					color.blu = ambient.b;
-
-					for (int l = 0; l < this->lights.size(); l++) {
-						// compute the shadow ray s from intersectCoord to l
-						Vector3f shadowRayOrigin, shadowRayDirection;
-						shadowRayOrigin.x = p.x + this->shadowRayEps * primaryRay.direction.x;
-						shadowRayOrigin.y = p.y + this->shadowRayEps * primaryRay.direction.y;
-						shadowRayOrigin.z = p.z + this->shadowRayEps * primaryRay.direction.z;
-						shadowRayDirection.x = this->lights[l]->position.x - p.x;
-						shadowRayDirection.y = this->lights[l]->position.y - p.y;
-						shadowRayDirection.z = this->lights[l]->position.z - p.z;
-						Ray shadowRay(shadowRayOrigin, shadowRayDirection);
-						
-						for (int o = 0; o < this->objects.size(); o++) {
-							// if s intersects the o before the light source, continue loop, because point is in shadow
-							ReturnVal returnVal_ray = this->objects[o]->intersect(shadowRay);
-							if (returnVal_ray.isIntersect &&
-								shadowRay.gett(p) < primaryRay.gett(p) ) {
-								continue;
-							}
-							// color += diffuse + specular
-							Vector3f contribution = this->lights[l]->computeLightContribution(p);
-							Vector contr(contribution.x, contribution.y, contribution.z);
-
-							Vector w_i(this->lights[l]->position.x - p.x, this->lights[l]->position.y - p.y, this->lights[l]->position.z - p.z);
-							//w_i = w_i.normalize(w_i);
-							Vector normal(returnVal.normalVec.x, returnVal.normalVec.y, returnVal.normalVec.z);
-							//normal = normal.normalize(normal);
-							//cos_diffuse = w_i.dot(normal);
-							cos_diffuse = (-w_i.dot(normal)) / (w_i.getMagnitude() * normal.getMagnitude());
-							//cos_diffuse = std::max(0.f, std::min(cos_diffuse, 1.f));
-
-							diffuse.r = (contr.x * this->materials[this->objects[obj_i]->matIndex-1]->diffuseRef.r * cos_diffuse);
-							diffuse.g = (contr.y * this->materials[this->objects[obj_i]->matIndex-1]->diffuseRef.g * cos_diffuse);
-							diffuse.b = (contr.z * this->materials[this->objects[obj_i]->matIndex-1]->diffuseRef.b * cos_diffuse);
-
-							color.red = (diffuse.r + ambient.r) > 255 ? 255 : (diffuse.r + ambient.r);
-							color.grn = (diffuse.r + ambient.g) > 255 ? 255 : (diffuse.g + ambient.g);
-							color.blu = (diffuse.r + ambient.b) > 255 ? 255 : (diffuse.b + ambient.b);
-
-							//std::cout << "color = " << static_cast<unsigned>(color.red) << " " << static_cast<unsigned>(color.grn) << " " << static_cast<unsigned>(color.blu) << std::endl;
-						}
-					}
-					
-				}
-				else {
-					color.red = this->backgroundColor.x;
-					color.grn = this->backgroundColor.y;
-					color.blu = this->backgroundColor.z;				
-				}				
+			for (int j = 0; j < ny; j++) {		
+				color = this->traverseObjects(i, j, cameraIndex);
 				outputImage->setPixelValue(j, i, color);
 			}
 		}
 		outputImage->saveImage(outputImgName);
 	}
-
 
 }
 
