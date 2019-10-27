@@ -58,7 +58,7 @@ ReturnVal Sphere::intersect(const Ray & ray) const
 
         float t = (t1 < t2) ? t1 : t2;
         returnVal.intersectCoord = o + d * t;
-        returnVal.normalVec = returnVal.intersectCoord - center;
+        returnVal.normalVec = (returnVal.intersectCoord - center) / this->R;
         returnVal.isIntersect = true;
     }
     return returnVal;

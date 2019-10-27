@@ -18,6 +18,8 @@ class Vector {
         Vector cross (Vector const &v1) ;
         float dot(Vector const &v1);
         float getMagnitude();
+        float getDistance(Vector const &v1);
+        Vector normalize(Vector v1);
 };
 
 #endif
