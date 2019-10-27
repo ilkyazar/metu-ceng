@@ -70,3 +70,16 @@ float Vector::getMagnitude() {
     float magn = sqrt(pow(this->x, 2) + pow(this->y, 2) + pow(this->z, 2));
     return magn;
 }
+
+float Vector::getDistance(Vector const &v1){
+    float result =  sqrt(pow(this->x - v1.x, 2) + pow(this->y - v1.y, 2) + pow(this->z - v1.z, 2));
+    return result;
+}
+
+Vector Vector::normalize(Vector v1) {
+    Vector vec;
+    vec.x = v1.x / v1.getMagnitude();
+    vec.y = v1.y / v1.getMagnitude();
+    vec.z = v1.z / v1.getMagnitude();
+    return vec;
+}

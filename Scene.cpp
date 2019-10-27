@@ -38,10 +38,12 @@ void Scene::renderScene(void)
 				for (int objIndex = 0; objIndex < this->objects.size(); objIndex++) {
 					returnVal = this->objects[objIndex]->intersect(primaryRay);
 					if (returnVal.isIntersect == true) {
-						p.x = returnVal.intersectCoord.x;
-						p.y = returnVal.intersectCoord.y;
-						p.z = returnVal.intersectCoord.z;
-						if (primaryRay.gett(p) < t_min) {
+						Vector3f p_temp;
+						p_temp.x = returnVal.intersectCoord.x;
+						p_temp.y = returnVal.intersectCoord.y;
+						p_temp.z = returnVal.intersectCoord.z;
+						if (primaryRay.gett(p_temp) < t_min) {
+							p = p_temp;
 							t_min = primaryRay.gett(p);
 							obj = true;
 							obj_i = objIndex;
@@ -50,13 +52,15 @@ void Scene::renderScene(void)
 				}
 
 				if (obj) {
-					Color ambient, diffuse, specular;
+					Vector3f ambient, diffuse, specular;
 					float cos_diffuse, cos_specular;
-					ambient.red = this->ambientLight.x * this->materials[this->objects[obj_i]->matIndex-1]->ambientRef.r;
-					ambient.grn = this->ambientLight.y * this->materials[this->objects[obj_i]->matIndex-1]->ambientRef.g;
-					ambient.blu = this->ambientLight.z * this->materials[this->objects[obj_i]->matIndex-1]->ambientRef.b;					
+					ambient.r = this->ambientLight.x * this->materials[this->objects[obj_i]->matIndex-1]->ambientRef.r;
+					ambient.g = this->ambientLight.y * this->materials[this->objects[obj_i]->matIndex-1]->ambientRef.g;
+					ambient.b = this->ambientLight.z * this->materials[this->objects[obj_i]->matIndex-1]->ambientRef.b;					
 
-					color = ambient;
+					color.red = ambient.r;
+					color.grn = ambient.g;
+					color.blu = ambient.b;
 
 					for (int l = 0; l < this->lights.size(); l++) {
 						// compute the shadow ray s from intersectCoord to l
@@ -73,33 +77,40 @@ void Scene::renderScene(void)
 							// if s intersects the o before the light source, continue loop, because point is in shadow
 							ReturnVal returnVal_ray = this->objects[o]->intersect(shadowRay);
 							if (returnVal_ray.isIntersect &&
-								shadowRay.gett(p) < primaryRay.gett(p)) {
+								shadowRay.gett(p) < primaryRay.gett(p) ) {
 								continue;
 							}
 							// color += diffuse + specular
 							Vector3f contribution = this->lights[l]->computeLightContribution(p);
-							Vector contr(contribution. x, contribution.y, contribution.z);
+							Vector contr(contribution.x, contribution.y, contribution.z);
+
 							Vector w_i(this->lights[l]->position.x - p.x, this->lights[l]->position.y - p.y, this->lights[l]->position.z - p.z);
+							//w_i = w_i.normalize(w_i);
+							Vector normal(returnVal.normalVec.x, returnVal.normalVec.y, returnVal.normalVec.z);
+							//normal = normal.normalize(normal);
+							//cos_diffuse = w_i.dot(normal);
+							cos_diffuse = (-w_i.dot(normal)) / (w_i.getMagnitude() * normal.getMagnitude());
+							//cos_diffuse = std::max(0.f, std::min(cos_diffuse, 1.f));
 
-							cos_diffuse = (0 - w_i.dot(returnVal.normalVec)) / (w_i.getMagnitude() * returnVal.normalVec.getMagnitude());
+							diffuse.r = (contr.x * this->materials[this->objects[obj_i]->matIndex-1]->diffuseRef.r * cos_diffuse);
+							diffuse.g = (contr.y * this->materials[this->objects[obj_i]->matIndex-1]->diffuseRef.g * cos_diffuse);
+							diffuse.b = (contr.z * this->materials[this->objects[obj_i]->matIndex-1]->diffuseRef.b * cos_diffuse);
 
-							diffuse.red = contr.x * this->materials[this->objects[o]->matIndex-1]->diffuseRef.r * cos_diffuse;
-							diffuse.grn = contr.y * this->materials[this->objects[o]->matIndex-1]->diffuseRef.g * cos_diffuse;
-							diffuse.blu = contr.z * this->materials[this->objects[o]->matIndex-1]->diffuseRef.b * cos_diffuse;
-							color.red += diffuse.red;
-							color.grn += diffuse.grn;
-							color.blu += diffuse.blu;
+							color.red = (diffuse.r + ambient.r) > 255 ? 255 : (diffuse.r + ambient.r);
+							color.grn = (diffuse.r + ambient.g) > 255 ? 255 : (diffuse.g + ambient.g);
+							color.blu = (diffuse.r + ambient.b) > 255 ? 255 : (diffuse.b + ambient.b);
+
+							//std::cout << "color = " << static_cast<unsigned>(color.red) << " " << static_cast<unsigned>(color.grn) << " " << static_cast<unsigned>(color.blu) << std::endl;
 						}
-						
 					}
-					outputImage->setPixelValue(j, i, color);
+					
 				}
 				else {
 					color.red = this->backgroundColor.x;
 					color.grn = this->backgroundColor.y;
 					color.blu = this->backgroundColor.z;				
-					outputImage->setPixelValue(j, i, color);
 				}				
+				outputImage->setPixelValue(j, i, color);
 			}
 		}
 		outputImage->saveImage(outputImgName);
