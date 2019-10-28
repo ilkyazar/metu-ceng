@@ -101,12 +101,16 @@ ReturnVal Triangle::intersect(const Ray & ray) const
 {
     ReturnVal returnVal;
     Vector n;
-    Vector v0(pScene->vertices[this->p1Index - 1].x, pScene->vertices[this->p1Index - 1].y, pScene->vertices[this->p1Index - 1].z);
-    Vector v1(pScene->vertices[this->p2Index - 1].x, pScene->vertices[this->p2Index - 1].y, pScene->vertices[this->p2Index - 1].z);
-    Vector v2(pScene->vertices[this->p3Index - 1].x, pScene->vertices[this->p3Index - 1].y, pScene->vertices[this->p3Index - 1].z);
+    //Vector v0(pScene->vertices[this->p1Index - 1].x, pScene->vertices[this->p1Index - 1].y, pScene->vertices[this->p1Index - 1].z);
+    //Vector v1(pScene->vertices[this->p2Index - 1].x, pScene->vertices[this->p2Index - 1].y, pScene->vertices[this->p2Index - 1].z);
+    //Vector v2(pScene->vertices[this->p3Index - 1].x, pScene->vertices[this->p3Index - 1].y, pScene->vertices[this->p3Index - 1].z);
+    Vector v0(this->vertices[0][p1Index-1].x, this->vertices[0][p1Index-1].y, this->vertices[0][p1Index-1].z);
+    Vector v1(this->vertices[0][p2Index-1].x, this->vertices[0][p2Index-1].y, this->vertices[0][p2Index-1].z);
+    Vector v2(this->vertices[0][p3Index-1].x, this->vertices[0][p3Index-1].y, this->vertices[0][p3Index-1].z);
+
     n = (v0-v1).cross(v0-v2);
     n = n.normalize(n);
-
+    
     float a = v0.x - v1.x,
           b = v0.y - v1.y,
           c = v0.z - v1.z,
@@ -124,17 +128,20 @@ ReturnVal Triangle::intersect(const Ray & ray) const
     float beta = (this->det(j, k, l, d, e, f, g, h, i))/A;
     float gamma = (this->det(a, b, c, j, k, l, g, h, i))/A;
     float t = (this->det(a, b, c, d, e, f, j, k, l))/A;
+    float t_min = std::numeric_limits<int>::max();
 
-    if(beta + gamma <= 1 && beta >=0 && gamma >= 0 && t >= pScene->intTestEps ){ //intersects
+    if(beta + gamma <= 1 && beta >= 0 && gamma >= 0 && t >= pScene->intTestEps && t < t_min ){ //intersects
         Vector3f point = ray.getPoint(t);
         Vector p(point.x, point.y, point.z);
+        t_min = t;
         returnVal.isIntersect = true;
-        returnVal.intersectCoord = p;    
+        returnVal.intersectCoord = p;
+        returnVal.normalVec = n;    
     }
     else{
         returnVal.isIntersect = false;
     }
-    returnVal.normalVec = n;
+    
     return returnVal;
 }
 
@@ -159,7 +166,7 @@ ReturnVal Mesh::intersect(const Ray & ray) const
 {
 	ReturnVal returnVal, returnValTri;
     returnVal.isIntersect = false; 
-    
+    float t_min = std::numeric_limits<float>::max();
     for(int triIndex=0; triIndex < this->faces.size(); triIndex++){
         Triangle tri = faces[triIndex];
         /*
@@ -172,7 +179,7 @@ ReturnVal Mesh::intersect(const Ray & ray) const
         Vector v1( vertices[0][v1_index].x, vertices[0][v1_index].y, vertices[0][v1_index].z );
         Vector v2( vertices[0][v2_index].x, vertices[0][v2_index].y, vertices[0][v2_index].z );
         */
-        float t_min = std::numeric_limits<float>::max();
+        
         //Triangle tri(-1, -1, v0_index, v1_index, v2_index, nullptr);
         
         returnValTri = tri.intersect(ray);
@@ -181,14 +188,14 @@ ReturnVal Mesh::intersect(const Ray & ray) const
         triCoord.y = returnValTri.intersectCoord.y;
         triCoord.z = returnValTri.intersectCoord.z; 
 
-        if(returnValTri.isIntersect && (ray.gett(triCoord) < t_min) ){
+        if(returnValTri.isIntersect && ray.gett(triCoord) < t_min){
             returnVal.isIntersect = true;
             t_min = ray.gett(triCoord);
             returnVal.intersectCoord = returnValTri.intersectCoord;
-
+            returnVal.normalVec = returnValTri.normalVec;
         }
     }
-    returnVal.normalVec = returnValTri.normalVec;
+    
     return returnVal;
 
 }

@@ -32,6 +32,9 @@ Color Scene::traverseLights(Vector3f p, ReturnVal returnVal, int objIndex, Ray v
 	ambient.g = this->ambientLight.y * material->ambientRef.g;
 	ambient.b = this->ambientLight.z * material->ambientRef.b;
 
+	color.channel[0] = ambient.r;
+	color.channel[1] = ambient.g;
+	color.channel[2] = ambient.b;
 
 	for (int l = 0; l < this->lights.size(); l++) {
 		bool inShadow = false;
@@ -50,12 +53,11 @@ Color Scene::traverseLights(Vector3f p, ReturnVal returnVal, int objIndex, Ray v
 				continue;
 			}
 		}
-
+		
 		diffuse = {0,0,0};
 		specular = {0,0,0};
 
-		if(!inShadow){
-
+		//if(!inShadow){
 			Vector w_i(lightPosition.x - p.x, lightPosition.y - p.y, lightPosition.z - p.z);
 			w_i = w_i.normalize(w_i);
 
@@ -84,7 +86,7 @@ Color Scene::traverseLights(Vector3f p, ReturnVal returnVal, int objIndex, Ray v
 			specular.g = specularRefCoeff.g * cos_specular * irradiance.y;
 			specular.b = specularRefCoeff.b * cos_specular * irradiance.z;
 			
-		}
+		//}
 
 		color.channel[0] = (ambient.r + diffuse.r + specular.r) > 255 ? 255 : (ambient.r + diffuse.r + specular.r);
 		color.channel[1] = (ambient.g + diffuse.g + specular.g) > 255 ? 255 : (ambient.g + diffuse.g + specular.g);
