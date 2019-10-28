@@ -11,12 +11,13 @@ using namespace tinyxml2;
 
 Ray Scene::computeShadowRay(Vector3f p, Ray viewingRay, Vector3f lightPosition) {
 	Vector3f shadowRayOrigin, shadowRayDirection;
-	shadowRayOrigin.x = p.x + this->shadowRayEps * viewingRay.direction.x;
-	shadowRayOrigin.y = p.y + this->shadowRayEps * viewingRay.direction.y;
-	shadowRayOrigin.z = p.z + this->shadowRayEps * viewingRay.direction.z;
 	shadowRayDirection.x = lightPosition.x - p.x;
 	shadowRayDirection.y = lightPosition.y - p.y;
 	shadowRayDirection.z = lightPosition.z - p.z;
+	shadowRayOrigin.x = p.x + this->shadowRayEps * shadowRayDirection.x;
+	shadowRayOrigin.y = p.y + this->shadowRayEps * shadowRayDirection.y;
+	shadowRayOrigin.z = p.z + this->shadowRayEps * shadowRayDirection.z;
+
 	Ray shadowRay(shadowRayOrigin, shadowRayDirection);
 	return shadowRay;
 }
@@ -31,53 +32,66 @@ Color Scene::traverseLights(Vector3f p, ReturnVal returnVal, int objIndex, Ray v
 	ambient.g = this->ambientLight.y * material->ambientRef.g;
 	ambient.b = this->ambientLight.z * material->ambientRef.b;
 
+
 	for (int l = 0; l < this->lights.size(); l++) {
+		bool inShadow = false;
 		Vector3f lightPosition = this->lights[l]->position;
 		Ray shadowRay = this->computeShadowRay(p, viewingRay, lightPosition);
 
 		for (int o = 0; o < this->objects.size(); o++) {
 			ReturnVal shadowRayReturnVal = this->objects[o]->intersect(shadowRay);
-
+			Vector3f shadowRayP = {shadowRayReturnVal.intersectCoord.x, 
+									shadowRayReturnVal.intersectCoord.y,
+									shadowRayReturnVal.intersectCoord.z};
 			if (shadowRayReturnVal.isIntersect &&
-				shadowRay.gett(p) < viewingRay.gett(p)) {
+				shadowRay.gett(shadowRayP) < shadowRay.gett(lightPosition)
+				) {
+				inShadow = true;
 				continue;
 			}
 		}
 
-		Vector w_i(lightPosition.x - p.x, lightPosition.y - p.y, lightPosition.z - p.z);
-		w_i = w_i.normalize(w_i);
+		diffuse = {0,0,0};
+		specular = {0,0,0};
 
-		Vector3f irradiance = this->lights[l]->computeLightContribution(p);
+		if(!inShadow){
+
+			Vector w_i(lightPosition.x - p.x, lightPosition.y - p.y, lightPosition.z - p.z);
+			w_i = w_i.normalize(w_i);
+
+			Vector3f irradiance = this->lights[l]->computeLightContribution(p);
+			
+			Vector3f diffuseRefCoeff = material->diffuseRef;
+
+			Vector N = returnVal.normalVec;
+			N = N.normalize(N);
+			float cos_diffuse = max(0.f, w_i.dot(N));
+
+			diffuse.r = diffuseRefCoeff.x * cos_diffuse * irradiance.x;
+			diffuse.g = diffuseRefCoeff.y * cos_diffuse * irradiance.y;
+			diffuse.b = diffuseRefCoeff.z * cos_diffuse * irradiance.z;
+			
+			Vector h;
+			Vector w_o(-viewingRay.direction.x, -viewingRay.direction.y, -viewingRay.direction.z);
+			w_o = w_o.normalize(w_o);
+			h = (w_i + w_o) / (w_i + w_o).getMagnitude();
+
+			float cos_specular = pow(max(0.f, N.dot(h)), material->phongExp);
+
+			Vector3f specularRefCoeff = material->specularRef;
+
+			specular.r = specularRefCoeff.r * cos_specular * irradiance.x;
+			specular.g = specularRefCoeff.g * cos_specular * irradiance.y;
+			specular.b = specularRefCoeff.b * cos_specular * irradiance.z;
+			
+		}
+
+		color.channel[0] = (ambient.r + diffuse.r + specular.r) > 255 ? 255 : (ambient.r + diffuse.r + specular.r);
+		color.channel[1] = (ambient.g + diffuse.g + specular.g) > 255 ? 255 : (ambient.g + diffuse.g + specular.g);
+		color.channel[2] = (ambient.b + diffuse.b + specular.b) > 255 ? 255 : (ambient.b + diffuse.b + specular.b);
+		//std::cout << "color = " << static_cast<unsigned>(color.red) << " " << static_cast<unsigned>(color.grn) << " " << static_cast<unsigned>(color.blu) << std::endl;
 		
-		Vector3f diffuseRefCoeff = material->diffuseRef;
-
-		Vector N = returnVal.normalVec;
-		N = N.normalize(N);
-		float cos_diffuse = max(0.f, w_i.dot(N));
-
-		diffuse.r = diffuseRefCoeff.x * cos_diffuse * irradiance.x;
-		diffuse.g = diffuseRefCoeff.y * cos_diffuse * irradiance.y;
-		diffuse.b = diffuseRefCoeff.z * cos_diffuse * irradiance.z;
-
-		Vector h;
-		Vector w_o(-viewingRay.direction.x, -viewingRay.direction.y, -viewingRay.direction.z);
-		w_o = w_o.normalize(w_o);
-		h = (w_i + w_o) / (w_i + w_o).getMagnitude();
-
-		float cos_specular = pow(max(0.f, N.dot(h)), material->phongExp);
-
-		Vector3f specularRefCoeff = material->specularRef;
-
-		specular.r = specularRefCoeff.r * cos_specular * irradiance.x;
-		specular.g = specularRefCoeff.g * cos_specular * irradiance.y;
-		specular.b = specularRefCoeff.b * cos_specular * irradiance.z;
-
 	}
-
-	color.channel[0] = (ambient.r + diffuse.r + specular.r) > 255 ? 255 : (ambient.r + diffuse.r + specular.r);
-	color.channel[1] = (ambient.g + diffuse.g + specular.g) > 255 ? 255 : (ambient.g + diffuse.g + specular.g);
-	color.channel[2] = (ambient.b + diffuse.b + specular.b) > 255 ? 255 : (ambient.b + diffuse.b + specular.b);
-	//std::cout << "color = " << static_cast<unsigned>(color.red) << " " << static_cast<unsigned>(color.grn) << " " << static_cast<unsigned>(color.blu) << std::endl;
 	return color;
 }
 

@@ -55,11 +55,26 @@ ReturnVal Sphere::intersect(const Ray & ray) const
 
         float t1 = (-b - sqrt(delta))/(2*a);
         float t2 = (-b + sqrt(delta))/(2*a);
+        float t;
+        if(t1 < 0 && t2 < 0){
+            returnVal.isIntersect = false;
+        }
+        else{
+            if(t1 > 0 && t2 < 0){
+                t = t1;
+            }
+        
+            else if(t1 < 0 && t2 > 0){
+                t = t2;
+            }
+            else{
+                t = (t1 < t2) ? t1 : t2;
+            }
+            returnVal.intersectCoord = o + d * t;
+            returnVal.normalVec = (returnVal.intersectCoord - center) / this->R;
+            returnVal.isIntersect = true;
 
-        float t = (t1 < t2) ? t1 : t2;
-        returnVal.intersectCoord = o + d * t;
-        returnVal.normalVec = (returnVal.intersectCoord - center) / this->R;
-        returnVal.isIntersect = true;
+        }   
     }
     return returnVal;
 }
@@ -89,7 +104,8 @@ ReturnVal Triangle::intersect(const Ray & ray) const
     Vector v0(pScene->vertices[this->p1Index - 1].x, pScene->vertices[this->p1Index - 1].y, pScene->vertices[this->p1Index - 1].z);
     Vector v1(pScene->vertices[this->p2Index - 1].x, pScene->vertices[this->p2Index - 1].y, pScene->vertices[this->p2Index - 1].z);
     Vector v2(pScene->vertices[this->p3Index - 1].x, pScene->vertices[this->p3Index - 1].y, pScene->vertices[this->p3Index - 1].z);
-    n = (v1-v0).cross(v2-v0);
+    n = (v0-v1).cross(v0-v2);
+    n = n.normalize(n);
 
     float a = v0.x - v1.x,
           b = v0.y - v1.y,
@@ -145,17 +161,20 @@ ReturnVal Mesh::intersect(const Ray & ray) const
     returnVal.isIntersect = false; 
     
     for(int triIndex=0; triIndex < this->faces.size(); triIndex++){
+        Triangle tri = faces[triIndex];
+        /*
         int v0_index = pIndices[0][3*triIndex];
         int v1_index = pIndices[0][3*triIndex + 1];
         int v2_index = pIndices[0][3*triIndex + 2];
-        
+        */
         /*
         Vector v0( vertices[0][v0_index].x, vertices[0][v0_index].y, vertices[0][v0_index].z );
         Vector v1( vertices[0][v1_index].x, vertices[0][v1_index].y, vertices[0][v1_index].z );
         Vector v2( vertices[0][v2_index].x, vertices[0][v2_index].y, vertices[0][v2_index].z );
         */
-        float t_min = std::numeric_limits<int>::max();
-        Triangle tri(-1, -1, v0_index, v1_index, v2_index, nullptr);
+        float t_min = std::numeric_limits<float>::max();
+        //Triangle tri(-1, -1, v0_index, v1_index, v2_index, nullptr);
+        
         returnValTri = tri.intersect(ray);
         Vector3f triCoord;
         triCoord.x = returnValTri.intersectCoord.x;

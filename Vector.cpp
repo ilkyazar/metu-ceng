@@ -55,7 +55,7 @@ Vector Vector::operator/ (float scalar){
 Vector Vector::cross(Vector const &v1){
     Vector v3;
     v3.x = (this->y * v1.z) - (this->z * v1.y);
-    v3.y = (this->x * v1.z) - (this->z * v1.x);
+    v3.y = (this->z * v1.x) - (this->x * v1.z);
     v3.z = (this->x * v1.y) - (this->y * v1.x);
 
     return v3;
