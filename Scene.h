@@ -44,7 +44,7 @@ public:
 private:
     // Write any other stuff here
 	Color traverseObjects(int i, int j, int cameraIndex);
-	Color traverseLights(Vector3f p, ReturnVal returnVal, int objIndex, Ray viewingRay);
+	Color traverseLights(Vector3f p, ReturnVal returnVal, int objIndex, Ray viewingRay, int recDepth);
 	Ray computeShadowRay(Vector3f p, Ray viewingRay, Vector3f lightPosition);
 };
 

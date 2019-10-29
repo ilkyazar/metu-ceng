@@ -22,8 +22,15 @@ Ray Scene::computeShadowRay(Vector3f p, Ray viewingRay, Vector3f lightPosition) 
 	return shadowRay;
 }
 
-Color Scene::traverseLights(Vector3f p, ReturnVal returnVal, int objIndex, Ray viewingRay) {
+Color Scene::traverseLights(Vector3f p, ReturnVal returnVal, int objIndex, Ray viewingRay, int recDepth) {
+	
 	Color color;
+
+	if(recDepth < 0){
+		color = {0,0,0};
+		return color;
+	}
+	
 	Vector3f diffuse, ambient, specular;
 	Material* material;
 	material = this->materials[this->objects[objIndex]->matIndex-1];
@@ -94,6 +101,41 @@ Color Scene::traverseLights(Vector3f p, ReturnVal returnVal, int objIndex, Ray v
 		//std::cout << "color = " << static_cast<unsigned>(color.red) << " " << static_cast<unsigned>(color.grn) << " " << static_cast<unsigned>(color.blu) << std::endl;
 		
 	}
+	//calculate reflection
+	if(material->mirrorRef.r != 0 || material->mirrorRef.g != 0 || material->mirrorRef.b != 0  ){
+		Vector w_o(-viewingRay.direction.x, -viewingRay.direction.y, -viewingRay.direction.z);
+		w_o = w_o.normalize(w_o);
+		Vector n = returnVal.normalVec;
+		n = n.normalize(n);
+
+		Vector w_r = w_o*(-1) + (n*2)*(n.dot(w_o));
+		Vector3f mirrorRayOrigin, mirrorRayDirection;
+
+		mirrorRayDirection = {w_r.x, w_r.y, w_r.z };
+		mirrorRayOrigin = {p.x + this->shadowRayEps * mirrorRayDirection.x,
+						   p.y + this->shadowRayEps * mirrorRayDirection.y,
+						   p.z + this->shadowRayEps * mirrorRayDirection.z};
+		Ray mirrorRay(mirrorRayOrigin, mirrorRayDirection); 
+		
+		float t_min = std::numeric_limits<float>::max();
+		for(int obj = 0; obj < this->objects.size(); obj++ ){
+			ReturnVal returnValMirror = this->objects[obj]->intersect(mirrorRay);
+			if(returnValMirror.isIntersect){
+				Vector3f p_temp = {returnValMirror.intersectCoord.x, returnValMirror.intersectCoord.y, returnValMirror.intersectCoord.z };
+
+				if (mirrorRay.gett(p_temp) < t_min){
+					t_min = mirrorRay.gett(p_temp);
+					p = p_temp;
+					Color reflection = this->traverseLights(p, returnValMirror, obj, mirrorRay, recDepth-1);
+					color.red = color.red + material->mirrorRef.r * reflection.red > 255 ? 255 : color.red + material->mirrorRef.r * reflection.red;
+					color.grn = color.grn + material->mirrorRef.r * reflection.grn > 255 ? 255 : color.grn + material->mirrorRef.r * reflection.grn;
+					color.blu = color.blu + material->mirrorRef.r * reflection.blu > 255 ? 255 : color.blu + material->mirrorRef.r * reflection.blu;	 
+				}
+			}
+		}
+
+
+	}
 	return color;
 }
 
@@ -117,7 +159,7 @@ Color Scene::traverseObjects(int i, int j, int cameraIndex) {
 				t_min = primaryRay.gett(p_temp);
 				rayIntersectedWithObj = true;
 				p = p_temp;
-				color = this->traverseLights(p, returnVal, obj, primaryRay);
+				color = this->traverseLights(p, returnVal, obj, primaryRay, this->maxRecursionDepth);
 			}
 		}
 	}
