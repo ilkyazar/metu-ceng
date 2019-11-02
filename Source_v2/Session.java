@@ -47,17 +47,21 @@ public class Session {
   public void simulate() {
     // Fill this method
     if (this.track.isValidTrack()) {
-
+      System.out.println("Track is valid.Strating simulation on " + this.track.getTrackName() + " for " + this.totalLaps + " laps.");
     }
-    else 
+    else {
+      System.out.println("Track is invalid.Simulation aborted!");
       return;
+    }
   }
 
   public String printWinnerTeam() {
     // Fill this method
+    return ("printWinnerTeam");
   }
 
   private String printTimingTable() {
     // Fill this method
+    return ("printTimingTable");
   }
 }

@@ -8,11 +8,15 @@ public class Track {
   private ArrayList<TrackFeature> featureList;
   private boolean isClockwise;
 
+  // add to uml
+  private Iterator<TrackFeature> trackIterator;
+
   public Track() {
     // Fill this method
     this.trackName = "";
     this.featureList = null;
     this.isClockwise = false;
+    this.trackIterator = null;
   }
 
   public Track(String trackName, ArrayList<TrackFeature> featureList, boolean isClockwise) {
@@ -20,7 +24,7 @@ public class Track {
     this.trackName = trackName;
     this.featureList = featureList;
     this.isClockwise = isClockwise;
-
+    this.trackIterator = this.featureList.iterator();
   }
 
   public String getTrackName() {
@@ -52,11 +56,10 @@ public class Track {
     return this.featureList.size();
   }
 
-  Iterator<TrackFeature> iterator = this.featureList.iterator();
   public TrackFeature getNextFeature() {
     // Fill this method
-    if (iterator.hasNext()) {
-      return iterator.next();
+    if (this.trackIterator.hasNext()) {
+      return this.trackIterator.next();
     }
     else {
       return this.featureList.get(0);

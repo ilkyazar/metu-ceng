@@ -4,7 +4,7 @@ public class Straight extends TrackFeature {
     // Fill this method
     this.featureNo = turnNo;
     this.turnDirection = direction;
-    this.distance = ditance;
+    this.distance = distance;
     this.roughness = roughness;
   }
 }
