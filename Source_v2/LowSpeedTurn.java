@@ -6,5 +6,6 @@ public class LowSpeedTurn extends TrackFeature {
     this.turnDirection = direction;
     this.distance = distance;
     this.roughness = roughness;
+    this.featureMultiplier = 1.3;
   }
 }

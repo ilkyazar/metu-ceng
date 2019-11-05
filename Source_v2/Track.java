@@ -8,7 +8,7 @@ public class Track {
   private ArrayList<TrackFeature> featureList;
   private boolean isClockwise;
 
-  // add to uml
+  // New instance variable
   private Iterator<TrackFeature> trackIterator;
 
   public Track() {

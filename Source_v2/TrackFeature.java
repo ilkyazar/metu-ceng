@@ -5,6 +5,14 @@ public abstract class TrackFeature {
   protected double distance;
   protected double roughness;
 
+  // New instance variable
+  protected double featureMultiplier;
+
+  // New method
+  public double getFeatureMultiplier() {
+    return featureMultiplier;
+  }
+
   public int getFeatureNo() {
     return featureNo;
   }

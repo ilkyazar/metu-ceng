@@ -51,6 +51,25 @@ public class Car {
 
   public void tick(TrackFeature feature) {
     // Fill this method
+    double time_spent = feature.getDistance()/this.tire.getSpeed() + Math.random();
+    //System.out.println(time_spent);
+    this.totalTime += time_spent;
+
+    if (this.tire.getDegradation() > 70) {
+      // Car is performing a pit stop
+
+      Tire newTire;
+
+      if (this.tire instanceof SoftTire) {
+        newTire = new MediumTire();
+      }
+      else {
+        newTire = new SoftTire();
+      }
+
+      this.tire = newTire;
+      this.totalTime += 0.25;
+    }
   }
 
 }

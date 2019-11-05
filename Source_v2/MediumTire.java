@@ -6,5 +6,5 @@ public class MediumTire extends Tire {
     this.tireMultiplier = 1.1;
   }
 
-  public void tick(TrackFeature f) {}
+  //public void tick(TrackFeature f) {}
 }

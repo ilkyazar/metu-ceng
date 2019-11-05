@@ -3,7 +3,7 @@ public abstract class Tire {
   protected double speed;
   protected double degradation;
 
-  // Add to uml
+  // New instance variable
   protected double tireMultiplier;
 
   public double getSpeed() {
@@ -14,5 +14,14 @@ public abstract class Tire {
     return degradation;
   }
 
-  abstract public void tick(TrackFeature f);
+  // In order to not to duplicate the code in HardTire, SoftTire and MediumTire, I changed the tick method as not abstract.
+  // abstract public void tick(TrackFeature f);
+
+  public void tick(TrackFeature f) {
+    this.degradation += f.getFeatureMultiplier() * f.getRoughness() * this.tireMultiplier;
+    if (this.speed >= 100) {
+      this.speed -= Math.min(75, this.degradation) * 0.25;
+    }
+  }
+
 }

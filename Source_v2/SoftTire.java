@@ -6,5 +6,5 @@ public class SoftTire extends Tire {
     this.tireMultiplier = 1.2;
   }
 
-  public void tick(TrackFeature f) {}
+  //public void tick(TrackFeature f) {}
 }
