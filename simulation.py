@@ -1,5 +1,8 @@
 from Ball import *
 from BowlingBall import *
+from TennisBall import *
+from MarbleBall import *
+
 import pymunk
 import pyglet
 from pymunk.pyglet_util import DrawOptions
@@ -10,8 +13,11 @@ options = DrawOptions()
 space = pymunk.Space()
 space.gravity = 0, -100
 
-bowling = BowlingBall(center = (400,400))
-space.add(bowling.body)
+ball1 = BowlingBall(center = (400,400))
+ball2 = TennisBall(center = (600,600))
+ball3 = MarbleBall(center = (500, 600))
+
+space.add(ball1, ball1.body, ball2, ball2.body, ball3, ball3.body)
 
 @window.event
 def on_draw():
