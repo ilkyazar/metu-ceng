@@ -21,6 +21,7 @@ space.gravity = 0, -100
 #####
 
 ball1 = BowlingBall(center = (400,600))
+#ball1.getMass()
 ball2 = TennisBall(center = (600,600))
 ball3 = MarbleBall(center = (500, 600))
 

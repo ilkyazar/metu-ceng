@@ -3,14 +3,13 @@ import pymunk
 
 class BowlingBall(Ball):
     def __init__(self, center, bouncingFactor = 1):
-        #A typical bowling ball might have a mass of 8 kg and a radius of 12 cm.
-        self.bowlingMass = 8
-        self.bowlingRadius = 12
-        self.bowlingCenter = center
+        bowlingMass = 8
+        bowlingRadius = 12
+        bowlingCenter = center
         
         self.bouncingFactor = bouncingFactor
 
-        Ball.__init__(self, self.bowlingMass, self.bowlingRadius, self.bowlingCenter)
+        Ball.__init__(self, bowlingMass, bowlingRadius, bowlingCenter)
         print('Bowling Ball is created at position ' + str(center) + '.')
 
 

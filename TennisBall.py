@@ -3,7 +3,6 @@ import pymunk
 
 class TennisBall(Ball):
     def __init__(self, center, bouncingFactor = 1):
-        #A typical tennis ball might have a mass of 0.57 kg and a radius of 6.5 cm.
         self.tennisMass = 0.57
         self.tennisRadius = 6.5
         self.tennisCenter = center

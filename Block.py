@@ -3,18 +3,53 @@ import random
 
 class Block(pymunk.Poly):
     def __init__(self, mass, center, size):
+
+        self.setColor()
+        self.setMass(mass)
+        self.setCenter(center)
+        self.setSize(size)
+        self.setShape()
+        self.setVertices()
+        self.setBody()
+        self.setPosition()              
+
+        pymunk.Poly.__init__(self, self.blockBody, self.blockVertices, transform=None, radius=0)
+
+
+    def setColor(self):
         r = random.randint(0, 255)
         g = random.randint(0, 255)
         b = random.randint(0, 255)
         self.color = [r,g,b]
 
-        poly_shape = pymunk.Poly.create_box(None, size=size)
-        vertices = poly_shape.get_vertices()
-        poly_moment = pymunk.moment_for_poly(mass, vertices)
+    def setMass(self, mass):
+        self.blockMass = mass
 
-        body = pymunk.Body(mass, poly_moment, pymunk.Body.DYNAMIC)
-        poly_shape.body = body
+    def getMass(self):
+        return self.blockMass
 
-        body.position = center
+    def setCenter(self, center):
+        self.blockCenter = center
 
-        pymunk.Poly.__init__(self, body, vertices, transform=None, radius=0)
+    def setSize(self, size):
+        self.blockSize = size
+
+    def getSize(self):
+        return self.blockSize
+
+    def setShape(self):
+        self.blockShape = pymunk.Poly.create_box(None, size=self.blockSize)
+
+    def setVertices(self):
+        self.blockVertices = self.blockShape.get_vertices()
+
+    def setBody(self):
+        poly_moment = pymunk.moment_for_poly(self.blockMass, self.blockVertices)
+        self.blockBody = pymunk.Body(self.blockMass, poly_moment, pymunk.Body.DYNAMIC)
+        self.blockShape.body = self.blockBody
+
+    def setPosition(self):
+        self.blockBody.position = self.blockCenter
+
+    def getPosition(self):
+        return self.blockBody.position

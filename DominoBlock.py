@@ -3,9 +3,9 @@ import pymunk
 
 class DominoBlock(Block):
     def __init__(self, center):
-        self.size = (4.8, 2.24)
-        self.dominoMass = 0.08
-        self.dominoCenter = center
+        size = (4.8, 2.24)
+        dominoMass = 0.08
+        dominoCenter = center
         
-        Block.__init__(self, self.dominoMass, self.dominoCenter, self.size)
+        Block.__init__(self, dominoMass, dominoCenter, size)
         print('Domino Block is created at position ' + str(center) + '.')
