@@ -5,7 +5,7 @@ from MarbleBall import *
 from Block import *
 from BookBlock import *
 from DominoBlock import *
-
+from Segment import *
 
 import pymunk
 import pyglet
@@ -39,13 +39,11 @@ space.add(block1, block1.body, block2, block2.body)
 #####
 
 mass = 1
-# (mass, a, b, radius)
-segment_moment = pymunk.moment_for_segment(mass, (600,300), (600,700), 2)
-segment_body = pymunk.Body(mass, segment_moment)
-segment_shape = pymunk.Segment(segment_body, (0,0), (0,400), 2)
-segment_body.position = 600, 300
 
-space.add(segment_body, segment_shape)
+# (mass, a, b, radius)
+segment = Segment(mass, (600,300), (600,700), 2)
+space.add(segment, segment.body)
+
 
 #####
 
