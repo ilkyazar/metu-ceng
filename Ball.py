@@ -9,8 +9,16 @@ class Ball(pymunk.Circle):
         self.setMass(mass)
         self.setBody()
         self.setPosition(center)              
-        
+        self.setShape()
+
         pymunk.Circle.__init__(self, self.ballBody, self.ballRadius)
+
+    def setShape(self):
+        self.ballShape = pymunk.Circle(self.ballBody, self.ballRadius)
+        self.ballShape.friction = 0.7
+
+    def getShape(self):
+        return self.ballShape
 
     def setRadius(self, radius):
         self.ballRadius = radius
@@ -33,6 +41,9 @@ class Ball(pymunk.Circle):
     def setBody(self):
         circle_moment = pymunk.moment_for_circle(self.ballMass, 0, self.ballRadius)
         self.ballBody = pymunk.Body(self.ballMass, circle_moment, pymunk.Body.DYNAMIC)
+
+    def getBody(self):
+        return self.ballBody
 
     def setPosition(self, center):
         self.ballBody.position = center
