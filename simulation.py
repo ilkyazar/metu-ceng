@@ -39,7 +39,6 @@ space.add(block1, block1.body, block2, block2.body)
 #####
 
 mass = 1
-
 # (mass, a, b, radius)
 segment = Segment(mass, (600,300), (600,700), 2)
 space.add(segment, segment.body)
