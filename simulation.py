@@ -7,16 +7,26 @@ from BookBlock import *
 from DominoBlock import *
 from Segment import *
 
+from pygame.locals import *
+import pymunk.pygame_util
+
 import pymunk
 import pyglet
+import pygame
 from pymunk.pyglet_util import DrawOptions
+from pymunk.vec2d import Vec2d
 
+pymunk.pygame_util.positive_y_is_up = False
 
-window = pyglet.window.Window(1280, 720, "Pymunk Tester", resizable=False)
-options = DrawOptions()
 space = pymunk.Space()
 space.gravity = 0, -50
 
+pygame.init()
+screen = pygame.display.set_mode((1200, 600))
+options = pymunk.pygame_util.DrawOptions(screen)
+
+clock = pygame.time.Clock()
+font = pygame.font.Font(None, 24)
 
 #####
 
@@ -25,8 +35,19 @@ ball1 = BowlingBall(center = (250, 500))
 ball2 = TennisBall(center = (70,60))
 ball3 = MarbleBall(center = (90, 60))
 
-space.add(ball1, ball1.body, ball2, ball2.body, ball3, ball3.body)
+space.add(ball2, ball2.body, ball3, ball3.body)
 
+if (ball1.getShape() != None):
+    print("ball1.getShape() is not none")
+    print(ball1.getShape().friction)
+space.add(ball1.body, ball1.getShape())
+
+circleBody = pymunk.Body()
+circleBody.position = (900, 450)
+circleShape = pymunk.Circle(circleBody, 50)
+circleShape.mass = 1
+circleShape.friction = 0.7
+space.add(circleBody, circleShape)
 
 #####
 
@@ -40,7 +61,8 @@ space.add(block1, block1.body, block2, block2.body)
 
 mass = 1
 # (mass, a, b, radius)
-segment = Segment(mass, (600,300), (600,700), 2)
+segment = Segment(mass, (-800,-100), (2000,-100), 200)
+segment.body.body_type = pymunk.Body.STATIC
 space.add(segment, segment.body)
 
 
@@ -57,18 +79,63 @@ rotation_center_joint = pymunk.PinJoint(body, rotation_center_body, (0,0), (0,0)
 space.add(l1, body, rotation_center_joint)
 #####
 
+mouse_joint = None
+mouse_body = pymunk.Body(body_type=pymunk.Body.KINEMATIC)
 
-@window.event
-def on_draw():
-    window.clear()
-    space.debug_draw(options)   # DrawOptions
+while True:
+    for event in pygame.event.get():
+        if event.type == QUIT:
+            exit()
+        elif event.type == KEYDOWN and event.key == K_ESCAPE:
+            exit()
+        elif event.type == MOUSEBUTTONDOWN:
+            if mouse_joint != None:
+                space.remove(mouse_joint)
+                mouse_joint = None
+                print("mouse joint is not none")
+
+            p = Vec2d(event.pos)
+            print(p)
+            hit = space.point_query_nearest(p, 5, pymunk.ShapeFilter())
+            print(hit)
+
+            if (hit != None):
+                print(hit.shape.body.body_type)
+
+            if hit != None and hit.shape.body.body_type == pymunk.Body.DYNAMIC:
+                shape = hit.shape
+                # Use the closest point on the surface if the click is outside 
+                # of the shape.
+                if hit.distance > 0:
+                    nearest = hit.point 
+                else:
+                    nearest = p
+                mouse_joint = pymunk.PivotJoint(mouse_body, shape.body, 
+                    (0,0), shape.body.world_to_local(nearest))
+                mouse_joint.max_force = 50000
+                mouse_joint.error_bias = (1-0.15) ** 60
+                space.add(mouse_joint)
+                print("hit is not none and body is dynamic")
+
+            print("mouse button down")
+
+        elif event.type == MOUSEBUTTONUP:
+            if mouse_joint != None:
+                space.remove(mouse_joint)
+                mouse_joint = None
+            print("mouse button up")
+
+    screen.fill(pygame.color.THECOLORS["white"])
 
 
-# Update the space in update method
-def update(dt):
-    space.step(dt)
+    mouse_pos = pygame.mouse.get_pos()
 
-if __name__ == "__main__":
-    # Every 1.0/60 of a sec, update
-    pyglet.clock.schedule_interval(update, 1.0/60)
-    pyglet.app.run()
+    mouse_body.position = mouse_pos
+
+    space.step(1./60)
+    
+    space.debug_draw(options)
+    pygame.display.flip()
+
+    clock.tick(60)
+    pygame.display.set_caption("fps: " + str(clock.get_fps()))
