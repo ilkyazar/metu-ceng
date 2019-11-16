@@ -40,6 +40,9 @@ class Block(pymunk.Poly):
     def setShape(self):
         self.blockShape = pymunk.Poly.create_box(None, size=self.blockSize)
 
+    def getShape(self):
+        return self.blockShape
+        
     def setVertices(self):
         self.blockVertices = self.blockShape.get_vertices()
 

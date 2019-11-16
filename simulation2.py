@@ -27,7 +27,7 @@ font = pygame.font.Font(None, 24)
 
 
 board1 = Board()
-board1.load('test2.json')
+board1.load('test1.json')
 
 help_txt = font.render(
     "Move objects with left click. Remove objects with right click. Have fun! :)", 
@@ -39,20 +39,6 @@ options = pymunk.pygame_util.DrawOptions(board1.screen)
 mouse_joint = None
 mouse_body = pymunk.Body(body_type=pymunk.Body.KINEMATIC)
 
-# containers
-box_size = 200
-w = board1.screen.get_width()
-h = board1.screen.get_height()
-for i in range(6):
-    sw = pymunk.Segment(board1.space.static_body, 
-        (0, i*box_size), (w, i* box_size), 1)
-    sw.friction = 1
-    sw.elasticity = 1
-    sh = pymunk.Segment(board1.space.static_body, 
-        (i*box_size, 0), (i*box_size, h-box_size), 1)
-    sh.friction = 1
-    sh.elasticity = 1
-    board1.space.add(sw, sh)
 
 while True:
     for event in pygame.event.get():

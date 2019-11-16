@@ -9,9 +9,16 @@ class Segment(pymunk.Segment):
         self.setVertice2(p2)
         self.setRadius(radius)
         self.setBody()
-        
+        self.setShape()
+
         pymunk.Segment.__init__(self, self.segmentBody, self.p1, self.p2, self.segmentRadius)
     
+    def setShape(self):
+        self.segmentShape = pymunk.Segment(self.segmentBody, self.p1, self.p2, self.segmentRadius)
+
+    def getShape(self):
+        return self.segmentShape
+
     def setColor(self):
         r = random.randint(0, 255)
         g = random.randint(0, 255)
@@ -39,6 +46,9 @@ class Segment(pymunk.Segment):
     def getRadius(self):
         return self.segmentRadius
     
+    def getBody(self):
+        return self.segmentBody
+
     def setBody(self):
         segment_moment = pymunk.moment_for_segment(self.segmentMass, self.p1, self.p2, self.segmentRadius)
         self.segmentBody = pymunk.Body(self.segmentMass, segment_moment, pymunk.Body.DYNAMIC)

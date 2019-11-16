@@ -2,7 +2,7 @@ import pymunk
 from Segment import *
 
 class RotatingSegment(pymunk.Segment):
-    def __init__(self, rotationCenter, length, radius):
+    def __init__(self, rotationCenter, length, radius, orientation = "horizontal"):
         self.setRotationCenter(rotationCenter)
         self.setLength(length)
 
@@ -10,6 +10,7 @@ class RotatingSegment(pymunk.Segment):
         self.rotation_center_body.position = self.rotationCenter
 
         self.setBody()
+        self.setOrientation(orientation)
         self.setVertices(self.rotationCenter, self.length)
         self.setRadius(radius)
         self.setShape()
@@ -21,6 +22,9 @@ class RotatingSegment(pymunk.Segment):
 
     def setRotationCenter(self, rotationCenter):
         self.rotationCenter = rotationCenter
+    
+    def setOrientation(self, orientation):
+        self.orientation = orientation
 
     def setLength(self, length):
         self.length = length
@@ -43,5 +47,9 @@ class RotatingSegment(pymunk.Segment):
         return self.segmentBody
 
     def setVertices(self, rotationCenter, length):
-        self.p1 = (-(self.length/2),0)
-        self.p2 = ((self.length/2), 0)
+        if self.orientation == "horizontal":
+            self.p1 = (-(self.length/2),0)
+            self.p2 = ((self.length/2), 0)
+        else:
+            self.p1 = (0, -(self.length/2))
+            self.p2 = (0, (self.length/2))
