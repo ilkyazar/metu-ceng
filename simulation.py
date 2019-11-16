@@ -6,6 +6,7 @@ from Block import *
 from BookBlock import *
 from DominoBlock import *
 from Segment import *
+from Connector import * 
 
 from pygame.locals import *
 import pymunk.pygame_util
@@ -37,17 +38,10 @@ ball3 = MarbleBall(center = (90, 60))
 
 space.add(ball2, ball2.body, ball3, ball3.body)
 
-if (ball1.getShape() != None):
-    print("ball1.getShape() is not none")
-    print(ball1.getShape().friction)
 space.add(ball1.body, ball1.getShape())
 
-circleBody = pymunk.Body()
-circleBody.position = (900, 450)
-circleShape = pymunk.Circle(circleBody, 50)
-circleShape.mass = 1
-circleShape.friction = 0.7
-space.add(circleBody, circleShape)
+connectorBall2_3 = Connector(ball2.getShape(), ball3.getShape())
+space.add(connectorBall2_3.getPinJoint())
 
 #####
 

@@ -48,6 +48,9 @@ class Block(pymunk.Poly):
         self.blockBody = pymunk.Body(self.blockMass, poly_moment, pymunk.Body.DYNAMIC)
         self.blockShape.body = self.blockBody
 
+    def getBody(self):
+        return self.blockBody
+        
     def setPosition(self):
         self.blockBody.position = self.blockCenter
 
