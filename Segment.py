@@ -9,7 +9,7 @@ class Segment(pymunk.Segment):
         self.setVertice2(p2)
         self.setRadius(radius)
         self.setBody()
-
+        
         pymunk.Segment.__init__(self, self.segmentBody, self.p1, self.p2, self.segmentRadius)
     
     def setColor(self):
@@ -42,4 +42,4 @@ class Segment(pymunk.Segment):
     def setBody(self):
         segment_moment = pymunk.moment_for_segment(self.segmentMass, self.p1, self.p2, self.segmentRadius)
         self.segmentBody = pymunk.Body(self.segmentMass, segment_moment, pymunk.Body.DYNAMIC)
-        #could also be STATIC
+ 
