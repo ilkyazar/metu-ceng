@@ -41,8 +41,8 @@ space.add(ball2, ball2.body, ball3, ball3.body)
 
 space.add(ball1.body, ball1.getShape())
 
-connectorBall2_3 = Connector(ball2.getShape(), ball3.getShape())
-space.add(connectorBall2_3.getPinJoint())
+#connectorBall2_3 = Connector(ball2.getShape(), ball3.getShape())
+#space.add(connectorBall2_3.getPinJoint())
 
 #####
 
@@ -83,20 +83,8 @@ print(segment2.getShape().body)
 #space.add(segment2.getShape(), segment2.getBody(), segment2.getJoint())
 space.add(segment2, segment2.getBody(), segment2.getJoint())
 
-@window.event
-def on_draw():
-    window.clear()
-    space.debug_draw(options)   # DrawOptions
+#####
 
-
-# Update the space in update method
-def update(dt):
-    space.step(dt)
-
-if __name__ == "__main__":
-    # Every 1.0/60 of a sec, update
-    pyglet.clock.schedule_interval(update, 1.0/60)
-    pyglet.app.run()
 mouse_joint = None
 mouse_body = pymunk.Body(body_type=pymunk.Body.KINEMATIC)
 
