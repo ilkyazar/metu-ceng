@@ -58,3 +58,9 @@ class Segment(pymunk.Segment):
     
     def getType(self):
         return "segment"
+
+    def getPosition(self):
+        pos = self.p1
+        pos[0] = (self.p1[0] + self.p2[0]) / 2
+        pos[1] = (self.p1[1] + self.p2[1]) / 2
+        return pos

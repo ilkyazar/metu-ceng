@@ -5,6 +5,7 @@ class User():
     def __init__(self, name):
         self.setName(name)
         self.boards = {}
+        self.currentState = {}
 
     def addBoard(self, board):
         self.boards[board.boardName] = board
@@ -18,5 +19,9 @@ class User():
     def setName(self, name):
         self.userName = name
 
+    def getName(self):
+        return self.userName
+
     def notify(self, state):
-        pass
+        self.currentState = state
+        print("User " + self.getName() + " is notified with state: " + str(state))

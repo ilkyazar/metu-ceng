@@ -19,7 +19,7 @@ import pygame
 from pymunk.vec2d import Vec2d
 
 user0 = User("admin")
-board1 = Board(1200, 600, 'simulation_3')
+board1 = Board(1200, 600, 'simulation_4')
 user0.addBoard(board1)
 board1.start((1./60.0), 60, 1000)
 
@@ -99,6 +99,8 @@ while s < board1.number_of_steps:
 
     #current boards and attached users
     user_txt = getUserText()
+    notifyUser()
+    board1.list()
 
     board1.screen.fill(pygame.color.THECOLORS["white"])
     board1.screen.blit(user_txt, (5, board1.screen.get_height() - 50))

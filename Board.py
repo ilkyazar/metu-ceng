@@ -12,6 +12,7 @@ from DominoBlock import *
 from Segment import *
 from RotatingSegment import *
 from Connector import * 
+from pymunk.vec2d import Vec2d
 
 class Board():
     def __init__(self, x=0, y=0, name=''):
@@ -101,7 +102,22 @@ class Board():
                 break
 
     def pick(self, x, y):
-        pass
+        '''
+        picklist = []
+        for shape in self.allShapes:
+            if (self.allShapes[shape].getPosition()[0] == x and self.allShapes[shape].getPosition()[1] == y):
+                picklist.append(self.allShapes[shape])
+        for p in range(len(picklist)): 
+            print(str(picklist[p]) + " \n")
+        '''
+        p = Vec2d(x, y)
+        hit1 = self.space.point_query_nearest(p, 5, pymunk.ShapeFilter())
+
+        print("\n pick(" + str(x) + ", " + str(y) + ") result: \n" )
+        if hit1 != None:
+            print(hit1.shape) 
+        print("\n")  
+        return hit1
 
     def getShapeWithID(self, id):
         #for test purposes
@@ -122,7 +138,12 @@ class Board():
     def list(self):
         #an admin user will store all boards
         #dont forget to use user classes methods (addboard, deleteboard etc.) in simulation3
-        pass
+        for user in self.users:
+            if self.users[user].getName() == "admin":
+                boards = self.users[user].boards
+                for board in boards:
+                    print("All boards in the system: \n")
+                    print(boards[board].boardName + "\n")
     
     #(step_size = (1./60.0), k = clock.tick, number_of_steps = game length)
     def start(self, step_size, k, number_of_steps):
