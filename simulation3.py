@@ -20,6 +20,7 @@ from pymunk.vec2d import Vec2d
 
 
 board1 = Board(1200, 600, 'simulation_3')
+board1.start((1./60.0), 60, 1000)
 
 #create shapes
 ball1 = BowlingBall(center = (250, 500))
@@ -38,10 +39,12 @@ board1.addShape(block2.getShape(), block2.getBody())
 board1.addShape(segment1.getShape(), segment1.getBody())
 
 #add users
+user0 = User("admin")
 user1 = User("ilkyazar") 
 user2 = User("dilsada")
 board1.attach(user1)
 board1.attach(user2)
+board1.attach(user0)
 
 #visualize
 pymunk.pygame_util.positive_y_is_up = False
@@ -58,8 +61,8 @@ def getUserText():
     text = "Users who are watching: " + user_result
     return font.render(text, 1, pygame.color.THECOLORS["black"])
 
-
-while 1:
+s=0
+while s < board1.number_of_steps:
     #moveShape
     if ball1.getPosition().x == 250:
         offset = (1,0)
@@ -79,9 +82,9 @@ while 1:
     options = pymunk.pygame_util.DrawOptions(board1.screen)
     board1.space.debug_draw(options)
     pygame.display.flip()
-    clock.tick(60)
+    clock.tick(board1.k)
     
-
+    s += 1
 
 
 

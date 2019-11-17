@@ -37,7 +37,8 @@ class Board():
         self.space.gravity = gravity
     
     def updateSpace(self):
-        self.space.step(1./60.0)
+        #self.lastUpdated = self.allShapes
+        self.space.step(self.step_size)
 
     def addShape(self, shape, body, offset=0):
         self.space.add(shape)
@@ -90,23 +91,30 @@ class Board():
         pass
 
     def attach(self, user):
-        if(user.userName not in users.keys()):
+        if(user.userName not in self.users.keys()):
             self.users[user.userName] = user
         else:
             print ('User already attached!')
 
     def detach(self, user):
-        if(user.userName in users.keys()):
+        if(user.userName in self.users.keys()):
             self.users.pop(user.userName)
         else:
-            print ('User isnt attached!')
+            print ('User is not attached, you can not detach it!')
 
     def list(self):
-        #THIS IS IMPLEMENTED IN GAME CLASS
+        #an admin user will store all boards
+        #dont forget to use user classes methods (addboard, deleteboard etc.) in simulation3
         pass
-
+    
+    #(1./60.0)
     def start(self, step_size, k, number_of_steps):
-        pass
+        self.step_size = step_size
+        self.number_of_steps = number_of_steps
+        self.k = k
+        self.allShapes = {}
+        self.users = {}
+
 
     def save(self, file):
         pass
@@ -159,4 +167,6 @@ class Board():
             #self.allShapes[connector['id']] = newConnector
 
     def state(self, update):
+        #allShapes with their positions
+        # visualization vs simulation, how will we implement the difference for further phases
         pass

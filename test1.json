@@ -2,6 +2,7 @@
     "boardName": "board1",
     "x": 1200,
     "y": 800,
+    "gravity": [0, 0],
     "balls": [
         {
             "id": "1",
