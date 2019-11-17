@@ -19,15 +19,30 @@ class RotatingSegment(pymunk.Segment):
 
     def setRadius(self, radius):
         self.segmentRadius = radius
+    
+    def getRadius(self):
+        return self.segmentRadius
 
     def setRotationCenter(self, rotationCenter):
         self.rotationCenter = rotationCenter
     
+    def getRotationCenter(self):
+        return self.rotationCenter
+    
+    def getPosition(self):
+        return self.getRotationCenter()
+
     def setOrientation(self, orientation):
         self.orientation = orientation
+    
+    def getOrientation(self):
+        return self.orientation
 
     def setLength(self, length):
         self.length = length
+    
+    def getLength(self):
+        return self.length
 
     def setShape(self):
         self.segmentShape = pymunk.Segment(self.segmentBody, self.p1, self.p2, self.segmentRadius)
@@ -53,3 +68,6 @@ class RotatingSegment(pymunk.Segment):
         else:
             self.p1 = (0, -(self.length/2))
             self.p2 = (0, (self.length/2))
+    
+    def getType(self):
+        return "rotatingSegment"

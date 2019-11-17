@@ -11,3 +11,6 @@ class Connector():
 
     def getPinJoint(self):
         return self.pin_joint
+    
+    def getType(self):
+        return "connector"

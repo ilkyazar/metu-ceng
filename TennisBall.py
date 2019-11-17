@@ -12,4 +12,6 @@ class TennisBall(Ball):
         Ball.__init__(self, self.tennisMass, self.tennisRadius, self.tennisCenter)
         print('Tennis Ball is created at position ' + str(center) + '.')
 
+    def getType(self):
+        return "tennisBall"
 

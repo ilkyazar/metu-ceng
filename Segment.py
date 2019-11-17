@@ -28,6 +28,9 @@ class Segment(pymunk.Segment):
     def setMass(self,mass):
         self.segmentMass = mass
     
+    def getMass(self):
+        return self.segmentMass
+    
     def setVertice1(self,p1):
         self.p1 = p1
     
@@ -52,4 +55,6 @@ class Segment(pymunk.Segment):
     def setBody(self):
         segment_moment = pymunk.moment_for_segment(self.segmentMass, self.p1, self.p2, self.segmentRadius)
         self.segmentBody = pymunk.Body(self.segmentMass, segment_moment, pymunk.Body.DYNAMIC)
- 
+    
+    def getType(self):
+        return "segment"

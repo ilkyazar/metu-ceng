@@ -12,4 +12,6 @@ class BowlingBall(Ball):
         Ball.__init__(self, bowlingMass, bowlingRadius, bowlingCenter)
         print('Bowling Ball is created at position ' + str(center) + '.')
 
+    def getType(self):
+        return "bowlingBall"
 

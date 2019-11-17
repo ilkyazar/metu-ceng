@@ -9,3 +9,6 @@ class BookBlock(Block):
         
         Block.__init__(self, bookMass, bookCenter, size)
         print('Book Block is created at position ' + str(center) + '.')
+
+    def getType(self):
+        return "bookBlock"

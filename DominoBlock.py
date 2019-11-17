@@ -9,3 +9,6 @@ class DominoBlock(Block):
         
         Block.__init__(self, dominoMass, dominoCenter, size)
         print('Domino Block is created at position ' + str(center) + '.')
+
+    def getType(self):
+        return "dominoBlock"

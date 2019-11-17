@@ -12,4 +12,5 @@ class MarbleBall(Ball):
         Ball.__init__(self, marbleMass, marbleRadius, marbleCenter)
         print('Marble Ball is created at position ' + str(center) + '.')
 
-
+    def getType(self):
+        return "marbleBall"
