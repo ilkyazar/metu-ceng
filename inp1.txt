@@ -1,0 +1,7 @@
+5 3
+5
+Kadir A2 A0 A1
+Bilal C2 B0 B1
+Ulfet C2 C1 C0
+Akcay C1 C0 B2
+Selim A1 A0 A2
