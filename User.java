@@ -1,44 +1,30 @@
-public class Logger {
-    private static long startTime;
+import java.util.ArrayList;
+import java.lang.*;
 
-    public static void InitLogger() {
-        startTime = System.nanoTime();
+public class User implements Runnable {
+    private String userName;
+    private ArrayList listOfSeats;
+
+    public User() {
+        this.userName = "";
+        this.listOfSeats = new ArrayList();
     }
 
-    public static synchronized void LogSuccessfulReservation(String name, String seats, long time) {
-        long currentThreadID = Thread.currentThread().getId();
-        long timestamp = time - startTime;
-        System.out.printf("[*] %012.5f | %d | %s | %s |\n", timestamp / 1000000.0, currentThreadID, name, seats);
+    public User(String userName, ArrayList listOfSeats) {
+        this.userName = userName;
+        this.listOfSeats = listOfSeats;
     }
 
-    public static synchronized void LogSuccessfulReservation(String name, String seats, long time, String comment) {
-        long currentThreadID = Thread.currentThread().getId();
-        long timestamp = time - startTime;
-        System.out.printf("[*] %012.5f | %d | %s | %s | Comment: %s\n", timestamp / 1000000.0, currentThreadID, name, seats, comment);
+    public String getUserName() {
+        return this.userName;
     }
 
-    public static synchronized void LogFailedReservation(String name, String seats, long time) {
-        long currentThreadID = Thread.currentThread().getId();
-        long timestamp = time - startTime;
-        System.out.printf("[X] %012.5f | %d | %s | %s |\n", timestamp / 1000000.0, currentThreadID, name, seats);
+    public ArrayList getListOfSeats() {
+        return this.listOfSeats;
     }
 
-    public static synchronized void LogFailedReservation(String name, String seats, long time, String comment) {
-        long currentThreadID = Thread.currentThread().getId();
-        long timestamp = time - startTime;
-        System.out.printf("[X] %012.5f | %d | %s | %s | Comment: %s\n", timestamp / 1000000.0, currentThreadID, name, seats, comment);
+    @Override
+    public void run() {
+        System.out.println("Inside : " + Thread.currentThread().getName());
     }
-
-    public static synchronized void LogDatabaseFailiure(String name, String seats, long time) {
-        long currentThreadID = Thread.currentThread().getId();
-        long timestamp = time - startTime;
-        System.out.printf("[-] %012.5f | %d | %s | %s |\n", timestamp / 1000000.0, currentThreadID, name, seats);
-    }
-    public static synchronized void LogDatabaseFailiure(String name, String seats, long time, String comment) {
-        long currentThreadID = Thread.currentThread().getId();
-        long timestamp = time - startTime;
-        System.out.printf("[-] %012.5f | %d | %s | %s | Comment: %s\n", timestamp / 1000000.0, currentThreadID, name, seats, comment);
-    }
-
-
 }
