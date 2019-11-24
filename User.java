@@ -3,24 +3,39 @@ import java.lang.*;
 
 public class User implements Runnable {
     private String userName;
-    private ArrayList listOfSeats;
+    private ArrayList<Seat> listOfWantedSeats;
 
     public User() {
         this.userName = "";
-        this.listOfSeats = new ArrayList();
+        this.listOfWantedSeats = new ArrayList<Seat>();
     }
 
-    public User(String userName, ArrayList listOfSeats) {
+    public User(String userName, ArrayList<Seat> listOfWantedSeats) {
         this.userName = userName;
-        this.listOfSeats = listOfSeats;
+        this.listOfWantedSeats = listOfWantedSeats;
+    }
+
+    public void setUserName(String userName) {
+        this.userName = userName;
     }
 
     public String getUserName() {
         return this.userName;
     }
 
-    public ArrayList getListOfSeats() {
-        return this.listOfSeats;
+    public void setlistOfWantedSeats(ArrayList<Seat> listOfWantedSeats) {
+        this.listOfWantedSeats = listOfWantedSeats;
+    }
+
+    public ArrayList<Seat> getlistOfWantedSeats() {
+        return this.listOfWantedSeats;
+    }
+
+    public void printUser() {
+        System.out.println("Name of the user: " + this.getUserName());
+        for (Seat seat: this.listOfWantedSeats) {
+            System.out.println("Seat number: " + seat.getSeatNumber());
+        }
     }
 
     @Override
