@@ -1,7 +1,12 @@
+import java.util.concurrent.Semaphore;
+import java.util.concurrent.locks.*;
+
 public class Seat {
     private Boolean taken;
     private String seatNumber;
     private User reservedUser;
+    //private Lock seatLock = new ReentrantLock();
+    private Semaphore sem = new Semaphore(1);
 
     public Seat() {
         this.taken = false;
@@ -39,5 +44,28 @@ public class Seat {
 
     public User getReservedUser() {
         return this.reservedUser;
+    }
+
+    public void reserve(User user) {
+        try {
+            sem.acquire();
+        } catch (InterruptedException ex) {
+            ex.printStackTrace();
+        }
+
+        try {
+            doReserve(user);
+        } finally {
+            sem.release();
+        }
+    }
+
+    public void doReserve(User user) {
+        synchronized (this) {
+            if (this.taken == false) {
+                this.setTaken();
+                this.setReservedUser(user);
+            }
+        }
     }
 }

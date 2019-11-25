@@ -42,6 +42,14 @@ public class Grid {
         return this.seatGrid.get(r).get(c);
     }
 
+    public Seat getSeatInGrid(String seatNumber) {
+        char letter = seatNumber.charAt(0);
+        char digit = seatNumber.charAt(1);
+        int r = letter - 65;
+        int c = digit - '0';
+        return getSeatInGrid(r, c);
+    }
+
     public void printGrid() {
         for (int row = 0; row < this.n; row++) {            
             for (int col = 0; col < this.m; col++) {
@@ -58,7 +66,7 @@ public class Grid {
                 String seatStatus;
                 Seat seat = this.getSeatInGrid(row, col);
                 if (seat.isTaken()) {
-                    seatStatus = "T:" + seat.getReservedUser();
+                    seatStatus = "T:" + seat.getReservedUser().getUserName();
                 }
                 else {
                     seatStatus = "E:     ";
