@@ -1,0 +1,10 @@
+3 10
+8
+Ayşe A0 A1 A2
+Fatma A1 A2 A3 A4
+Ali B5 B6 B7 B8 B9
+Veli C0 C1
+Zeynep C1 C4
+Yasin C2 C3
+Sina B0 B1 B2 B3
+Oya C8 C9

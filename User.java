@@ -1,12 +1,12 @@
 import java.util.ArrayList;
-import java.lang.*;
 import java.util.Random;
 
 public class User implements Runnable {
     private String userName;
     private ArrayList<String> wantedSeats;
     private Grid grid;
-
+    private String notAvailableComment = "";
+    
     public User() {
         this.userName = "";
         this.wantedSeats = null;
@@ -37,12 +37,13 @@ public class User implements Runnable {
 
     public String getWantedSeatsString() {
         String seats = "[";
-        int count = 0;
+        int count = 1;
         for (String seatNumber: this.wantedSeats) {
             seats += seatNumber;
             if (count != this.wantedSeats.size()) {
                 seats += ", ";
             }
+            count++;
         }
         seats += "]";
         return seats;
@@ -58,19 +59,19 @@ public class User implements Runnable {
 
 
     public void printUser() {
-        System.out.println("Name of the user: " + this.getUserName() + ", seats: " + this.getWantedSeats());
+        System.out.println("Name of the user: " + this.getUserName() + ", seats: " + this.getWantedSeatsString());
     }
 
-    public Boolean shouldRetry() {
+    public Boolean shouldRetry(int tryNo) {
         Boolean allSeatsTaken = true;
 
         for (String seatNumber: this.wantedSeats) {
             // If one of the seats is not taken, set allSeatsTaken to false
             Seat seat = this.getGrid().getSeatInGrid(seatNumber);
-            allSeatsTaken = seat.isTaken() && allSeatsTaken;            
+            allSeatsTaken = seat.isTaken() && allSeatsTaken;   
         }
 
-        if (allSeatsTaken == false) {
+        if (allSeatsTaken == false || tryNo == 1) {
             return true;
         }
         else {
@@ -82,36 +83,67 @@ public class User implements Runnable {
         Boolean allWantedSeatsEmpty = true;
 
         for (String seatNumber: this.wantedSeats) {
-            // If one of the seats is taken, set allWantedSeatsEmpty to false
+            // If one of the seats is taken by somebody else, set allWantedSeatsEmpty to false
             Seat seat = this.getGrid().getSeatInGrid(seatNumber);
             if (seat.isTaken()) {
-                allWantedSeatsEmpty = false;
+                if (seat.getReservedUser().getUserName().equals(this.getUserName()) == false) {
+                    allWantedSeatsEmpty = false;
+                    this.notAvailableComment += (seatNumber + " is taken by " + seat.getReservedUser().getUserName() + ". ");
+                }
             }            
         }
 
         return allWantedSeatsEmpty;
     }
 
+    public Boolean allTaken() {
+        Boolean allTaken = true;
+        for (String seatNumber: this.wantedSeats) {
+            Seat seat = this.getGrid().getSeatInGrid(seatNumber);
+            // If the seat is reserved by someone else or it's empty, return false
+            if ((seat.isTaken() && seat.getReservedUser().getUserName().equals(this.getUserName()) == false) || 
+                seat.isTaken() == false) {
+                allTaken = false;
+            }
+        }
+
+        return allTaken;
+    }
+
     public Boolean databaseFailed() {
         Random random = new Random();
-        //may fail with a 10% chance
+        // Database may fail with a 10% probability
         return (random.nextInt(10) < 1) ? true : false;
     }
 
     @Override
     public void run() {
         // System.out.println("Inside : " + Thread.currentThread().getName());
+
         int tryNo = 1;
-        while (this.shouldRetry()) {
+        while (this.shouldRetry(tryNo)) {
             if (this.allWantedSeatsEmpty()) {
                 if (this.databaseFailed() == false) {
 
                     for (String seatNumber: this.wantedSeats) {
                         Seat seat = this.getGrid().getSeatInGrid(seatNumber);
-                        if (seat.isTaken() == false)
+                        if (seat.isTaken() == false && this.allWantedSeatsEmpty()) {
                             seat.reserve(this);
-                        else
+                        }
+                        else {
+                            // Give up seats
+                            if (seat.isTaken() == true && seat.getReservedUser().getUserName().equals(this.userName) == false) {
+                                for (String seatNu: this.wantedSeats) {
+                                    Seat seatToGiveUp = this.getGrid().getSeatInGrid(seatNu);
+                                    if (seatToGiveUp.isTaken() && seatToGiveUp.getReservedUser().getUserName().equals(this.userName)) {
+                                        seatToGiveUp.setEmpty();
+                                        
+                                        //System.out.println(seatNu + " is set as EMPTY by " + this.getUserName() + " " + System.nanoTime());
+                                    }
+                                }
+                            }
                             break; 
+                        }
                     }
 
                     try {
@@ -120,8 +152,8 @@ public class User implements Runnable {
                     catch (InterruptedException exception) {
                         exception.printStackTrace();
                     }
-                    Logger.LogSuccessfulReservation(this.getUserName(), this.getWantedSeatsString(), System.nanoTime(), "Reservation successful. Retry No: " + tryNo);
-                
+                    if (this.allTaken())
+                        Logger.LogSuccessfulReservation(this.getUserName(), this.getWantedSeatsString(), System.nanoTime(), "Reservation successful. Retry No: " + tryNo);
                 }
                 else {
                     Logger.LogDatabaseFailiure(this.getUserName(), this.getWantedSeatsString(), System.nanoTime(), "Database failure. Trying again. ");
@@ -134,10 +166,10 @@ public class User implements Runnable {
                 }
             }
             else {
-                Logger.LogFailedReservation(this.getUserName(), this.getWantedSeatsString(), System.nanoTime(), "Reservation failed. Seats are not available.");
+                Logger.LogFailedReservation(this.getUserName(), this.getWantedSeatsString(), System.nanoTime(), "Reservation failed. " + this.notAvailableComment);
+                break;
             }
             tryNo++;
         }
-
     }
 }

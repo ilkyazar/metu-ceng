@@ -38,12 +38,21 @@ public class Seat {
         return this.taken;
     }
 
+    public void setEmpty() {
+        this.taken = false;
+        this.reservedUser = null;
+    }
+
     public void setReservedUser(User user) {
         this.reservedUser = user;
     }
 
     public User getReservedUser() {
         return this.reservedUser;
+    }
+
+    public Semaphore getSem() {
+        return this.sem;
     }
 
     public void reserve(User user) {
@@ -65,6 +74,8 @@ public class Seat {
             if (this.taken == false) {
                 this.setTaken();
                 this.setReservedUser(user);
+
+                //System.out.println(this.getSeatNumber() + " is set as taken by " + getReservedUser().getUserName() + " " + System.nanoTime());
             }
         }
     }
