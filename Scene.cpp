@@ -19,6 +19,30 @@
 using namespace tinyxml2;
 using namespace std;
 
+void Scene::transformAllModels() {
+	for (int m = 0; m < models.size(); m++) {
+		for (int t = 0; t < models[m]->numberOfTransformations; t++) {
+			//for (int tri = 0; tri < models[m]->numberOfTriangles; tri++) {
+				if (models[m]->transformationTypes[t] == 'r') {
+					cout << models[m]->transformationIds[t] << endl;
+					Rotation* r = (this->rotations[models[m]->transformationIds[t] - 1]);
+					cout << *r << endl;
+				}
+                else if (models[m]->transformationTypes[t] == 's') {
+					cout << models[m]->transformationIds[t] << endl;
+					Scaling* s = (this->scalings[models[m]->transformationIds[t] - 1]);
+					cout << *s << endl;
+				}
+                else {
+					cout << models[m]->transformationIds[t] << endl;
+					Translation* tr = (this->translations[models[m]->transformationIds[t] - 1]);
+					cout << *tr << endl;
+				}
+			//}
+		}	
+	}
+}
+
 /*
 	Transformations, clipping, culling, rasterization are done here.
 	You can define helper functions inside Scene class implementation.
@@ -26,6 +50,8 @@ using namespace std;
 void Scene::forwardRenderingPipeline(Camera *camera)
 {
 	// TODO: Implement this function.
+    cout << "Transforming for camera" << camera->cameraId << endl;
+	this->transformAllModels();
 }
 
 /*
