@@ -19,27 +19,86 @@
 using namespace tinyxml2;
 using namespace std;
 
+
+void Scene::translateTriangle(Triangle tri, Translation* tr) {
+	int vertice1_id = tri.getFirstVertexId() - 1;
+	int vertice2_id = tri.getSecondVertexId() - 1;
+	int vertice3_id = tri.getThirdVertexId() - 1;
+
+	Matrix4 identity = getIdentityMatrix();
+	Matrix4 T = getTranslationMatrix(identity, tr);
+
+	cout << "before vec3: " << this->vertices[vertice1_id] << endl;
+	Vec4 vert1(Vec3toVec4(this->vertices[vertice1_id]));
+	Vec4 vert2(Vec3toVec4(this->vertices[vertice2_id]));
+	Vec4 vert3(Vec3toVec4(this->vertices[vertice3_id]));
+
+	Vec3 vertice1 = Vec4toVec3(multiplyMatrixWithVec4(T, vert1));
+	Vec3 vertice2 = Vec4toVec3(multiplyMatrixWithVec4(T, vert2));
+	Vec3 vertice3 = Vec4toVec3(multiplyMatrixWithVec4(T, vert3));
+
+	cout << "BEFORE" << endl;
+	cout << "vert1 = " << vert1 << endl; 
+	cout << vertice1_id << " " << this->vertices[vertice1_id] << endl;
+	cout << vertice2_id << " " << *this->vertices[vertice2_id] << endl;
+	cout << vertice3_id << " " << *this->vertices[vertice3_id] << endl;
+
+	this->vertices[vertice1_id] = &vertice1;
+	this->vertices[vertice2_id] = &vertice2;
+	this->vertices[vertice3_id] = &vertice3;
+
+	cout << "AFTER" << endl;
+	cout << vertice1_id << " " << *this->vertices[vertice1_id] << endl;
+	cout << vertice2_id << " " << *this->vertices[vertice2_id] << endl;
+	cout << vertice3_id << " " << *this->vertices[vertice3_id] << endl;
+
+	//*this->vertices[vertice1] 
+}
+
+void Scene::translateModel(int modelIndex, int transformIndex) {
+
+	Model* model = models[modelIndex];
+	
+	cout << model->transformationIds[transformIndex] << endl;
+	Translation* tr = (this->translations[model->transformationIds[transformIndex] - 1]);
+	cout << "Translation: " << *tr << endl;
+
+	for (int tri = 0; tri < model->numberOfTriangles; tri++) {
+		translateTriangle(model->triangles[tri], tr);
+	}
+}
+
+void Scene::scaleModel(int modelIndex, int transformIndex) {
+	cout << models[modelIndex]->transformationIds[transformIndex] << endl;
+	Scaling* s = (this->scalings[models[modelIndex]->transformationIds[transformIndex] - 1]);
+	cout << "Scaling: " << *s << endl;
+}
+
+
+void Scene::rotateModel(int modelIndex, int transformIndex) {
+	cout << this->models[modelIndex]->transformationIds[transformIndex] << endl;
+	Rotation* r = (this->rotations[models[modelIndex]->transformationIds[transformIndex] - 1]);
+	cout << "Rotation: " << *r << endl;
+}
+
+void Scene::transformModel(int m) {
+	for (int t = 0; t < this->models[m]->numberOfTransformations; t++) {
+		if (models[m]->transformationTypes[t] == 'r') {
+			this->rotateModel(m, t);
+		}
+		else if (models[m]->transformationTypes[t] == 's') {
+			this->scaleModel(m, t);
+		}
+		else {
+			this->translateModel(m, t);
+		}
+	}	
+}
+
 void Scene::transformAllModels() {
+	
 	for (int m = 0; m < models.size(); m++) {
-		for (int t = 0; t < models[m]->numberOfTransformations; t++) {
-			//for (int tri = 0; tri < models[m]->numberOfTriangles; tri++) {
-				if (models[m]->transformationTypes[t] == 'r') {
-					cout << models[m]->transformationIds[t] << endl;
-					Rotation* r = (this->rotations[models[m]->transformationIds[t] - 1]);
-					cout << *r << endl;
-				}
-                else if (models[m]->transformationTypes[t] == 's') {
-					cout << models[m]->transformationIds[t] << endl;
-					Scaling* s = (this->scalings[models[m]->transformationIds[t] - 1]);
-					cout << *s << endl;
-				}
-                else {
-					cout << models[m]->transformationIds[t] << endl;
-					Translation* tr = (this->translations[models[m]->transformationIds[t] - 1]);
-					cout << *tr << endl;
-				}
-			//}
-		}	
+		this->transformModel(m);
 	}
 }
 
@@ -49,8 +108,12 @@ void Scene::transformAllModels() {
 */
 void Scene::forwardRenderingPipeline(Camera *camera)
 {
+	//camera transformation matrix
+	//Matrix4 M_camera = calculateCameraMatrix(camera);
+
 	// TODO: Implement this function.
-    cout << "Transforming for camera" << camera->cameraId << endl;
+	cout << "-------------------------" << endl;
+    cout << "Transforming for camera " << camera->cameraId << endl;
 	this->transformAllModels();
 }
 

@@ -45,6 +45,12 @@ public:
 	void convertPPMToPNG(string ppmFileName, int osType);
 
 	void transformAllModels();
+	void transformModel(int m);
+	void rotateModel(int modelIndex, int transformIndex);
+	void scaleModel(int modelIndex, int transformIndex);
+	void translateModel(int modelIndex, int transformIndex);
+
+	void translateTriangle(Triangle tri, Translation* tr);
 };
 
 #endif

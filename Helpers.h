@@ -7,6 +7,9 @@
 #include "Matrix4.h"
 #include "Vec3.h"
 #include "Vec4.h"
+#include "Rotation.h"
+#include "Translation.h"
+#include "Scaling.h"
 
 /*
  * Calculate cross product of vec3 a, vec3 b and return resulting vec3.
@@ -73,5 +76,13 @@ Matrix4 multiplyMatrixWithMatrix(Matrix4 m1, Matrix4 m2);
  * Multiply matrix m (Matrix4) with vector v (vec4) and store the result in vector r (vec4).
  */
 Vec4 multiplyMatrixWithVec4(Matrix4 m, Vec4 v);
+
+Matrix4 getTranslationMatrix(Matrix4 matrix, Translation* t);
+Matrix4 getScalingMatrix(Matrix4 matrix, Scaling s);
+Vec3 getV(double x, double y, double z);
+Matrix4 getRotationMatrix(Matrix4 matrix, Rotation r);
+
+Vec4 Vec3toVec4(Vec3* vec3);
+Vec3 Vec4toVec3(Vec4 vec4);
 
 #endif
