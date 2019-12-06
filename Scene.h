@@ -17,6 +17,7 @@
 #include "Triangle.h"
 #include "Vec3.h"
 #include "Vec4.h"
+#include "Matrix4.h"
 
 using namespace std;
 
@@ -55,6 +56,8 @@ public:
 	void translateTriangle(Triangle tri, Translation* tr);
 	void scaleTriangle(Triangle tri, Scaling* s);
 	void rotateTriangle(Triangle tri,Rotation* r);
+	Matrix4 calculateCameraMatrix(Camera *camera);
+	void cameraTransformation(int modelIndex, Matrix4 M_camera);
 };
 
 #endif

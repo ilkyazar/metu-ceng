@@ -148,21 +148,69 @@ void Scene::transformAllModels() {
 	}
 }
 
+Matrix4 Scene::calculateCameraMatrix(Camera *camera){
+	Matrix4 matrix = getIdentityMatrix();
+    
+	Translation tr(-1, camera->pos.x, camera->pos.y, camera->pos.z );
+	Matrix4 T = getTranslationMatrix(&tr);
+
+    Vec3 u = camera->u;
+    Vec3 unit_u(normalizeVec3(u));
+    Vec3 v = camera->v;
+    Vec3 unit_v(normalizeVec3(v));
+    Vec3 w = camera->w;
+    Vec3 unit_w(normalizeVec3(w));
+
+    double m_val[4][4] = {{unit_u.x, unit_u.y, unit_u.z, 0},
+                        {unit_v.x, unit_v.y, unit_v.z, 0},
+                        {unit_w.x, unit_w.y, unit_w.z, 0},
+                        {0,0,0,1}};
+	Matrix4 R(m_val);
+	matrix = multiplyMatrixWithMatrix(R, T);
+	return matrix;
+}
+
+void Scene::cameraTransformation(int modelIndex, Matrix4 M_camera){
+	//multiply all points of a model with camera transformation matrix
+	
+	Model* model = models[modelIndex];
+	for (int tri = 0; tri < model->numberOfTriangles; tri++) {
+		
+		Triangle triangle = model->triangles[tri];
+
+		for(int vid = 0; vid < 3; vid++){
+			int vertex_id = triangle.vertexIds[vid] -1;
+			Vec4 vert(Vec3toVec4(this->vertices[vertex_id]));
+			Vec3 vertex = Vec4toVec3(multiplyMatrixWithVec4(M_camera, vert));
+			
+			cout << "Before camera transformation: " << *this->vertices[vertex_id] << endl;
+			Vec3* vertex_ptr = &vertex;
+			*this->vertices[vertex_id] = *vertex_ptr;
+			cout << "After camera transformation: " << *this->vertices[vertex_id] << endl;
+		}
+	}
+}
 /*
 	Transformations, clipping, culling, rasterization are done here.
 	You can define helper functions inside Scene class implementation.
 */
 void Scene::forwardRenderingPipeline(Camera *camera)
 {
-	//camera transformation matrix
-	//Matrix4 M_camera = calculateCameraMatrix(camera);
-
 	// TODO: Implement this function.
 	if(!this->isTransformed){
 		cout << "-------------------------" << endl;
     	cout << "Transforming the model";
 		this->transformAllModels();
 		this->isTransformed = true;
+	}
+
+	//camera transformation matrix
+
+	cout << "-------------------------" << endl;
+	cout << "Transforming for camera: " << camera->cameraId << endl;
+	Matrix4 M_camera = calculateCameraMatrix(camera);
+	for (int modelIndex = 0; modelIndex < this->models.size(); modelIndex++){
+		this->cameraTransformation(modelIndex, M_camera);
 	}
 }
 
