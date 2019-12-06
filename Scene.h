@@ -55,9 +55,13 @@ public:
 
 	void translateTriangle(Triangle tri, Translation* tr);
 	void scaleTriangle(Triangle tri, Scaling* s);
-	void rotateTriangle(Triangle tri,Rotation* r);
 	Matrix4 calculateCameraMatrix(Camera *camera);
 	void cameraTransformation(int modelIndex, Matrix4 M_camera);
+
+	std::vector<int> getUniqueVerticesOfModel(int modelIndex);
+	void rotateVertex(int vertex_id, Rotation* r);
+	void scaleVertex(int vertex_id, Scaling* s);
+	void translateVertex(int vertex_id, Translation* tr);
 };
 
 #endif

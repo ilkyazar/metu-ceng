@@ -4,6 +4,8 @@
 #include <fstream>
 #include <cmath>
 
+#include <set>
+
 #include "Scene.h"
 #include "Camera.h"
 #include "Color.h"
@@ -20,116 +22,109 @@ using namespace tinyxml2;
 using namespace std;
 
 
-void Scene::translateTriangle(Triangle tri, Translation* tr) {
+void Scene::translateVertex(int vertex_id, Translation* tr) {
+	Matrix4 T = getTranslationMatrix(tr);
+	Vec4 vert(Vec3toVec4(this->vertices[vertex_id]));
 
-	for(int vid = 0; vid < 3; vid++){
-		int vertex_id = tri.vertexIds[vid] -1;
-		Matrix4 T = getTranslationMatrix(tr);
-		Vec4 vert(Vec3toVec4(this->vertices[vertex_id]));
+	cout << "Vertex " << vertex_id + 1 << " : Before Translation" << endl;
+	cout << *this->vertices[vertex_id] << endl;
 
-		cout << "Vertex " << vertex_id + 1 << " : Before Translation" << endl;
-		cout << *this->vertices[vertex_id] << endl;
+	Vec3 vertex = Vec4toVec3(multiplyMatrixWithVec4(T, vert));
 
-		Vec3 vertex = Vec4toVec3(multiplyMatrixWithVec4(T, vert));
+	Vec3* vertex_ptr = &vertex;
+	*this->vertices[vertex_id] = *vertex_ptr;
 
-		Vec3* vertex_ptr = &vertex;
-		*this->vertices[vertex_id] = *vertex_ptr;
+	cout << "Vertex " << vertex_id + 1 << " : After Translation" << endl;
+	cout << *this->vertices[vertex_id] << endl;
 
-		cout << "Vertex " << vertex_id + 1 << " : After Translation" << endl;
-		cout << *this->vertices[vertex_id] << endl;
-
-	}
 }
 
 void Scene::translateModel(int modelIndex, int transformIndex) {
 
 	Model* model = models[modelIndex];
 	Translation* tr = (this->translations[model->transformationIds[transformIndex] - 1]);
-	cout << "Translation: " << *tr << endl;
+	cout << "------------------------------------------------------" << endl;
+	cout << "TRANSLATION: " << *tr << endl;
 
-	for (int tri = 0; tri < model->numberOfTriangles; tri++) {
-		this->translateTriangle(model->triangles[tri], tr);
+	std::vector<int> modelVerticeIds = this->getUniqueVerticesOfModel(modelIndex);
+	
+	for (int i = 0; i < modelVerticeIds.size(); i++ ){
+		this->translateVertex(i, tr);
 	}
 }
 
 
-void Scene::scaleTriangle(Triangle tri, Scaling* s){
-
-	for(int vid = 0; vid < 3; vid++){
-
-		int vertex_id = tri.vertexIds[vid] - 1;
-
+void Scene::scaleVertex(int vertex_id, Scaling* s) {
 		Matrix4 S = scaleAroundPoint(s, this->vertices[vertex_id]);
-		
-		cout << "S" << endl;
-		cout << S << endl;
-		cout << "BEFORE" << endl;
+		//Matrix4 S = getScalingMatrix(s);
+
+		//cout << "S" << endl;
+		//cout << S << endl;
+		cout << "Before Scaling:" << endl;
 		cout << *this->vertices[vertex_id] << endl;
 
 		Vec4 vert(Vec3toVec4(this->vertices[vertex_id]));
-		Vec3 vertex = Vec4toVec3(multiplyMatrixWithVec4(S, vert));
+		//cout << "vert" << vert << endl;
+
+		Vec4 vertex4 = multiplyMatrixWithVec4(S, vert);
+		//cout << "vertex4" << vertex4 << endl;
+
+		Vec3 vertex = Vec4toVec3(vertex4);
 		
 		//ilkyaz kafayi kırmak üzereyim, burada tam olarak translationun aynisini yapiyorum
 		//önce transformation matrix hesapliyorum (S) sonra onu vertex ile çarpıyorum ama
 		//BEFORE ve SCALED VERTEX aynı geliyor, S ile çarpamıyor(??) yani. HELP
 
-		cout << "SCALED VERTEX" << endl;
-		cout << vertex << endl;
+		//cout << "SCALED VERTEX" << endl;
+		//cout << vertex << endl;
 
 		Vec3* vertex_ptr = &vertex;
 		*this->vertices[vertex_id] = *vertex_ptr;
 
-		cout << "AFTER" << endl;
+		cout << "After Scaling: " << endl;
 		cout << *this->vertices[vertex_id] << endl;
-		
-	}
-
 }
 
 void Scene::scaleModel(int modelIndex, int transformIndex) {
 	Model* model = models[modelIndex];
 	Scaling* s = (this->scalings[models[modelIndex]->transformationIds[transformIndex] - 1]);
-	cout << "Scaling: " << *s << endl;
+	cout << "------------------------------------------------------" << endl;	
+	cout << "SCALING: " << *s << endl;
 
-	for (int tri = 0; tri < model->numberOfTriangles; tri++) {
-		//this->scaleTriangle(model->triangles[tri], s);
+	std::vector<int> modelVerticeIds = this->getUniqueVerticesOfModel(modelIndex);
+	
+	for (int i = 0; i < modelVerticeIds.size(); i++ ){
+		this->scaleVertex(i, s);
 	}
 }
 
-void Scene::rotateTriangle(Triangle tri,Rotation* r){
+void  Scene::rotateVertex(int vertex_id, Rotation* r) {
+	Matrix4 R = getRotationMatrix(r);
+	Vec4 vert(Vec3toVec4(this->vertices[vertex_id]));
+	cout << "Vertex " << vertex_id + 1 << " : Before Rotation" << endl;
+	cout << *this->vertices[vertex_id] << endl;
 
-	for(int vid = 0; vid < 3; vid++){
-		int vertex_id = tri.vertexIds[vid] -1;
-		Matrix4 R = getRotationMatrix(r);
-		Vec4 vert(Vec3toVec4(this->vertices[vertex_id]));
+	Vec3 vertex = Vec4toVec3(multiplyMatrixWithVec4(R, vert));
 
-		cout << "Vertex " << vertex_id + 1 << " : Before Rotation" << endl;
-		cout << *this->vertices[vertex_id] << endl;
+	Vec3* vertex_ptr = &vertex;
+	*this->vertices[vertex_id] = *vertex_ptr;
 
-		Vec3 vertex = Vec4toVec3(multiplyMatrixWithVec4(R, vert));
-
-		Vec3* vertex_ptr = &vertex;
-		*this->vertices[vertex_id] = *vertex_ptr;
-
-		cout << "Vertex " << vertex_id + 1 << " : After Rotation" << endl;
-		cout << *this->vertices[vertex_id] << endl;
-
-	}
+	cout << "Vertex " << vertex_id + 1 << " : After Rotation" << endl;
+	cout << *this->vertices[vertex_id] << endl;
 }
 
 void Scene::rotateModel(int modelIndex, int transformIndex) {
 	Model* model = models[modelIndex];
 	Rotation* r = (this->rotations[models[modelIndex]->transformationIds[transformIndex] - 1]);
-	cout << "Rotation: " << *r << endl;
-	/*
-	std::set<int> verticeIDSet;
-	unsigned size = vec.size();
-	for( unsigned i = 0; i < size; ++i ) s.insert( vec[i] );
-	vec.assign( s.begin(), s.end() );
-	*/
-	for (int tri = 0; tri < model->numberOfTriangles; tri++ ){
-		this->rotateTriangle(model->triangles[tri], r);
+	cout << "------------------------------------------------------" << endl;
+	cout << "ROTATION: " << *r << endl;
+
+	std::vector<int> modelVerticeIds = this->getUniqueVerticesOfModel(modelIndex);
+	
+	for (int i = 0; i < modelVerticeIds.size(); i++ ){
+		this->rotateVertex(i, r);
 	}
+		
 }
 
 void Scene::transformModel(int m) {
@@ -144,6 +139,25 @@ void Scene::transformModel(int m) {
 			this->translateModel(m, t);
 		}
 	}	
+}
+
+std::vector<int> Scene::getUniqueVerticesOfModel(int modelIndex) {
+
+	Model* model = models[modelIndex];
+	std::vector<int> nonUnique; 
+	for (int tri = 0; tri < model->numberOfTriangles; tri++ ) {
+		nonUnique.push_back(model->triangles[tri].getFirstVertexId());
+		nonUnique.push_back(model->triangles[tri].getSecondVertexId());
+		nonUnique.push_back(model->triangles[tri].getThirdVertexId());
+	}
+
+	std::set<int> verticeIDSet;
+	unsigned size = nonUnique.size();
+	for (unsigned i = 0; i < size; i++) {
+		verticeIDSet.insert(nonUnique[i]);
+	}
+	nonUnique.assign(verticeIDSet.begin(), verticeIDSet.end());
+	return nonUnique;
 }
 
 void Scene::transformAllModels() {
@@ -206,16 +220,15 @@ void Scene::forwardRenderingPipeline(Camera *camera)
 	// TODO: Implement this function.
 
 	if(!this->isTransformed){
-		cout << "-------------------------" << endl;
-    	cout << "Transforming the model" << endl;
+    	cout << "TRANSFORMING THE MODEL" << endl;
 		this->transformAllModels();
 		this->isTransformed = true;
 	}
 
 	//camera transformation matrix
 
-	cout << "-------------------------" << endl;
-	cout << "Transforming for camera: " << camera->cameraId << endl;
+	cout << "------------------------------------------------------" << endl;
+	cout << "TRANSFORMING FOR CAMERA " << camera->cameraId << endl;
 	Matrix4 M_camera = calculateCameraMatrix(camera);
 	for (int modelIndex = 0; modelIndex < this->models.size(); modelIndex++){
 		this->cameraTransformation(modelIndex, M_camera);
