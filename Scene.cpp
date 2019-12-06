@@ -21,64 +21,110 @@ using namespace std;
 
 
 void Scene::translateTriangle(Triangle tri, Translation* tr) {
-	int vertice1_id = tri.getFirstVertexId() - 1;
-	int vertice2_id = tri.getSecondVertexId() - 1;
-	int vertice3_id = tri.getThirdVertexId() - 1;
 
-	Matrix4 identity = getIdentityMatrix();
-	Matrix4 T = getTranslationMatrix(identity, tr);
+	for(int vid = 0; vid < 3; vid++){
+		int vertex_id = tri.vertexIds[vid] -1;
+		Matrix4 T = getTranslationMatrix(tr);
+		Vec4 vert(Vec3toVec4(this->vertices[vertex_id]));
 
-	cout << "before vec3: " << this->vertices[vertice1_id] << endl;
-	Vec4 vert1(Vec3toVec4(this->vertices[vertice1_id]));
-	Vec4 vert2(Vec3toVec4(this->vertices[vertice2_id]));
-	Vec4 vert3(Vec3toVec4(this->vertices[vertice3_id]));
+		cout << "Vertex " << vertex_id << " : Before Translation" << endl;
+		cout << *this->vertices[vertex_id] << endl;
 
-	Vec3 vertice1 = Vec4toVec3(multiplyMatrixWithVec4(T, vert1));
-	Vec3 vertice2 = Vec4toVec3(multiplyMatrixWithVec4(T, vert2));
-	Vec3 vertice3 = Vec4toVec3(multiplyMatrixWithVec4(T, vert3));
+		Vec3 vertex = Vec4toVec3(multiplyMatrixWithVec4(T, vert));
 
-	cout << "BEFORE" << endl;
-	cout << "vert1 = " << vert1 << endl; 
-	cout << vertice1_id << " " << this->vertices[vertice1_id] << endl;
-	cout << vertice2_id << " " << *this->vertices[vertice2_id] << endl;
-	cout << vertice3_id << " " << *this->vertices[vertice3_id] << endl;
+		Vec3* vertex_ptr = &vertex;
+		*this->vertices[vertex_id] = *vertex_ptr;
 
-	this->vertices[vertice1_id] = &vertice1;
-	this->vertices[vertice2_id] = &vertice2;
-	this->vertices[vertice3_id] = &vertice3;
+		cout << "Vertex " << vertex_id << " : After Translation" << endl;
+		cout << *this->vertices[vertex_id] << endl;
 
-	cout << "AFTER" << endl;
-	cout << vertice1_id << " " << *this->vertices[vertice1_id] << endl;
-	cout << vertice2_id << " " << *this->vertices[vertice2_id] << endl;
-	cout << vertice3_id << " " << *this->vertices[vertice3_id] << endl;
-
-	//*this->vertices[vertice1] 
+	}
 }
 
 void Scene::translateModel(int modelIndex, int transformIndex) {
 
 	Model* model = models[modelIndex];
-	
-	cout << model->transformationIds[transformIndex] << endl;
 	Translation* tr = (this->translations[model->transformationIds[transformIndex] - 1]);
 	cout << "Translation: " << *tr << endl;
 
 	for (int tri = 0; tri < model->numberOfTriangles; tri++) {
-		translateTriangle(model->triangles[tri], tr);
+		this->translateTriangle(model->triangles[tri], tr);
 	}
 }
 
-void Scene::scaleModel(int modelIndex, int transformIndex) {
-	cout << models[modelIndex]->transformationIds[transformIndex] << endl;
-	Scaling* s = (this->scalings[models[modelIndex]->transformationIds[transformIndex] - 1]);
-	cout << "Scaling: " << *s << endl;
+
+void Scene::scaleTriangle(Triangle tri, Scaling* s){
+
+	for(int vid = 0; vid < 3; vid++){
+
+		int vertex_id = tri.vertexIds[vid] - 1;
+
+		Matrix4 S = scaleAroundPoint(s, this->vertices[vertex_id]);
+		
+		cout << "S" << endl;
+		cout << S << endl;
+		cout << "BEFORE" << endl;
+		cout << *this->vertices[vertex_id] << endl;
+
+		Vec4 vert(Vec3toVec4(this->vertices[vertex_id]));
+		Vec3 vertex = Vec4toVec3(multiplyMatrixWithVec4(S, vert));
+		
+		//ilkyaz kafayi kırmak üzereyim, burada tam olarak translationun aynisini yapiyorum
+		//önce transformation matrix hesapliyorum (S) sonra onu vertex ile çarpıyorum ama
+		//BEFORE ve SCALED VERTEX aynı geliyor, S ile çarpamıyor(??) yani. HELP
+
+		cout << "SCALED VERTEX" << endl;
+		cout << vertex << endl;
+
+		Vec3* vertex_ptr = &vertex;
+		*this->vertices[vertex_id] = *vertex_ptr;
+
+		cout << "AFTER" << endl;
+		cout << *this->vertices[vertex_id] << endl;
+		
+	}
+
 }
 
+void Scene::scaleModel(int modelIndex, int transformIndex) {
+	Model* model = models[modelIndex];
+	Scaling* s = (this->scalings[models[modelIndex]->transformationIds[transformIndex] - 1]);
+	cout << "Scaling: " << *s << endl;
+
+	for (int tri = 0; tri < model->numberOfTriangles; tri++) {
+		//this->scaleTriangle(model->triangles[tri], s);
+	}
+}
+
+void Scene::rotateTriangle(Triangle tri,Rotation* r){
+
+	for(int vid = 0; vid < 3; vid++){
+		int vertex_id = tri.vertexIds[vid] -1;
+		Matrix4 R = getRotationMatrix(r);
+		Vec4 vert(Vec3toVec4(this->vertices[vertex_id]));
+
+		cout << "Vertex " << vertex_id << " : Before Rotation" << endl;
+		cout << *this->vertices[vertex_id] << endl;
+
+		Vec3 vertex = Vec4toVec3(multiplyMatrixWithVec4(R, vert));
+
+		Vec3* vertex_ptr = &vertex;
+		*this->vertices[vertex_id] = *vertex_ptr;
+
+		cout << "Vertex " << vertex_id << " : After Rotation" << endl;
+		cout << *this->vertices[vertex_id] << endl;
+
+	}
+}
 
 void Scene::rotateModel(int modelIndex, int transformIndex) {
-	cout << this->models[modelIndex]->transformationIds[transformIndex] << endl;
+	Model* model = models[modelIndex];
 	Rotation* r = (this->rotations[models[modelIndex]->transformationIds[transformIndex] - 1]);
 	cout << "Rotation: " << *r << endl;
+
+	for (int tri = 0; tri < model->numberOfTriangles; tri++ ){
+		this->rotateTriangle(model->triangles[tri], r);
+	}
 }
 
 void Scene::transformModel(int m) {
@@ -96,8 +142,8 @@ void Scene::transformModel(int m) {
 }
 
 void Scene::transformAllModels() {
-	
-	for (int m = 0; m < models.size(); m++) {
+
+	for (int m = 0; m < this->models.size(); m++) {
 		this->transformModel(m);
 	}
 }
@@ -112,9 +158,12 @@ void Scene::forwardRenderingPipeline(Camera *camera)
 	//Matrix4 M_camera = calculateCameraMatrix(camera);
 
 	// TODO: Implement this function.
-	cout << "-------------------------" << endl;
-    cout << "Transforming for camera " << camera->cameraId << endl;
-	this->transformAllModels();
+	if(!this->isTransformed){
+		cout << "-------------------------" << endl;
+    	cout << "Transforming the model";
+		this->transformAllModels();
+		this->isTransformed = true;
+	}
 }
 
 /*

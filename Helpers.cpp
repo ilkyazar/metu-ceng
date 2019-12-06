@@ -207,17 +207,35 @@ Vec4 multiplyMatrixWithVec4(Matrix4 m, Vec4 v)
 }
 
 //transformation functions
-Matrix4 getTranslationMatrix(Matrix4 matrix, Translation* t) {
+Matrix4 getTranslationMatrix(Translation* t) {
+    Matrix4 matrix = getIdentityMatrix();
     matrix.val[0][3] = t->tx;
     matrix.val[1][3] = t->ty;
     matrix.val[2][3] = t->tz;
     return matrix;
 }
 
-Matrix4 getScalingMatrix(Matrix4 matrix, Scaling s){
-    matrix.val[0][0] = matrix.val[0][0] * s.sx;
-    matrix.val[1][1] = matrix.val[1][1] * s.sy;
-    matrix.val[2][2] = matrix.val[2][2] * s.sz;
+Matrix4 getScalingMatrix(Scaling* s){
+    Matrix4 matrix = getIdentityMatrix();
+    matrix.val[0][0] = matrix.val[0][0] * s->sx;
+    matrix.val[1][1] = matrix.val[1][1] * s->sy;
+    matrix.val[2][2] = matrix.val[2][2] * s->sz;
+    return matrix;
+}
+
+Matrix4 scaleAroundPoint(Scaling* s, Vec3* point){
+    Matrix4 matrix = getIdentityMatrix();
+    Translation tr(-1, point->x, point->y, point->z);
+    Translation trInverse(-1, -(point->x), -(point->y), -(point->z));
+    cout<< "----MATRIX----"<<endl;
+    cout<<matrix<<endl;
+    cout << "------" << endl;
+    matrix = multiplyMatrixWithMatrix(getTranslationMatrix(&tr),getScalingMatrix(s));
+    cout<<matrix<<endl;
+    cout << "------" << endl;
+    matrix = multiplyMatrixWithMatrix(matrix, getTranslationMatrix(&trInverse));
+    cout<<matrix<<endl;
+    cout << "------" << endl;
     return matrix;
 }
 
@@ -234,8 +252,12 @@ Vec3 getV(double x, double y, double z){
     }
 }
 
-Matrix4 getRotationMatrix(Matrix4 matrix, Rotation r){
-    Vec3 u(r.ux, r.uy, r.uz, -1);
+Matrix4 getRotationMatrix(Rotation* r){
+    double pi = 3.14159265;
+    double radian = r->angle * pi / 180.0;
+    Matrix4 matrix = getIdentityMatrix();
+    
+    Vec3 u(r->ux, r->uy, r->uz, -1);
     Vec3 unit_u(normalizeVec3(u));
     
     Vec3 v(getV(unit_u.x, unit_u.y, unit_u.z));
@@ -254,8 +276,8 @@ Matrix4 getRotationMatrix(Matrix4 matrix, Rotation r){
                                 {unit_u.z, unit_v.z, unit_w.z, 0},
                                 {0,0,0,1}};
 
-    double rotation_x[4][4] = {{1,0,0,0},{0,cos(r.angle), -sin(r.angle),0},
-                            {0, sin(r.angle), cos(r.angle), 0},{0,0,0,1}};
+    double rotation_x[4][4] = {{1,0,0,0},{0,cos(radian), -sin(radian),0},
+                            {0, sin(radian), cos(radian), 0},{0,0,0,1}};
     
     Matrix4 M(m_val);
     Matrix4 inverse_M(inverse_m_val);
@@ -266,7 +288,7 @@ Matrix4 getRotationMatrix(Matrix4 matrix, Rotation r){
 }
 
 Vec4 Vec3toVec4(Vec3* vec3) {
-    Vec4 vec4(vec3->x, vec3->y, vec3->z, 0.0, -1);
+    Vec4 vec4(vec3->x, vec3->y, vec3->z, 1.0, -1);
     return vec4;
 }
 

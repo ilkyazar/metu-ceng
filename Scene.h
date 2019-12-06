@@ -27,6 +27,8 @@ public:
 	bool cullingEnabled;
 	int projectionType;
 
+	bool isTransformed = false;
+
 	vector< vector<Color> > image;
 	vector< Camera* > cameras;
 	vector< Vec3* > vertices;
@@ -51,6 +53,8 @@ public:
 	void translateModel(int modelIndex, int transformIndex);
 
 	void translateTriangle(Triangle tri, Translation* tr);
+	void scaleTriangle(Triangle tri, Scaling* s);
+	void rotateTriangle(Triangle tri,Rotation* r);
 };
 
 #endif
