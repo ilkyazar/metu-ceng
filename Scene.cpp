@@ -27,7 +27,7 @@ void Scene::translateTriangle(Triangle tri, Translation* tr) {
 		Matrix4 T = getTranslationMatrix(tr);
 		Vec4 vert(Vec3toVec4(this->vertices[vertex_id]));
 
-		cout << "Vertex " << vertex_id << " : Before Translation" << endl;
+		cout << "Vertex " << vertex_id + 1 << " : Before Translation" << endl;
 		cout << *this->vertices[vertex_id] << endl;
 
 		Vec3 vertex = Vec4toVec3(multiplyMatrixWithVec4(T, vert));
@@ -35,7 +35,7 @@ void Scene::translateTriangle(Triangle tri, Translation* tr) {
 		Vec3* vertex_ptr = &vertex;
 		*this->vertices[vertex_id] = *vertex_ptr;
 
-		cout << "Vertex " << vertex_id << " : After Translation" << endl;
+		cout << "Vertex " << vertex_id + 1 << " : After Translation" << endl;
 		cout << *this->vertices[vertex_id] << endl;
 
 	}
@@ -103,7 +103,7 @@ void Scene::rotateTriangle(Triangle tri,Rotation* r){
 		Matrix4 R = getRotationMatrix(r);
 		Vec4 vert(Vec3toVec4(this->vertices[vertex_id]));
 
-		cout << "Vertex " << vertex_id << " : Before Rotation" << endl;
+		cout << "Vertex " << vertex_id + 1 << " : Before Rotation" << endl;
 		cout << *this->vertices[vertex_id] << endl;
 
 		Vec3 vertex = Vec4toVec3(multiplyMatrixWithVec4(R, vert));
@@ -111,7 +111,7 @@ void Scene::rotateTriangle(Triangle tri,Rotation* r){
 		Vec3* vertex_ptr = &vertex;
 		*this->vertices[vertex_id] = *vertex_ptr;
 
-		cout << "Vertex " << vertex_id << " : After Rotation" << endl;
+		cout << "Vertex " << vertex_id + 1 << " : After Rotation" << endl;
 		cout << *this->vertices[vertex_id] << endl;
 
 	}
@@ -121,7 +121,12 @@ void Scene::rotateModel(int modelIndex, int transformIndex) {
 	Model* model = models[modelIndex];
 	Rotation* r = (this->rotations[models[modelIndex]->transformationIds[transformIndex] - 1]);
 	cout << "Rotation: " << *r << endl;
-
+	/*
+	std::set<int> verticeIDSet;
+	unsigned size = vec.size();
+	for( unsigned i = 0; i < size; ++i ) s.insert( vec[i] );
+	vec.assign( s.begin(), s.end() );
+	*/
 	for (int tri = 0; tri < model->numberOfTriangles; tri++ ){
 		this->rotateTriangle(model->triangles[tri], r);
 	}
@@ -174,19 +179,21 @@ void Scene::cameraTransformation(int modelIndex, Matrix4 M_camera){
 	//multiply all points of a model with camera transformation matrix
 	
 	Model* model = models[modelIndex];
+	cout << modelIndex << " (modelIndex) | Generating camera coordinate system " << endl;
 	for (int tri = 0; tri < model->numberOfTriangles; tri++) {
 		
 		Triangle triangle = model->triangles[tri];
+		cout << tri << ". triangle | Generating camera coordinate system " << endl;
 
 		for(int vid = 0; vid < 3; vid++){
 			int vertex_id = triangle.vertexIds[vid] -1;
 			Vec4 vert(Vec3toVec4(this->vertices[vertex_id]));
 			Vec3 vertex = Vec4toVec3(multiplyMatrixWithVec4(M_camera, vert));
 			
-			cout << "Before camera transformation: " << *this->vertices[vertex_id] << endl;
+			cout << vertex_id << " | Before camera transformation: " << *this->vertices[vertex_id] << endl;
 			Vec3* vertex_ptr = &vertex;
 			*this->vertices[vertex_id] = *vertex_ptr;
-			cout << "After camera transformation: " << *this->vertices[vertex_id] << endl;
+			cout << vertex_id << " | After camera transformation: " << *this->vertices[vertex_id] << endl;
 		}
 	}
 }
@@ -197,9 +204,10 @@ void Scene::cameraTransformation(int modelIndex, Matrix4 M_camera){
 void Scene::forwardRenderingPipeline(Camera *camera)
 {
 	// TODO: Implement this function.
+
 	if(!this->isTransformed){
 		cout << "-------------------------" << endl;
-    	cout << "Transforming the model";
+    	cout << "Transforming the model" << endl;
 		this->transformAllModels();
 		this->isTransformed = true;
 	}
