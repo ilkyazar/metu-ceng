@@ -47,7 +47,7 @@ class Server(object):
     def __init__(self, host, port):
         self.serverSocket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
         self.serverSocket.bind((host, port))
-        self.serverSocket.listen(1)
+        self.serverSocket.listen(5)
 
     def __del__(self):
         self.close()
