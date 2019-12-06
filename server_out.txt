@@ -1,3 +1,4 @@
+Loading chipmunk for Linux (64bit) [/home/ilkyaz/.local/lib/python3.6/site-packages/pymunk/libchipmunk.so]
 frame 0
 circle 200.0 175.0 25.0 0.0
 circle 250.0 175.0 25.0 0.0
