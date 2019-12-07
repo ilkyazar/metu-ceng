@@ -41,67 +41,65 @@ import threading
     7    In first phase, some methods were excluded for convenience, all given methods and functionalities should be implemented in this phase.
 
 '''
+class bcolors:
+    HEADER = '\033[95m'
+    OKBLUE = '\033[94m'
+    OKGREEN = '\033[92m'
+    WARNING = '\033[93m'
+    FAIL = '\033[91m'
+    ENDC = '\033[0m'
+    BOLD = '\033[1m'
+    UNDERLINE = '\033[4m'
 
-class Server(object):
-    clients = []
-    client_addresses = []
-
+class Server():
     def __init__(self, host, port):
+        self.host = host
+        self.port = port
         self.serverSocket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
-        self.serverSocket.bind((host, port))
-        self.serverSocket.listen()
 
-    def __del__(self):
-        self.close()
+        self.serverSocket.setsockopt(socket.SOL_SOCKET, socket.SO_REUSEADDR, 1)
 
-    def accept(self):
-        new_client, new_client_addr = self.serverSocket.accept()
+        self.serverSocket.bind((self.host, self.port))
 
-        self.clients.append(new_client)
-        self.client_addresses.append(new_client_addr)
+    def listen(self):
+        while True:
+            self.serverSocket.listen(1)
+            client, address = self.serverSocket.accept()
+            threading.Thread(target = self.listenToClient, args = (client, address)).start()
 
-        print("New client with address ", new_client_addr , " is accepted. ")
-        return self
-
-    def send(self, data):
-
-        if len(self.clients) == 0:
-            raise Exception('No client is connected')
-
+    def listenToClient(self, client, address):
+        userNameSet = False
         try:
-            # Encode JSON to a string --> json.dumps()
-            json_string = pickle.dumps(data)
+            message = pickle.loads(client.recv(1024))
 
-            for i in range(0, len(self.clients)):
-                self.clients[i].send(json_string)
-                print("Sent data to ", self.client_addresses[i])
+            if userNameSet == False:
+                userName = message
 
-        except (TypeError, ValueError) as e:
-            raise Exception('Pickle exception')
+                if userName:
+                    print(bcolors.OKBLUE + 'User name set as: ' + bcolors.ENDC + userName)
+                    userNameSet = True
+                    client.send('Your user name is set as: ' + userName)
+                    #print(bcolors.OKGREEN + 'Sent: ' + bcolors.ENDC + data)
 
-        return self
+            while True:
+                try:
+                    message = pickle.loads(client.recv(1024))
+                    print('Got a message: ' + message)
+                except:
+                    client.close()
+                    return False
 
-    def recv(self):
-        if len(self.clients) == 0:
-            raise Exception('Cannot receive data, no client is connected')
-        
-        print("Receiving ")
+        except:
+            client.close()
+            return False
 
+if __name__ == "__main__":
+    while True:
+        try:
+            host = 'localhost'
+            port = 8000
+            break
+        except ValueError:
+            pass
 
-        for i in range(0, len(self.clients)):
-            reply = self.clients[i].recv(1024)
-            data = pickle.loads(reply)
-            print("Received: ", data, " from ", self.clients[i])
-            
-        return data
-
-    def close(self):
-        if len(self.clients) > 0:
-            for i in range(1, len(self.clients)):
-                self.clients[i].close()
-
-            self.clients = []
-
-        if self.serverSocket:
-            self.serverSocket.close()
-            self.serverSocket = None
+    Server(host, port).listen()

@@ -42,51 +42,66 @@ import threading
 
 '''
 
-import socket
+class Server(object):
+    clients = []
+    client_addresses = []
 
-class bcolors:
-    HEADER = '\033[95m'
-    OKBLUE = '\033[94m'
-    OKGREEN = '\033[92m'
-    WARNING = '\033[93m'
-    FAIL = '\033[91m'
-    ENDC = '\033[0m'
-    BOLD = '\033[1m'
-    UNDERLINE = '\033[4m'
+    def __init__(self, host, port):
+        self.serverSocket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+        self.serverSocket.bind((host, port))
+        self.serverSocket.listen()
 
-host = 'localhost'
-port = 8000
+    def __del__(self):
+        self.close()
 
-clientSocket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
-clientSocket.connect((host,port))
+    def accept(self):
+        new_client, new_client_addr = self.serverSocket.accept()
 
-userNameSet = False
+        self.clients.append(new_client)
+        self.client_addresses.append(new_client_addr)
+
+        print("New client with address ", new_client_addr , " is accepted. ")
+        return self
+
+    def send(self, data):
+
+        if len(self.clients) == 0:
+            raise Exception('No client is connected')
+
+        try:
+            # Encode JSON to a string --> json.dumps()
+            json_string = pickle.dumps(data)
+
+            for i in range(0, len(self.clients)):
+                self.clients[i].send(json_string)
+                print("Sent data to ", self.client_addresses[i])
+
+        except (TypeError, ValueError) as e:
+            raise Exception('Pickle exception')
+
+        return self
+
+    def recv(self):
+        if len(self.clients) == 0:
+            raise Exception('Cannot receive data, no client is connected')
+        
+        print("Receiving ")
 
 
-if (userNameSet == False):
-    userName = input('Set a user name: ')
+        for i in range(0, len(self.clients)):
+            reply = self.clients[i].recv(1024)
+            data = pickle.loads(reply)
+            print("Received: ", data, " from ", self.clients[i])
+            
+        return data
 
-    while (userName == 'admin'):
-        print(bcolors.FAIL + 'You cannot set your user name as admin.' + bcolors.ENDC)
-        userName = input('Set a user name: ')
+    def close(self):
+        if len(self.clients) > 0:
+            for i in range(1, len(self.clients)):
+                self.clients[i].close()
 
-userNameSet = True   
+            self.clients = []
 
-data = pickle.dumps(userName)
-
-clientSocket.send(data)
-
-
-usrNameSetMsg = clientSocket.recv(1024)
-print(usrNameSetMsg)
-
-while True:
-    message = input('Message: ')
-
-    data = pickle.dumps(message)
-    clientSocket.send(data)
-
-    #received = clientSocket.recv(1024)
-
-    #print("response: ", received)
-
+        if self.serverSocket:
+            self.serverSocket.close()
+            self.serverSocket = None
