@@ -1,17 +1,29 @@
 import json, socket, pickle
+import threading
 
-class Client(object):
+class Client(threading.Thread):
     clientSocket = None
+
+    def __init__(self, host, port):
+        threading.Thread.__init__(self)
+
+        self.clientSocket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+        
+        self.connect(host, port)
+
+        #print ("New connection added: ", clientAddress)
 
     def __del__(self):
         self.close()
 
     def connect(self, host, port):
-        self.clientSocket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+        #self.clientSocket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
         self.clientSocket.connect((host, port))
         return self
 
     def send(self, data):
+        print("Sending", data, " to client socket", self.clientSocket)
+
         if not self.clientSocket:
             raise Exception('Connect before sending')
 
@@ -22,12 +34,15 @@ class Client(object):
             raise Exception('Only send JSON-serializable data')
 
         self.clientSocket.send(json_string)
+        print("Sent", data)
 
         return self
 
     def recv(self):
         if not self.clientSocket:
             raise Exception('Connect before receiving')
+
+        print("Receving")
 
         reply = self.clientSocket.recv(1024)
         data = pickle.loads(reply)
@@ -38,4 +53,12 @@ class Client(object):
             self.clientSocket.close()
             self.clientSocket = None
 
+    def run(self):
+        print ("Running")
+        
+        while True:
+            data = self.recv()
+
+            print("Recevied: ", data)
+            self.send(input())
 

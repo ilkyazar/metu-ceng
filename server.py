@@ -61,6 +61,8 @@ class Server(object):
         return self
 
     def send(self, data):
+        print("Sending", data)
+
         if not self.client:
             raise Exception('No client is connected')
 
@@ -78,8 +80,11 @@ class Server(object):
         if not self.client:
             raise Exception('Cannot receive data, no client is connected')
         
+        print("Receiving from", self.client)
+
         reply = self.client.recv(1024)
         data = pickle.loads(reply)
+        print("Received: ", data)
         return data
 
     def close(self):
