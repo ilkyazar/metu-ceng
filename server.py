@@ -19,6 +19,7 @@ import pygame
 from pymunk.vec2d import Vec2d
 
 import json, socket, pickle
+import threading
 
 ''' TODO:
         create instances of class library
@@ -47,7 +48,7 @@ class Server(object):
     def __init__(self, host, port):
         self.serverSocket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
         self.serverSocket.bind((host, port))
-        self.serverSocket.listen(5)
+        self.serverSocket.listen()
 
     def __del__(self):
         self.close()
