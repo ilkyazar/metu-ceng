@@ -8,7 +8,7 @@ class Client(threading.Thread):
         threading.Thread.__init__(self)
 
         self.clientSocket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
-        
+
         self.connect(host, port)
 
         #print ("New connection added: ", clientAddress)
@@ -31,7 +31,7 @@ class Client(threading.Thread):
             # Encode JSON to a string --> json.dumps()
             json_string = pickle.dumps(data)
         except (TypeError, ValueError) as e:
-            raise Exception('Only send JSON-serializable data')
+            raise Exception('Pickle exception')
 
         self.clientSocket.send(json_string)
         print("Sent", data)
@@ -57,8 +57,13 @@ class Client(threading.Thread):
         print ("Running")
         
         while True:
-            data = self.recv()
+            board_data = self.recv()
 
-            print("Recevied: ", data)
+            print("Recevied: ", board_data)
+
+            username_requ = self.recv()
+
+            print("Receive: ", username_requ)
+            
             self.send(input())
 

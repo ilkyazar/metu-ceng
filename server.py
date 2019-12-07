@@ -43,7 +43,8 @@ import threading
 '''
 
 class Server(object):
-    client = None
+    clients = []
+    client_addresses = []
 
     def __init__(self, host, port):
         self.serverSocket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
@@ -54,43 +55,53 @@ class Server(object):
         self.close()
 
     def accept(self):
-        # if a client is already connected, disconnect it
-        if self.client:
-            self.client.close()
-        self.client, self.client_addr = self.serverSocket.accept()
+        new_client, new_client_addr = self.serverSocket.accept()
+
+        self.clients.append(new_client)
+        self.client_addresses.append(new_client_addr)
+
+        print("New client with address ", new_client_addr , " is accepted. ")
         return self
 
     def send(self, data):
-        print("Sending", data)
 
-        if not self.client:
+        if len(self.clients) == 0:
             raise Exception('No client is connected')
 
         try:
             # Encode JSON to a string --> json.dumps()
             json_string = pickle.dumps(data)
-            self.client.send(json_string)
+
+            for i in range(0, len(self.clients)):
+                self.clients[i].send(json_string)
+                print("Sent data to ", self.client_addresses[i])
 
         except (TypeError, ValueError) as e:
-            raise Exception('Only send JSON-serializable data')
+            raise Exception('Pickle exception')
 
         return self
 
     def recv(self):
-        if not self.client:
+        if len(self.clients) == 0:
             raise Exception('Cannot receive data, no client is connected')
         
-        print("Receiving from", self.client)
+        print("Receiving ")
 
-        reply = self.client.recv(1024)
-        data = pickle.loads(reply)
-        print("Received: ", data)
+
+        for i in range(0, len(self.clients)):
+            reply = self.clients[i].recv(1024)
+            data = pickle.loads(reply)
+            print("Received: ", data, " from ", self.clients[i])
+            
         return data
 
     def close(self):
-        if self.client:
-            self.client.close()
-            self.client = None
+        if len(self.clients) > 0:
+            for i in range(1, len(self.clients)):
+                self.clients[i].close()
+
+            self.clients = []
+
         if self.serverSocket:
             self.serverSocket.close()
             self.serverSocket = None

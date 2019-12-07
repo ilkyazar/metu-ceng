@@ -1,9 +1,8 @@
-import threading
-from client import Client
-import socket
 # A thread per connection stream service and clients
 import time
 import random
+import threading 
+import socket
 
 def echoservice(sock):
     ''' echo uppercase string back in a loop'''
@@ -22,11 +21,11 @@ def client(n, port):
     c = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
     c.connect(('127.0.0.1', port))
     for i in range(n):
-        time.sleep(random.random()*3)
+        #time.sleep(random.random()*3)
         c.send(random.choice(mess).encode())
         reply = c.recv(1024)
         print(c.getsockname(), reply)
-    c.close()
+    #c.close()
         
 def server(port):
     s = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
@@ -43,4 +42,9 @@ def server(port):
             # now main thread ready to accept next connection
     finally:
         s.close()
+        
+    
+
+server = threading.Thread(target=server, args=(20445,))
+server.start()
 
