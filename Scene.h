@@ -29,6 +29,7 @@ public:
 	int projectionType;
 
 	bool isTransformed = false;
+	vector< Vec3 > transformedVertices;
 
 	vector< vector<Color> > image;
 	vector< Camera* > cameras;
@@ -62,6 +63,13 @@ public:
 	void rotateVertex(int vertex_id, Rotation* r);
 	void scaleVertex(int vertex_id, Scaling* s);
 	void translateVertex(int vertex_id, Translation* tr);
+	void restoreVertices();
+	void saveVertices();
+	Matrix4 ortographicProjection(Camera *camera);
+	Matrix4 perspectiveProjection(Camera *camera);
+	void projectionTransformation(int ModelIndex, Camera *camera);
+	void viewportTransformation(int modelIndex, Matrix4 M_viewport );
+	Matrix4 calculateViewportMatrix(Camera* camera);
 };
 
 #endif

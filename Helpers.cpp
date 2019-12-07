@@ -227,15 +227,15 @@ Matrix4 scaleAroundPoint(Scaling* s, Vec3* point){
     Matrix4 matrix = getIdentityMatrix();
     Translation tr(-1, point->x, point->y, point->z);
     Translation trInverse(-1, -(point->x), -(point->y), -(point->z));
-    cout<< "----MATRIX----"<<endl;
-    cout<<matrix<<endl;
-    cout << "------" << endl;
+    //cout<< "----MATRIX----"<<endl;
+    //cout<<matrix<<endl;
+    //cout << "------" << endl;
     matrix = multiplyMatrixWithMatrix(getTranslationMatrix(&tr),getScalingMatrix(s));
-    cout<<matrix<<endl;
-    cout << "------" << endl;
+    //cout<<matrix<<endl;
+    //cout << "------" << endl;
     matrix = multiplyMatrixWithMatrix(matrix, getTranslationMatrix(&trInverse));
-    cout<<matrix<<endl;
-    cout << "------" << endl;
+    //cout<<matrix<<endl;
+    //cout << "------" << endl;
     return matrix;
 }
 

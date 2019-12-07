@@ -69,162 +69,34 @@ Vertex 8 : After Translation
 [4.414214, -4.000000, -6.000000]
 ------------------------------------------------------
 SCALING: Scaling 1 => [5.200, 5.200, 5.200]
-----MATRIX----
-|1.000000|0.000000|0.000000|0.000000|
-|0.000000|1.000000|0.000000|0.000000|
-|0.000000|0.000000|1.000000|0.000000|
-|0.000000|0.000000|0.000000|1.000000|
-------
-|5.200000|0.000000|0.000000|3.000000|
-|0.000000|5.200000|0.000000|-2.000000|
-|0.000000|0.000000|5.200000|-7.414214|
-|0.000000|0.000000|0.000000|1.000000|
-------
-|5.200000|0.000000|0.000000|-12.600000|
-|0.000000|5.200000|0.000000|8.400000|
-|0.000000|0.000000|5.200000|31.139697|
-|0.000000|0.000000|0.000000|1.000000|
-------
 Before Scaling:
 [3.000000, -2.000000, -7.414214]
 After Scaling: 
 [3.000000, -2.000000, -7.414214]
-----MATRIX----
-|1.000000|0.000000|0.000000|0.000000|
-|0.000000|1.000000|0.000000|0.000000|
-|0.000000|0.000000|1.000000|0.000000|
-|0.000000|0.000000|0.000000|1.000000|
-------
-|5.200000|0.000000|0.000000|1.585786|
-|0.000000|5.200000|0.000000|-2.000000|
-|0.000000|0.000000|5.200000|-6.000000|
-|0.000000|0.000000|0.000000|1.000000|
-------
-|5.200000|0.000000|0.000000|-6.660303|
-|0.000000|5.200000|0.000000|8.400000|
-|0.000000|0.000000|5.200000|25.200000|
-|0.000000|0.000000|0.000000|1.000000|
-------
 Before Scaling:
 [1.585786, -2.000000, -6.000000]
 After Scaling: 
 [1.585786, -2.000000, -6.000000]
-----MATRIX----
-|1.000000|0.000000|0.000000|0.000000|
-|0.000000|1.000000|0.000000|0.000000|
-|0.000000|0.000000|1.000000|0.000000|
-|0.000000|0.000000|0.000000|1.000000|
-------
-|5.200000|0.000000|0.000000|3.000000|
-|0.000000|5.200000|0.000000|-2.000000|
-|0.000000|0.000000|5.200000|-4.585786|
-|0.000000|0.000000|0.000000|1.000000|
-------
-|5.200000|0.000000|0.000000|-12.600000|
-|0.000000|5.200000|0.000000|8.400000|
-|0.000000|0.000000|5.200000|19.260303|
-|0.000000|0.000000|0.000000|1.000000|
-------
 Before Scaling:
 [3.000000, -2.000000, -4.585786]
 After Scaling: 
 [3.000000, -2.000000, -4.585786]
-----MATRIX----
-|1.000000|0.000000|0.000000|0.000000|
-|0.000000|1.000000|0.000000|0.000000|
-|0.000000|0.000000|1.000000|0.000000|
-|0.000000|0.000000|0.000000|1.000000|
-------
-|5.200000|0.000000|0.000000|4.414214|
-|0.000000|5.200000|0.000000|-2.000000|
-|0.000000|0.000000|5.200000|-6.000000|
-|0.000000|0.000000|0.000000|1.000000|
-------
-|5.200000|0.000000|0.000000|-18.539697|
-|0.000000|5.200000|0.000000|8.400000|
-|0.000000|0.000000|5.200000|25.200000|
-|0.000000|0.000000|0.000000|1.000000|
-------
 Before Scaling:
 [4.414214, -2.000000, -6.000000]
 After Scaling: 
 [4.414214, -2.000000, -6.000000]
-----MATRIX----
-|1.000000|0.000000|0.000000|0.000000|
-|0.000000|1.000000|0.000000|0.000000|
-|0.000000|0.000000|1.000000|0.000000|
-|0.000000|0.000000|0.000000|1.000000|
-------
-|5.200000|0.000000|0.000000|3.000000|
-|0.000000|5.200000|0.000000|-4.000000|
-|0.000000|0.000000|5.200000|-7.414214|
-|0.000000|0.000000|0.000000|1.000000|
-------
-|5.200000|0.000000|0.000000|-12.600000|
-|0.000000|5.200000|0.000000|16.800000|
-|0.000000|0.000000|5.200000|31.139697|
-|0.000000|0.000000|0.000000|1.000000|
-------
 Before Scaling:
 [3.000000, -4.000000, -7.414214]
 After Scaling: 
 [3.000000, -4.000000, -7.414214]
-----MATRIX----
-|1.000000|0.000000|0.000000|0.000000|
-|0.000000|1.000000|0.000000|0.000000|
-|0.000000|0.000000|1.000000|0.000000|
-|0.000000|0.000000|0.000000|1.000000|
-------
-|5.200000|0.000000|0.000000|1.585786|
-|0.000000|5.200000|0.000000|-4.000000|
-|0.000000|0.000000|5.200000|-6.000000|
-|0.000000|0.000000|0.000000|1.000000|
-------
-|5.200000|0.000000|0.000000|-6.660303|
-|0.000000|5.200000|0.000000|16.800000|
-|0.000000|0.000000|5.200000|25.200000|
-|0.000000|0.000000|0.000000|1.000000|
-------
 Before Scaling:
 [1.585786, -4.000000, -6.000000]
 After Scaling: 
 [1.585786, -4.000000, -6.000000]
-----MATRIX----
-|1.000000|0.000000|0.000000|0.000000|
-|0.000000|1.000000|0.000000|0.000000|
-|0.000000|0.000000|1.000000|0.000000|
-|0.000000|0.000000|0.000000|1.000000|
-------
-|5.200000|0.000000|0.000000|3.000000|
-|0.000000|5.200000|0.000000|-4.000000|
-|0.000000|0.000000|5.200000|-4.585786|
-|0.000000|0.000000|0.000000|1.000000|
-------
-|5.200000|0.000000|0.000000|-12.600000|
-|0.000000|5.200000|0.000000|16.800000|
-|0.000000|0.000000|5.200000|19.260303|
-|0.000000|0.000000|0.000000|1.000000|
-------
 Before Scaling:
 [3.000000, -4.000000, -4.585786]
 After Scaling: 
 [3.000000, -4.000000, -4.585786]
-----MATRIX----
-|1.000000|0.000000|0.000000|0.000000|
-|0.000000|1.000000|0.000000|0.000000|
-|0.000000|0.000000|1.000000|0.000000|
-|0.000000|0.000000|0.000000|1.000000|
-------
-|5.200000|0.000000|0.000000|4.414214|
-|0.000000|5.200000|0.000000|-4.000000|
-|0.000000|0.000000|5.200000|-6.000000|
-|0.000000|0.000000|0.000000|1.000000|
-------
-|5.200000|0.000000|0.000000|-18.539697|
-|0.000000|5.200000|0.000000|16.800000|
-|0.000000|0.000000|5.200000|25.200000|
-|0.000000|0.000000|0.000000|1.000000|
-------
 Before Scaling:
 [4.414214, -4.000000, -6.000000]
 After Scaling: 
@@ -232,783 +104,747 @@ After Scaling:
 ------------------------------------------------------
 TRANSFORMING FOR CAMERA 1
 0 (modelIndex) | Generating camera coordinate system 
-0. triangle | Generating camera coordinate system 
+0 | Before camera transformation: [3.000000, -2.000000, -7.414214]
+0 | After camera transformation: [-34.138145, -29.770491, 29.627936]
+1 | Before camera transformation: [1.585786, -2.000000, -6.000000]
+1 | After camera transformation: [-33.028745, -28.605387, 30.816113]
+2 | Before camera transformation: [3.000000, -2.000000, -4.585786]
+2 | After camera transformation: [-31.364644, -29.382123, 30.023995]
+3 | Before camera transformation: [4.414214, -2.000000, -6.000000]
+3 | After camera transformation: [-32.474044, -30.547226, 28.835818]
+4 | Before camera transformation: [3.000000, -4.000000, -7.414214]
+4 | After camera transformation: [-34.138145, -31.198502, 31.028216]
+5 | Before camera transformation: [1.585786, -4.000000, -6.000000]
+5 | After camera transformation: [-33.028745, -30.033398, 32.216393]
 6 | Before camera transformation: [3.000000, -4.000000, -4.585786]
 6 | After camera transformation: [-31.364644, -30.810134, 31.424275]
 7 | Before camera transformation: [4.414214, -4.000000, -6.000000]
 7 | After camera transformation: [-32.474044, -31.975237, 30.236098]
-3 | Before camera transformation: [4.414214, -2.000000, -6.000000]
-3 | After camera transformation: [-32.474044, -30.547226, 28.835818]
-1. triangle | Generating camera coordinate system 
-6 | Before camera transformation: [-31.364644, -30.810134, 31.424275]
-6 | After camera transformation: [-2.793335, -21.415388, 79.297604]
-3 | Before camera transformation: [-32.474044, -30.547226, 28.835818]
-3 | After camera transformation: [-5.549097, -20.821437, 79.527811]
-2 | Before camera transformation: [3.000000, -2.000000, -4.585786]
-2 | After camera transformation: [-31.364644, -29.382123, 30.023995]
-2. triangle | Generating camera coordinate system 
-7 | Before camera transformation: [-32.474044, -31.975237, 30.236098]
-7 | After camera transformation: [-4.176009, -21.648774, 80.723697]
-4 | Before camera transformation: [3.000000, -4.000000, -7.414214]
-4 | After camera transformation: [-34.138145, -31.198502, 31.028216]
-0 | Before camera transformation: [3.000000, -2.000000, -7.414214]
-0 | After camera transformation: [-34.138145, -29.770491, 29.627936]
-3. triangle | Generating camera coordinate system 
-7 | Before camera transformation: [-4.176009, -21.648774, 80.723697]
-7 | After camera transformation: [50.880856, -26.771072, 60.750817]
-0 | Before camera transformation: [-34.138145, -29.770491, 29.627936]
-0 | After camera transformation: [-5.098718, -19.015600, 80.260010]
-3 | Before camera transformation: [-5.549097, -20.821437, 79.527811]
-3 | After camera transformation: [49.438909, -25.401870, 60.965461]
-4. triangle | Generating camera coordinate system 
-5 | Before camera transformation: [1.585786, -4.000000, -6.000000]
-5 | After camera transformation: [-33.028745, -30.033398, 32.216393]
-2 | Before camera transformation: [-31.364644, -29.382123, 30.023995]
-2 | After camera transformation: [-4.166422, -20.588051, 78.101718]
-1 | Before camera transformation: [1.585786, -2.000000, -6.000000]
-1 | After camera transformation: [-33.028745, -28.605387, 30.816113]
-5. triangle | Generating camera coordinate system 
-5 | Before camera transformation: [-33.028745, -30.033398, 32.216393]
-5 | After camera transformation: [-2.342956, -19.609552, 80.029803]
-6 | Before camera transformation: [-2.793335, -21.415388, 79.297604]
-6 | After camera transformation: [49.753621, -27.749515, 59.419656]
-2 | Before camera transformation: [-4.166422, -20.588051, 78.101718]
-2 | After camera transformation: [48.311674, -26.380313, 59.634300]
-6. triangle | Generating camera coordinate system 
-2 | Before camera transformation: [48.311674, -26.380313, 59.634300]
-2 | After camera transformation: [40.494682, -69.080270, 24.361722]
-3 | Before camera transformation: [49.438909, -25.401870, 60.965461]
-3 | After camera transformation: [42.021062, -68.972772, 23.073853]
-0 | Before camera transformation: [-5.098718, -19.015600, 80.260010]
-0 | After camera transformation: [50.245215, -24.321160, 59.488323]
-7. triangle | Generating camera coordinate system 
-2 | Before camera transformation: [40.494682, -69.080270, 24.361722]
-2 | After camera transformation: [4.374036, -99.044802, 54.791512]
-0 | Before camera transformation: [50.245215, -24.321160, 59.488323]
-0 | After camera transformation: [40.730739, -68.957527, 21.545837]
-1 | Before camera transformation: [-33.028745, -28.605387, 30.816113]
-1 | After camera transformation: [-3.716043, -18.782215, 78.833917]
-8. triangle | Generating camera coordinate system 
-5 | Before camera transformation: [-2.342956, -19.609552, 80.029803]
-5 | After camera transformation: [50.559928, -26.668806, 57.942517]
-1 | Before camera transformation: [-3.716043, -18.782215, 78.833917]
-1 | After camera transformation: [49.117980, -25.299603, 58.157162]
-4 | Before camera transformation: [-34.138145, -31.198502, 31.028216]
-4 | After camera transformation: [-3.725631, -19.842937, 81.455896]
-9. triangle | Generating camera coordinate system 
-1 | Before camera transformation: [49.117980, -25.299603, 58.157162]
-1 | After camera transformation: [39.204358, -69.065026, 22.833706]
-0 | Before camera transformation: [40.730739, -68.957527, 21.545837]
-0 | After camera transformation: [1.659127, -99.505873, 54.146000]
-4 | Before camera transformation: [-3.725631, -19.842937, 81.455896]
-4 | After camera transformation: [51.687162, -25.690362, 59.273679]
-10. triangle | Generating camera coordinate system 
-4 | Before camera transformation: [51.687162, -25.690362, 59.273679]
-4 | After camera transformation: [40.803052, -70.954578, 21.464849]
-7 | Before camera transformation: [50.880856, -26.771072, 60.750817]
-7 | After camera transformation: [42.093375, -70.969822, 22.992865]
-5 | Before camera transformation: [50.559928, -26.668806, 57.942517]
-5 | After camera transformation: [39.276672, -71.062076, 22.752718]
-11. triangle | Generating camera coordinate system 
-6 | Before camera transformation: [49.753621, -27.749515, 59.419656]
-6 | After camera transformation: [40.566995, -71.077321, 24.280734]
-5 | Before camera transformation: [39.276672, -71.062076, 22.752718]
-5 | After camera transformation: [2.557406, -99.844536, 56.806526]
-7 | Before camera transformation: [42.093375, -70.969822, 22.992865]
-7 | After camera transformation: [3.345290, -101.679482, 54.803476]
+0 | Before projection transformation: [-34.138145, -29.770491, 29.627936]
+0 | After projection transformation: [-34.138145, -29.770491, -1.063383]
+1 | Before projection transformation: [-33.028745, -28.605387, 30.816113]
+1 | After projection transformation: [-33.028745, -28.605387, -1.065764]
+2 | Before projection transformation: [-31.364644, -29.382123, 30.023995]
+2 | After projection transformation: [-31.364644, -29.382123, -1.064176]
+3 | Before projection transformation: [-32.474044, -30.547226, 28.835818]
+3 | After projection transformation: [-32.474044, -30.547226, -1.061795]
+4 | Before projection transformation: [-34.138145, -31.198502, 31.028216]
+4 | After projection transformation: [-34.138145, -31.198502, -1.066189]
+5 | Before projection transformation: [-33.028745, -30.033398, 32.216393]
+5 | After projection transformation: [-33.028745, -30.033398, -1.068570]
+6 | Before projection transformation: [-31.364644, -30.810134, 31.424275]
+6 | After projection transformation: [-31.364644, -30.810134, -1.066983]
+7 | Before projection transformation: [-32.474044, -31.975237, 30.236098]
+7 | After projection transformation: [-32.474044, -31.975237, -1.064601]
+Viewport matrix: 
+|350.000000|0.000000|0.000000|349.000000|
+|0.000000|350.000000|0.000000|349.000000|
+|0.000000|0.000000|0.000000|0.000000|
+|0.000000|0.000000|0.000000|1.000000|
+[-11599.350770, -10070.671717, 0.000000]
+Viewport matrix: 
+|350.000000|0.000000|0.000000|349.000000|
+|0.000000|350.000000|0.000000|349.000000|
+|0.000000|0.000000|0.000000|0.000000|
+|0.000000|0.000000|0.000000|1.000000|
+[-11211.060634, -9662.885507, 0.000000]
+Viewport matrix: 
+|350.000000|0.000000|0.000000|349.000000|
+|0.000000|350.000000|0.000000|349.000000|
+|0.000000|0.000000|0.000000|0.000000|
+|0.000000|0.000000|0.000000|1.000000|
+[-10628.625427, -9934.742980, 0.000000]
+Viewport matrix: 
+|350.000000|0.000000|0.000000|349.000000|
+|0.000000|350.000000|0.000000|349.000000|
+|0.000000|0.000000|0.000000|0.000000|
+|0.000000|0.000000|0.000000|1.000000|
+[-11016.915564, -10342.529189, 0.000000]
+Viewport matrix: 
+|350.000000|0.000000|0.000000|349.000000|
+|0.000000|350.000000|0.000000|349.000000|
+|0.000000|0.000000|0.000000|0.000000|
+|0.000000|0.000000|0.000000|1.000000|
+[-11599.350770, -10570.475600, 0.000000]
+Viewport matrix: 
+|350.000000|0.000000|0.000000|349.000000|
+|0.000000|350.000000|0.000000|349.000000|
+|0.000000|0.000000|0.000000|0.000000|
+|0.000000|0.000000|0.000000|1.000000|
+[-11211.060634, -10162.689390, 0.000000]
+Viewport matrix: 
+|350.000000|0.000000|0.000000|349.000000|
+|0.000000|350.000000|0.000000|349.000000|
+|0.000000|0.000000|0.000000|0.000000|
+|0.000000|0.000000|0.000000|1.000000|
+[-10628.625427, -10434.546863, 0.000000]
+Viewport matrix: 
+|350.000000|0.000000|0.000000|349.000000|
+|0.000000|350.000000|0.000000|349.000000|
+|0.000000|0.000000|0.000000|0.000000|
+|0.000000|0.000000|0.000000|1.000000|
+[-11016.915564, -10842.333073, 0.000000]
 ------------------------------------------------------
 TRANSFORMING FOR CAMERA 2
 0 (modelIndex) | Generating camera coordinate system 
-0. triangle | Generating camera coordinate system 
-6 | Before camera transformation: [40.566995, -71.077321, 24.280734]
-6 | After camera transformation: [5.289383, -97.727982, 25.733654]
-7 | Before camera transformation: [3.345290, -101.679482, 54.803476]
-7 | After camera transformation: [27.919617, -106.502345, 77.352143]
-3 | Before camera transformation: [42.021062, -68.972772, 23.073853]
-3 | After camera transformation: [4.391104, -96.570218, 23.314423]
-1. triangle | Generating camera coordinate system 
-6 | Before camera transformation: [5.289383, -97.727982, 25.733654]
-6 | After camera transformation: [-0.204421, -106.303315, 68.782004]
-3 | Before camera transformation: [4.391104, -96.570218, 23.314423]
-3 | After camera transformation: [-2.752839, -105.084872, 68.637214]
-2 | Before camera transformation: [4.374036, -99.044802, 54.791512]
-2 | After camera transformation: [28.109639, -104.581818, 75.284423]
-2. triangle | Generating camera coordinate system 
-7 | Before camera transformation: [27.919617, -106.502345, 77.352143]
-7 | After camera transformation: [54.849826, -119.494147, 61.809401]
-4 | Before camera transformation: [40.803052, -70.954578, 21.464849]
-4 | After camera transformation: [2.574474, -97.962784, 24.975933]
-0 | Before camera transformation: [1.659127, -99.505873, 54.146000]
-0 | After camera transformation: [26.944224, -103.879575, 77.764073]
-3. triangle | Generating camera coordinate system 
-7 | Before camera transformation: [54.849826, -119.494147, 61.809401]
-7 | After camera transformation: [44.890362, -144.126349, 41.081071]
-0 | Before camera transformation: [26.944224, -103.879575, 77.764073]
-0 | After camera transformation: [55.062467, -116.682577, 61.586113]
-3 | Before camera transformation: [-2.752839, -105.084872, 68.637214]
-3 | After camera transformation: [40.288771, -105.733242, 86.656371]
-4. triangle | Generating camera coordinate system 
-5 | Before camera transformation: [2.557406, -99.844536, 56.806526]
-5 | After camera transformation: [29.729252, -104.341725, 77.590764]
-2 | Before camera transformation: [28.109639, -104.581818, 75.284423]
-2 | After camera transformation: [52.859526, -118.030275, 60.432526]
-1 | Before camera transformation: [39.204358, -69.065026, 22.833706]
-1 | After camera transformation: [3.603220, -95.457880, 25.792717]
-5. triangle | Generating camera coordinate system 
-5 | Before camera transformation: [29.729252, -104.341725, 77.590764]
-5 | After camera transformation: [55.438712, -118.314730, 59.306964]
-6 | Before camera transformation: [-0.204421, -106.303315, 68.782004]
-6 | After camera transformation: [40.930535, -107.914858, 84.974500]
-2 | Before camera transformation: [52.859526, -118.030275, 60.432526]
-2 | After camera transformation: [43.149895, -142.071664, 41.946545]
-6. triangle | Generating camera coordinate system 
-2 | Before camera transformation: [43.149895, -142.071664, 41.946545]
-2 | After camera transformation: [23.118684, -161.062693, 57.823830]
-3 | Before camera transformation: [40.288771, -105.733242, 86.656371]
-3 | After camera transformation: [66.399163, -123.339770, 52.218772]
-0 | Before camera transformation: [55.062467, -116.682577, 61.586113]
-0 | After camera transformation: [44.713112, -141.712945, 39.616808]
-7. triangle | Generating camera coordinate system 
-2 | Before camera transformation: [23.118684, -161.062693, 57.823830]
-2 | After camera transformation: [34.759199, -168.096722, 86.616497]
-0 | Before camera transformation: [44.713112, -141.712945, 39.616808]
-0 | After camera transformation: [21.140761, -161.616547, 55.879333]
-1 | Before camera transformation: [3.603220, -95.457880, 25.792717]
-1 | After camera transformation: [-0.477188, -103.532043, 69.277631]
-8. triangle | Generating camera coordinate system 
-5 | Before camera transformation: [55.438712, -118.314730, 59.306964]
-5 | After camera transformation: [42.552011, -143.537622, 39.602723]
-1 | Before camera transformation: [-0.477188, -103.532043, 69.277631]
-1 | After camera transformation: [41.363044, -105.266030, 84.081949]
-4 | Before camera transformation: [2.574474, -97.962784, 24.975933]
-4 | After camera transformation: [-1.479865, -105.407596, 71.142286]
-9. triangle | Generating camera coordinate system 
-1 | Before camera transformation: [41.363044, -105.266030, 84.081949]
-1 | After camera transformation: [64.085416, -123.606268, 50.613919]
-0 | Before camera transformation: [21.140761, -161.616547, 55.879333]
-0 | After camera transformation: [32.464561, -167.908076, 88.259374]
-4 | Before camera transformation: [-1.479865, -105.407596, 71.142286]
-4 | After camera transformation: [42.994847, -106.356249, 86.118770]
-10. triangle | Generating camera coordinate system 
-4 | Before camera transformation: [42.994847, -106.356249, 86.118770]
-4 | After camera transformation: [66.402707, -125.113723, 50.015802]
-7 | Before camera transformation: [44.890362, -144.126349, 41.081071]
-7 | After camera transformation: [22.611351, -163.733609, 57.043557]
-5 | Before camera transformation: [42.552011, -143.537622, 39.602723]
-5 | After camera transformation: [20.703122, -162.323221, 58.582865]
-11. triangle | Generating camera coordinate system 
-6 | Before camera transformation: [40.930535, -107.914858, 84.974500]
-6 | After camera transformation: [64.875813, -125.720855, 52.317972]
-5 | Before camera transformation: [20.703122, -162.323221, 58.582865]
-5 | After camera transformation: [35.029764, -168.120260, 89.431855]
-7 | Before camera transformation: [22.611351, -163.733609, 57.043557]
-7 | After camera transformation: [33.894582, -170.343264, 88.101585]
+0 | Before camera transformation: [3.000000, -2.000000, -7.414214]
+0 | After camera transformation: [-33.157564, -22.223937, 22.818785]
+1 | Before camera transformation: [1.585786, -2.000000, -6.000000]
+1 | After camera transformation: [-32.048164, -21.491358, 24.312959]
+2 | Before camera transformation: [3.000000, -2.000000, -4.585786]
+2 | After camera transformation: [-30.384063, -21.979744, 23.316843]
+3 | Before camera transformation: [4.414214, -2.000000, -6.000000]
+3 | After camera transformation: [-31.493464, -22.712323, 21.822668]
+4 | Before camera transformation: [3.000000, -4.000000, -7.414214]
+4 | After camera transformation: [-33.157564, -24.019712, 23.699236]
+5 | Before camera transformation: [1.585786, -4.000000, -6.000000]
+5 | After camera transformation: [-32.048164, -23.287132, 25.193410]
+6 | Before camera transformation: [3.000000, -4.000000, -4.585786]
+6 | After camera transformation: [-30.384063, -23.775518, 24.197294]
+7 | Before camera transformation: [4.414214, -4.000000, -6.000000]
+7 | After camera transformation: [-31.493464, -24.508098, 22.703119]
+0 | Before projection transformation: [-33.157564, -22.223937, 22.818785]
+0 | After projection transformation: [-33.157564, -22.223937, -1.049737]
+1 | Before projection transformation: [-32.048164, -21.491358, 24.312959]
+1 | After projection transformation: [-32.048164, -21.491358, -1.052731]
+2 | Before projection transformation: [-30.384063, -21.979744, 23.316843]
+2 | After projection transformation: [-30.384063, -21.979744, -1.050735]
+3 | Before projection transformation: [-31.493464, -22.712323, 21.822668]
+3 | After projection transformation: [-31.493464, -22.712323, -1.047741]
+4 | Before projection transformation: [-33.157564, -24.019712, 23.699236]
+4 | After projection transformation: [-33.157564, -24.019712, -1.051501]
+5 | Before projection transformation: [-32.048164, -23.287132, 25.193410]
+5 | After projection transformation: [-32.048164, -23.287132, -1.054496]
+6 | Before projection transformation: [-30.384063, -23.775518, 24.197294]
+6 | After projection transformation: [-30.384063, -23.775518, -1.052500]
+7 | Before projection transformation: [-31.493464, -24.508098, 22.703119]
+7 | After projection transformation: [-31.493464, -24.508098, -1.049505]
+Viewport matrix: 
+|350.000000|0.000000|0.000000|349.000000|
+|0.000000|350.000000|0.000000|349.000000|
+|0.000000|0.000000|0.000000|0.000000|
+|0.000000|0.000000|0.000000|1.000000|
+[-11256.147534, -7429.377977, 0.000000]
+Viewport matrix: 
+|350.000000|0.000000|0.000000|349.000000|
+|0.000000|350.000000|0.000000|349.000000|
+|0.000000|0.000000|0.000000|0.000000|
+|0.000000|0.000000|0.000000|1.000000|
+[-10867.857397, -7172.975174, 0.000000]
+Viewport matrix: 
+|350.000000|0.000000|0.000000|349.000000|
+|0.000000|350.000000|0.000000|349.000000|
+|0.000000|0.000000|0.000000|0.000000|
+|0.000000|0.000000|0.000000|1.000000|
+[-10285.422191, -7343.910375, 0.000000]
+Viewport matrix: 
+|350.000000|0.000000|0.000000|349.000000|
+|0.000000|350.000000|0.000000|349.000000|
+|0.000000|0.000000|0.000000|0.000000|
+|0.000000|0.000000|0.000000|1.000000|
+[-10673.712328, -7600.313178, 0.000000]
+Viewport matrix: 
+|350.000000|0.000000|0.000000|349.000000|
+|0.000000|350.000000|0.000000|349.000000|
+|0.000000|0.000000|0.000000|0.000000|
+|0.000000|0.000000|0.000000|1.000000|
+[-11256.147534, -8057.899066, 0.000000]
+Viewport matrix: 
+|350.000000|0.000000|0.000000|349.000000|
+|0.000000|350.000000|0.000000|349.000000|
+|0.000000|0.000000|0.000000|0.000000|
+|0.000000|0.000000|0.000000|1.000000|
+[-10867.857397, -7801.496263, 0.000000]
+Viewport matrix: 
+|350.000000|0.000000|0.000000|349.000000|
+|0.000000|350.000000|0.000000|349.000000|
+|0.000000|0.000000|0.000000|0.000000|
+|0.000000|0.000000|0.000000|1.000000|
+[-10285.422191, -7972.431465, 0.000000]
+Viewport matrix: 
+|350.000000|0.000000|0.000000|349.000000|
+|0.000000|350.000000|0.000000|349.000000|
+|0.000000|0.000000|0.000000|0.000000|
+|0.000000|0.000000|0.000000|1.000000|
+[-10673.712328, -8228.834267, 0.000000]
 ------------------------------------------------------
 TRANSFORMING FOR CAMERA 3
 0 (modelIndex) | Generating camera coordinate system 
-0. triangle | Generating camera coordinate system 
-6 | Before camera transformation: [64.875813, -125.720855, 52.317972]
-6 | After camera transformation: [38.530089, -110.349349, -77.448114]
-7 | Before camera transformation: [33.894582, -170.343264, 88.101585]
-7 | After camera transformation: [67.542888, -163.712031, -54.164116]
-3 | Before camera transformation: [66.399163, -123.339770, 52.218772]
-3 | After camera transformation: [38.731568, -107.637997, -78.227845]
-1. triangle | Generating camera coordinate system 
-6 | Before camera transformation: [38.530089, -110.349349, -77.448114]
-6 | After camera transformation: [-93.882850, -95.711303, -72.740786]
-3 | Before camera transformation: [38.731568, -107.637997, -78.227845]
-3 | After camera transformation: [-94.607925, -93.011253, -72.311836]
-2 | Before camera transformation: [34.759199, -168.096722, 86.616497]
-2 | After camera transformation: [66.256205, -161.235343, -54.622879]
-2. triangle | Generating camera coordinate system 
-7 | Before camera transformation: [67.542888, -163.712031, -54.164116]
-7 | After camera transformation: [-65.361132, -140.164658, -110.712800]
-4 | Before camera transformation: [66.402707, -125.113723, 50.015802]
-4 | After camera transformation: [36.572074, -109.216932, -79.146293]
-0 | Before camera transformation: [32.464561, -167.908076, 88.259374]
-0 | After camera transformation: [67.417163, -161.780303, -52.101927]
-3. triangle | Generating camera coordinate system 
-7 | Before camera transformation: [-65.361132, -140.164658, -110.712800]
-7 | After camera transformation: [-146.876303, -151.223959, 10.318932]
-0 | Before camera transformation: [67.417163, -161.780303, -52.101927]
-0 | After camera transformation: [-63.363647, -138.460382, -109.661374]
-3 | Before camera transformation: [-94.607925, -93.011253, -72.311836]
-3 | After camera transformation: [-114.956827, -116.206321, 58.364375]
-4. triangle | Generating camera coordinate system 
-5 | Before camera transformation: [35.029764, -168.120260, 89.431855]
-5 | After camera transformation: [69.069953, -161.338872, -54.354354]
-2 | Before camera transformation: [66.256205, -161.235343, -54.622879]
-2 | After camera transformation: [-66.063326, -138.119326, -108.889742]
-1 | Before camera transformation: [64.085416, -123.606268, 50.613919]
-1 | After camera transformation: [36.704117, -108.445135, -76.428408]
-5. triangle | Generating camera coordinate system 
-5 | Before camera transformation: [69.069953, -161.338872, -54.354354]
-5 | After camera transformation: [-65.248195, -137.454843, -111.515390]
-6 | Before camera transformation: [-93.882850, -95.711303, -72.740786]
-6 | After camera transformation: [-115.235248, -118.572221, 56.839580]
-2 | Before camera transformation: [-66.063326, -138.119326, -108.889742]
-2 | After camera transformation: [-145.226359, -149.556991, 11.899724]
-6. triangle | Generating camera coordinate system 
-2 | Before camera transformation: [-145.226359, -149.556991, 11.899724]
-2 | After camera transformation: [-42.307691, -189.122325, 105.867980]
-3 | Before camera transformation: [-114.956827, -116.206321, 58.364375]
-3 | After camera transformation: [9.190992, -151.322356, 95.546955]
-0 | Before camera transformation: [-63.363647, -138.460382, -109.661374]
-0 | After camera transformation: [-145.453556, -149.094379, 9.118650]
-7. triangle | Generating camera coordinate system 
-2 | Before camera transformation: [-42.307691, -189.122325, 105.867980]
-2 | After camera transformation: [70.019777, -203.798956, 15.563840]
-0 | Before camera transformation: [-145.453556, -149.094379, 9.118650]
-0 | After camera transformation: [-45.079315, -188.587467, 105.689022]
-1 | Before camera transformation: [36.704117, -108.445135, -76.428408]
-1 | After camera transformation: [-93.241048, -94.446244, -70.293805]
-8. triangle | Generating camera coordinate system 
-5 | Before camera transformation: [-65.248195, -137.454843, -111.515390]
-5 | After camera transformation: [-147.641157, -148.548621, 10.826440]
-1 | Before camera transformation: [-93.241048, -94.446244, -70.293805]
-1 | After camera transformation: [-112.709918, -117.316409, 57.053229]
-4 | Before camera transformation: [36.572074, -109.216932, -79.146293]
-4 | After camera transformation: [-95.932049, -95.072782, -70.898756]
-9. triangle | Generating camera coordinate system 
-1 | Before camera transformation: [-112.709918, -117.316409, 57.053229]
-1 | After camera transformation: [8.345963, -151.692952, 92.873271]
-0 | Before camera transformation: [-45.079315, -188.587467, 105.689022]
-0 | After camera transformation: [69.300734, -204.042942, 18.288441]
-4 | Before camera transformation: [-95.932049, -95.072782, -70.898756]
-4 | After camera transformation: [-113.830871, -118.628693, 59.294072]
-10. triangle | Generating camera coordinate system 
-4 | Before camera transformation: [-113.830871, -118.628693, 59.294072]
-4 | After camera transformation: [10.323453, -153.386124, 93.979028]
-7 | Before camera transformation: [-146.876303, -151.223959, 10.318932]
-7 | After camera transformation: [-44.181365, -191.090639, 106.652254]
-5 | Before camera transformation: [-147.641157, -148.548621, 10.826440]
-5 | After camera transformation: [-43.833713, -188.763803, 108.222278]
-11. triangle | Generating camera coordinate system 
-6 | Before camera transformation: [-115.235248, -118.572221, 56.839580]
-6 | After camera transformation: [7.641204, -153.584740, 94.854294]
-5 | Before camera transformation: [-43.833713, -188.763803, 108.222278]
-5 | After camera transformation: [72.029078, -204.007616, 17.543529]
-7 | Before camera transformation: [-44.181365, -191.090639, 106.652254]
-7 | After camera transformation: [70.421363, -206.249179, 16.918511]
+0 | Before camera transformation: [3.000000, -2.000000, -7.414214]
+0 | After camera transformation: [-32.176984, -5.474893, 4.437528]
+1 | Before camera transformation: [1.585786, -2.000000, -6.000000]
+1 | After camera transformation: [-31.067583, -5.944529, 6.033985]
+2 | Before camera transformation: [3.000000, -2.000000, -4.585786]
+2 | After camera transformation: [-29.403483, -5.631438, 4.969680]
+3 | Before camera transformation: [4.414214, -2.000000, -6.000000]
+3 | After camera transformation: [-30.512883, -5.161802, 3.373224]
+4 | Before camera transformation: [3.000000, -4.000000, -7.414214]
+4 | After camera transformation: [-32.176984, -7.393594, 3.873096]
+5 | Before camera transformation: [1.585786, -4.000000, -6.000000]
+5 | After camera transformation: [-31.067583, -7.863230, 5.469552]
+6 | Before camera transformation: [3.000000, -4.000000, -4.585786]
+6 | After camera transformation: [-29.403483, -7.550140, 4.405248]
+7 | Before camera transformation: [4.414214, -4.000000, -6.000000]
+7 | After camera transformation: [-30.512883, -7.080503, 2.808792]
+0 | Before projection transformation: [-32.176984, -5.474893, 4.437528]
+0 | After projection transformation: [-32.176984, -5.474893, -1.012901]
+1 | Before projection transformation: [-31.067583, -5.944529, 6.033985]
+1 | After projection transformation: [-31.067583, -5.944529, -1.016100]
+2 | Before projection transformation: [-29.403483, -5.631438, 4.969680]
+2 | After projection transformation: [-29.403483, -5.631438, -1.013967]
+3 | Before projection transformation: [-30.512883, -5.161802, 3.373224]
+3 | After projection transformation: [-30.512883, -5.161802, -1.010768]
+4 | Before projection transformation: [-32.176984, -7.393594, 3.873096]
+4 | After projection transformation: [-32.176984, -7.393594, -1.011770]
+5 | Before projection transformation: [-31.067583, -7.863230, 5.469552]
+5 | After projection transformation: [-31.067583, -7.863230, -1.014969]
+6 | Before projection transformation: [-29.403483, -7.550140, 4.405248]
+6 | After projection transformation: [-29.403483, -7.550140, -1.012836]
+7 | Before projection transformation: [-30.512883, -7.080503, 2.808792]
+7 | After projection transformation: [-30.512883, -7.080503, -1.009637]
+Viewport matrix: 
+|350.000000|0.000000|0.000000|349.000000|
+|0.000000|350.000000|0.000000|349.000000|
+|0.000000|0.000000|0.000000|0.000000|
+|0.000000|0.000000|0.000000|1.000000|
+[-10912.944297, -1567.212401, 0.000000]
+Viewport matrix: 
+|350.000000|0.000000|0.000000|349.000000|
+|0.000000|350.000000|0.000000|349.000000|
+|0.000000|0.000000|0.000000|0.000000|
+|0.000000|0.000000|0.000000|1.000000|
+[-10524.654161, -1731.585087, 0.000000]
+Viewport matrix: 
+|350.000000|0.000000|0.000000|349.000000|
+|0.000000|350.000000|0.000000|349.000000|
+|0.000000|0.000000|0.000000|0.000000|
+|0.000000|0.000000|0.000000|1.000000|
+[-9942.218954, -1622.003297, 0.000000]
+Viewport matrix: 
+|350.000000|0.000000|0.000000|349.000000|
+|0.000000|350.000000|0.000000|349.000000|
+|0.000000|0.000000|0.000000|0.000000|
+|0.000000|0.000000|0.000000|1.000000|
+[-10330.509091, -1457.630611, 0.000000]
+Viewport matrix: 
+|350.000000|0.000000|0.000000|349.000000|
+|0.000000|350.000000|0.000000|349.000000|
+|0.000000|0.000000|0.000000|0.000000|
+|0.000000|0.000000|0.000000|1.000000|
+[-10912.944297, -2238.757970, 0.000000]
+Viewport matrix: 
+|350.000000|0.000000|0.000000|349.000000|
+|0.000000|350.000000|0.000000|349.000000|
+|0.000000|0.000000|0.000000|0.000000|
+|0.000000|0.000000|0.000000|1.000000|
+[-10524.654161, -2403.130656, 0.000000]
+Viewport matrix: 
+|350.000000|0.000000|0.000000|349.000000|
+|0.000000|350.000000|0.000000|349.000000|
+|0.000000|0.000000|0.000000|0.000000|
+|0.000000|0.000000|0.000000|1.000000|
+[-9942.218954, -2293.548866, 0.000000]
+Viewport matrix: 
+|350.000000|0.000000|0.000000|349.000000|
+|0.000000|350.000000|0.000000|349.000000|
+|0.000000|0.000000|0.000000|0.000000|
+|0.000000|0.000000|0.000000|1.000000|
+[-10330.509091, -2129.176180, 0.000000]
 ------------------------------------------------------
 TRANSFORMING FOR CAMERA 4
 0 (modelIndex) | Generating camera coordinate system 
-0. triangle | Generating camera coordinate system 
-6 | Before camera transformation: [7.641204, -153.584740, 94.854294]
-6 | After camera transformation: [34.920501, -173.574827, 2.007419]
-7 | Before camera transformation: [70.421363, -206.249179, 16.918511]
-7 | After camera transformation: [81.197047, -173.969249, -101.177869]
-3 | Before camera transformation: [9.190992, -151.322356, 95.546955]
-3 | After camera transformation: [36.576035, -171.815195, 3.478099]
-1. triangle | Generating camera coordinate system 
-6 | Before camera transformation: [34.920501, -173.574827, 2.007419]
-6 | After camera transformation: [43.461282, -141.923557, -91.210381]
-3 | Before camera transformation: [36.576035, -171.815195, 3.478099]
-3 | After camera transformation: [45.373090, -140.973592, -89.354968]
-2 | Before camera transformation: [70.019777, -203.798956, 15.563840]
-2 | After camera transformation: [80.537586, -171.223756, -101.012404]
-2. triangle | Generating camera coordinate system 
-7 | Before camera transformation: [81.197047, -173.969249, -101.177869]
-7 | After camera transformation: [68.602869, -86.352963, -186.440038]
-4 | Before camera transformation: [10.323453, -153.386124, 93.979028]
-4 | After camera transformation: [37.379009, -172.701673, 0.915017]
-0 | Before camera transformation: [69.300734, -204.042942, 18.288441]
-0 | After camera transformation: [80.366845, -172.860347, -98.711880]
-3. triangle | Generating camera coordinate system 
-7 | Before camera transformation: [68.602869, -86.352963, -186.440038]
-7 | After camera transformation: [39.531974, 30.306500, -211.941352]
-0 | Before camera transformation: [80.366845, -172.860347, -98.711880]
-0 | After camera transformation: [68.272409, -86.705974, -183.653251]
-3 | Before camera transformation: [45.373090, -140.973592, -89.354968]
-3 | After camera transformation: [35.793251, -67.355821, -153.660657]
-4. triangle | Generating camera coordinate system 
-5 | Before camera transformation: [72.029078, -204.007616, 17.543529]
-5 | After camera transformation: [82.896117, -172.188166, -99.784706]
-2 | Before camera transformation: [80.537586, -171.223756, -101.012404]
-2 | After camera transformation: [67.988664, -84.134505, -184.796506]
-1 | Before camera transformation: [8.345963, -151.692952, 92.873271]
-1 | After camera transformation: [35.223063, -170.889169, 1.173334]
-5. triangle | Generating camera coordinate system 
-5 | Before camera transformation: [82.896117, -172.188166, -99.784706]
-5 | After camera transformation: [70.542166, -85.341635, -184.646621]
-6 | Before camera transformation: [43.461282, -141.923557, -91.210381]
-6 | After camera transformation: [33.554692, -67.442121, -155.387332]
-2 | Before camera transformation: [67.988664, -84.134505, -184.796506]
-2 | After camera transformation: [39.252020, 31.340251, -209.323531]
-6. triangle | Generating camera coordinate system 
-2 | Before camera transformation: [39.252020, 31.340251, -209.323531]
-2 | After camera transformation: [6.263276, 140.205086, -166.638882]
-3 | Before camera transformation: [35.793251, -67.355821, -153.660657]
-3 | After camera transformation: [13.788062, 27.117704, -169.058572]
-0 | Before camera transformation: [68.272409, -86.705974, -183.653251]
-0 | After camera transformation: [39.754466, 28.583663, -209.709239]
-7. triangle | Generating camera coordinate system 
-2 | Before camera transformation: [6.263276, 140.205086, -166.638882]
-2 | After camera transformation: [-17.713700, 209.529341, -69.783107]
-0 | Before camera transformation: [39.754466, 28.583663, -209.709239]
-0 | After camera transformation: [6.680321, 138.070965, -168.447639]
-1 | Before camera transformation: [35.223063, -170.889169, 1.173334]
-1 | After camera transformation: [43.594390, -139.163977, -90.604576]
-8. triangle | Generating camera coordinate system 
-5 | Before camera transformation: [70.542166, -85.341635, -184.646621]
-5 | After camera transformation: [41.785329, 30.479249, -210.240602]
-1 | Before camera transformation: [43.594390, -139.163977, -90.604576]
-1 | After camera transformation: [33.804024, -65.351658, -153.498471]
-4 | Before camera transformation: [37.379009, -172.701673, 0.915017]
-4 | After camera transformation: [45.657809, -140.383305, -92.106422]
-9. triangle | Generating camera coordinate system 
-1 | Before camera transformation: [33.804024, -65.351658, -153.498471]
-1 | After camera transformation: [11.869272, 28.566603, -167.568962]
-0 | Before camera transformation: [6.680321, 138.070965, -168.447639]
-0 | After camera transformation: [-17.659480, 208.630830, -72.464476]
-4 | Before camera transformation: [45.657809, -140.383305, -92.106422]
-4 | After camera transformation: [35.532836, -65.450596, -155.734856]
-10. triangle | Generating camera coordinate system 
-4 | Before camera transformation: [35.532836, -65.450596, -155.734856]
-4 | After camera transformation: [13.125921, 29.765290, -169.801446]
-7 | Before camera transformation: [39.531974, 30.306500, -211.941352]
-7 | After camera transformation: [6.024397, 140.643645, -169.422873]
-5 | Before camera transformation: [41.785329, 30.479249, -210.240602]
-5 | After camera transformation: [8.567538, 140.170940, -168.278764]
-11. triangle | Generating camera coordinate system 
-6 | Before camera transformation: [33.554692, -67.442121, -155.387332]
-6 | After camera transformation: [11.254345, 27.679282, -170.183255]
-5 | Before camera transformation: [8.567538, 140.170940, -168.278764]
-5 | After camera transformation: [-15.775793, 210.544490, -71.575867]
-7 | Before camera transformation: [6.024397, 140.643645, -169.422873]
-7 | After camera transformation: [-18.493926, 211.267900, -71.873241]
+0 | Before camera transformation: [3.000000, -2.000000, -7.414214]
+0 | After camera transformation: [10.312921, 7.465745, -6.773247]
+1 | Before camera transformation: [1.585786, -2.000000, -6.000000]
+1 | After camera transformation: [9.203521, 6.621892, -5.338972]
+2 | Before camera transformation: [3.000000, -2.000000, -4.585786]
+2 | After camera transformation: [10.867621, 6.059323, -4.382789]
+3 | Before camera transformation: [4.414214, -2.000000, -6.000000]
+3 | After camera transformation: [11.977022, 6.903176, -5.817064]
+4 | Before camera transformation: [3.000000, -4.000000, -7.414214]
+4 | After camera transformation: [10.312921, 5.741962, -7.787432]
+5 | Before camera transformation: [1.585786, -4.000000, -6.000000]
+5 | After camera transformation: [9.203521, 4.898109, -6.353157]
+6 | Before camera transformation: [3.000000, -4.000000, -4.585786]
+6 | After camera transformation: [10.867621, 4.335540, -5.396975]
+7 | Before camera transformation: [4.414214, -4.000000, -6.000000]
+7 | After camera transformation: [11.977022, 5.179393, -6.831249]
+0 | Before projection transformation: [10.312921, 7.465745, -6.773247]
+0 | After projection transformation: [10.312921, 7.465745, -0.990434]
+1 | Before projection transformation: [9.203521, 6.621892, -5.338972]
+1 | After projection transformation: [9.203521, 6.621892, -0.993309]
+2 | Before projection transformation: [10.867621, 6.059323, -4.382789]
+2 | After projection transformation: [10.867621, 6.059323, -0.995225]
+3 | Before projection transformation: [11.977022, 6.903176, -5.817064]
+3 | After projection transformation: [11.977022, 6.903176, -0.992351]
+4 | Before projection transformation: [10.312921, 5.741962, -7.787432]
+4 | After projection transformation: [10.312921, 5.741962, -0.988402]
+5 | Before projection transformation: [9.203521, 4.898109, -6.353157]
+5 | After projection transformation: [9.203521, 4.898109, -0.991276]
+6 | Before projection transformation: [10.867621, 4.335540, -5.396975]
+6 | After projection transformation: [10.867621, 4.335540, -0.993192]
+7 | Before projection transformation: [11.977022, 5.179393, -6.831249]
+7 | After projection transformation: [11.977022, 5.179393, -0.990318]
+Viewport matrix: 
+|350.000000|0.000000|0.000000|349.000000|
+|0.000000|350.000000|0.000000|349.000000|
+|0.000000|0.000000|0.000000|0.000000|
+|0.000000|0.000000|0.000000|1.000000|
+[3958.522420, 2962.010749, 0.000000]
+Viewport matrix: 
+|350.000000|0.000000|0.000000|349.000000|
+|0.000000|350.000000|0.000000|349.000000|
+|0.000000|0.000000|0.000000|0.000000|
+|0.000000|0.000000|0.000000|1.000000|
+[3570.232282, 2666.662194, 0.000000]
+Viewport matrix: 
+|350.000000|0.000000|0.000000|349.000000|
+|0.000000|350.000000|0.000000|349.000000|
+|0.000000|0.000000|0.000000|0.000000|
+|0.000000|0.000000|0.000000|1.000000|
+[4152.667488, 2469.763156, 0.000000]
+Viewport matrix: 
+|350.000000|0.000000|0.000000|349.000000|
+|0.000000|350.000000|0.000000|349.000000|
+|0.000000|0.000000|0.000000|0.000000|
+|0.000000|0.000000|0.000000|1.000000|
+[4540.957626, 2765.111712, 0.000000]
+Viewport matrix: 
+|350.000000|0.000000|0.000000|349.000000|
+|0.000000|350.000000|0.000000|349.000000|
+|0.000000|0.000000|0.000000|0.000000|
+|0.000000|0.000000|0.000000|1.000000|
+[3958.522420, 2358.686624, 0.000000]
+Viewport matrix: 
+|350.000000|0.000000|0.000000|349.000000|
+|0.000000|350.000000|0.000000|349.000000|
+|0.000000|0.000000|0.000000|0.000000|
+|0.000000|0.000000|0.000000|1.000000|
+[3570.232282, 2063.338068, 0.000000]
+Viewport matrix: 
+|350.000000|0.000000|0.000000|349.000000|
+|0.000000|350.000000|0.000000|349.000000|
+|0.000000|0.000000|0.000000|0.000000|
+|0.000000|0.000000|0.000000|1.000000|
+[4152.667488, 1866.439031, 0.000000]
+Viewport matrix: 
+|350.000000|0.000000|0.000000|349.000000|
+|0.000000|350.000000|0.000000|349.000000|
+|0.000000|0.000000|0.000000|0.000000|
+|0.000000|0.000000|0.000000|1.000000|
+[4540.957626, 2161.787586, 0.000000]
 ------------------------------------------------------
 TRANSFORMING FOR CAMERA 5
 0 (modelIndex) | Generating camera coordinate system 
-0. triangle | Generating camera coordinate system 
-6 | Before camera transformation: [11.254345, 27.679282, -170.183255]
-6 | After camera transformation: [180.876010, 46.917162, -30.688842]
-7 | Before camera transformation: [-18.493926, 211.267900, -71.873241]
-7 | After camera transformation: [81.270509, 198.696388, 75.595730]
-3 | Before camera transformation: [13.788062, 27.117704, -169.058572]
-3 | After camera transformation: [181.215188, 45.159098, -28.499283]
-1. triangle | Generating camera coordinate system 
-6 | Before camera transformation: [180.876010, 46.917162, -30.688842]
-6 | After camera transformation: [148.530163, -35.352893, 171.265808]
-3 | Before camera transformation: [181.215188, 45.159098, -28.499283]
-3 | After camera transformation: [146.827138, -37.564622, 171.721837]
-2 | Before camera transformation: [-17.713700, 209.529341, -69.783107]
-2 | After camera transformation: [79.879657, 196.352383, 76.351490]
-2. triangle | Generating camera coordinate system 
-7 | Before camera transformation: [81.270509, 198.696388, 75.595730]
-7 | After camera transformation: [6.145288, 113.668941, 213.380406]
-4 | Before camera transformation: [13.125921, 29.765290, -169.801446]
-4 | After camera transformation: [181.511529, 47.947977, -28.132764]
-0 | Before camera transformation: [-17.659480, 208.630830, -72.464476]
-0 | After camera transformation: [82.206808, 196.163285, 74.755053]
-3. triangle | Generating camera coordinate system 
-7 | Before camera transformation: [6.145288, 113.668941, 213.380406]
-7 | After camera transformation: [-150.655705, 35.101402, 180.234169]
-0 | Before camera transformation: [82.206808, 196.163285, 74.755053]
-0 | After camera transformation: [7.347884, 111.247046, 212.550838]
-3 | Before camera transformation: [146.827138, -37.564622, 171.721837]
-3 | After camera transformation: [-42.553561, -144.761089, 199.255751]
-4. triangle | Generating camera coordinate system 
-5 | Before camera transformation: [-15.775793, 210.544490, -71.575867]
-5 | After camera transformation: [82.413981, 196.916806, 77.473377]
-2 | Before camera transformation: [79.879657, 196.352383, 76.351490]
-2 | After camera transformation: [4.781641, 111.952364, 211.593277]
-1 | Before camera transformation: [11.869272, 28.566603, -167.568962]
-1 | After camera transformation: [178.950649, 46.849592, -28.617991]
-5. triangle | Generating camera coordinate system 
-5 | Before camera transformation: [82.413981, 196.916806, 77.473377]
-5 | After camera transformation: [5.123530, 111.195973, 214.297160]
-6 | Before camera transformation: [148.530163, -35.352893, 171.265808]
-6 | After camera transformation: [-41.286321, -143.355150, 201.357520]
-2 | Before camera transformation: [4.781641, 111.952364, 211.593277]
-2 | After camera transformation: [-149.824844, 34.530613, 177.591467]
-6. triangle | Generating camera coordinate system 
-2 | Before camera transformation: [-149.824844, 34.530613, 177.591467]
-2 | After camera transformation: [-200.212914, 34.341630, 8.729326]
-3 | Before camera transformation: [-42.553561, -144.761089, 199.255751]
-3 | After camera transformation: [-163.599264, -172.268456, 18.409044]
-0 | Before camera transformation: [7.347884, 111.247046, 212.550838]
-0 | After camera transformation: [-149.325625, 32.671310, 179.663609]
-7. triangle | Generating camera coordinate system 
-2 | Before camera transformation: [-200.212914, 34.341630, 8.729326]
-2 | After camera transformation: [-81.339270, 93.687494, -107.031381]
-0 | Before camera transformation: [-149.325625, 32.671310, 179.663609]
-0 | After camera transformation: [-201.732915, 32.004732, 9.207350]
-1 | Before camera transformation: [178.950649, 46.849592, -28.617991]
-1 | After camera transformation: [145.763834, -35.145095, 170.714227]
-8. triangle | Generating camera coordinate system 
-5 | Before camera transformation: [5.123530, 111.195973, 214.297160]
-5 | After camera transformation: [-151.967505, 33.087459, 178.743124]
-1 | Before camera transformation: [145.763834, -35.145095, 170.714227]
-1 | After camera transformation: [-42.236608, -141.955314, 199.090935]
-4 | Before camera transformation: [181.511529, 47.947977, -28.132764]
-4 | After camera transformation: [146.665316, -35.287243, 173.391375]
-9. triangle | Generating camera coordinate system 
-1 | Before camera transformation: [-42.236608, -141.955314, 199.090935]
-1 | After camera transformation: [-163.294864, -169.859073, 19.858946]
-0 | Before camera transformation: [-201.732915, 32.004732, 9.207350]
-0 | After camera transformation: [-82.531206, 92.093275, -109.040797]
-4 | Before camera transformation: [146.665316, -35.287243, 173.391375]
-4 | After camera transformation: [-44.068435, -143.065510, 200.938060]
-10. triangle | Generating camera coordinate system 
-4 | Before camera transformation: [-44.068435, -143.065510, 200.938060]
-4 | After camera transformation: [-165.821229, -170.562424, 18.799334]
-7 | Before camera transformation: [-150.655705, 35.101402, 180.234169]
-7 | After camera transformation: [-202.906486, 34.553091, 9.565959]
-5 | Before camera transformation: [-151.967505, 33.087459, 178.743124]
-5 | After camera transformation: [-202.302841, 33.627848, 6.962204]
-11. triangle | Generating camera coordinate system 
-6 | Before camera transformation: [-41.286321, -143.355150, 201.357520]
-6 | After camera transformation: [-164.749527, -172.010129, 20.980068]
-5 | Before camera transformation: [-202.302841, 33.627848, 6.962204]
-5 | After camera transformation: [-80.899235, 94.288612, -109.759938]
-7 | Before camera transformation: [-202.906486, 34.553091, 9.565959]
-7 | After camera transformation: [-83.442509, 94.735287, -108.605712]
+0 | Before camera transformation: [3.000000, -2.000000, -7.414214]
+0 | After camera transformation: [37.055882, -14.548344, 23.905273]
+1 | Before camera transformation: [1.585786, -2.000000, -6.000000]
+1 | After camera transformation: [35.115597, -14.326426, 23.473942]
+2 | Before camera transformation: [3.000000, -2.000000, -4.585786]
+2 | After camera transformation: [34.630526, -15.214098, 25.199266]
+3 | Before camera transformation: [4.414214, -2.000000, -6.000000]
+3 | After camera transformation: [36.570811, -15.436017, 25.630598]
+4 | Before camera transformation: [3.000000, -4.000000, -7.414214]
+4 | After camera transformation: [37.055882, -16.326768, 22.990282]
+5 | Before camera transformation: [1.585786, -4.000000, -6.000000]
+5 | After camera transformation: [35.115597, -16.104850, 22.558951]
+6 | Before camera transformation: [3.000000, -4.000000, -4.585786]
+6 | After camera transformation: [34.630526, -16.992522, 24.284275]
+7 | Before camera transformation: [4.414214, -4.000000, -6.000000]
+7 | After camera transformation: [36.570811, -17.214440, 24.715606]
+0 | Before projection transformation: [37.055882, -14.548344, 23.905273]
+0 | After projection transformation: [37.055882, -14.548344, -1.051914]
+1 | Before projection transformation: [35.115597, -14.326426, 23.473942]
+1 | After projection transformation: [35.115597, -14.326426, -1.051050]
+2 | Before projection transformation: [34.630526, -15.214098, 25.199266]
+2 | After projection transformation: [34.630526, -15.214098, -1.054508]
+3 | Before projection transformation: [36.570811, -15.436017, 25.630598]
+3 | After projection transformation: [36.570811, -15.436017, -1.055372]
+4 | Before projection transformation: [37.055882, -16.326768, 22.990282]
+4 | After projection transformation: [37.055882, -16.326768, -1.050081]
+5 | Before projection transformation: [35.115597, -16.104850, 22.558951]
+5 | After projection transformation: [35.115597, -16.104850, -1.049216]
+6 | Before projection transformation: [34.630526, -16.992522, 24.284275]
+6 | After projection transformation: [34.630526, -16.992522, -1.052674]
+7 | Before projection transformation: [36.570811, -17.214440, 24.715606]
+7 | After projection transformation: [36.570811, -17.214440, -1.053538]
+Viewport matrix: 
+|350.000000|0.000000|0.000000|349.000000|
+|0.000000|350.000000|0.000000|349.000000|
+|0.000000|0.000000|0.000000|0.000000|
+|0.000000|0.000000|0.000000|1.000000|
+[13318.558847, -4742.920556, 0.000000]
+Viewport matrix: 
+|350.000000|0.000000|0.000000|349.000000|
+|0.000000|350.000000|0.000000|349.000000|
+|0.000000|0.000000|0.000000|0.000000|
+|0.000000|0.000000|0.000000|1.000000|
+[12639.459097, -4665.249249, 0.000000]
+Viewport matrix: 
+|350.000000|0.000000|0.000000|349.000000|
+|0.000000|350.000000|0.000000|349.000000|
+|0.000000|0.000000|0.000000|0.000000|
+|0.000000|0.000000|0.000000|1.000000|
+[12469.684159, -4975.934472, 0.000000]
+Viewport matrix: 
+|350.000000|0.000000|0.000000|349.000000|
+|0.000000|350.000000|0.000000|349.000000|
+|0.000000|0.000000|0.000000|0.000000|
+|0.000000|0.000000|0.000000|1.000000|
+[13148.783909, -5053.605778, 0.000000]
+Viewport matrix: 
+|350.000000|0.000000|0.000000|349.000000|
+|0.000000|350.000000|0.000000|349.000000|
+|0.000000|0.000000|0.000000|0.000000|
+|0.000000|0.000000|0.000000|1.000000|
+[13318.558847, -5365.368835, 0.000000]
+Viewport matrix: 
+|350.000000|0.000000|0.000000|349.000000|
+|0.000000|350.000000|0.000000|349.000000|
+|0.000000|0.000000|0.000000|0.000000|
+|0.000000|0.000000|0.000000|1.000000|
+[12639.459097, -5287.697529, 0.000000]
+Viewport matrix: 
+|350.000000|0.000000|0.000000|349.000000|
+|0.000000|350.000000|0.000000|349.000000|
+|0.000000|0.000000|0.000000|0.000000|
+|0.000000|0.000000|0.000000|1.000000|
+[12469.684159, -5598.382752, 0.000000]
+Viewport matrix: 
+|350.000000|0.000000|0.000000|349.000000|
+|0.000000|350.000000|0.000000|349.000000|
+|0.000000|0.000000|0.000000|0.000000|
+|0.000000|0.000000|0.000000|1.000000|
+[13148.783909, -5676.054058, 0.000000]
 ------------------------------------------------------
 TRANSFORMING FOR CAMERA 6
 0 (modelIndex) | Generating camera coordinate system 
-0. triangle | Generating camera coordinate system 
-6 | Before camera transformation: [-164.749527, -172.010129, 20.980068]
-6 | After camera transformation: [-21.504108, -136.564031, -162.986054]
-7 | Before camera transformation: [-83.442509, 94.735287, -108.605712]
-7 | After camera transformation: [121.510822, 104.010042, -35.599761]
-3 | Before camera transformation: [-163.599264, -172.268456, 18.409044]
-3 | After camera transformation: [-18.757427, -136.987877, -162.460605]
-1. triangle | Generating camera coordinate system 
-6 | Before camera transformation: [-21.504108, -136.564031, -162.986054]
-6 | After camera transformation: [186.982254, -132.017923, -52.840788]
-3 | Before camera transformation: [-18.757427, -136.987877, -162.460605]
-3 | After camera transformation: [187.005677, -133.213727, -50.277684]
-2 | Before camera transformation: [-81.339270, 93.687494, -107.031381]
-2 | After camera transformation: [120.379542, 102.335665, -33.620704]
-2. triangle | Generating camera coordinate system 
-7 | Before camera transformation: [121.510822, 104.010042, -35.599761]
-7 | After camera transformation: [90.117252, 52.149188, 173.557245]
-4 | Before camera transformation: [-165.821229, -170.562424, 18.799334]
-4 | After camera transformation: [-19.575900, -134.757898, -163.995953]
-0 | Before camera transformation: [-82.531206, 92.093275, -109.040797]
-0 | After camera transformation: [122.116179, 101.247317, -35.569957]
-3. triangle | Generating camera coordinate system 
-7 | Before camera transformation: [90.117252, 52.149188, 173.557245]
-7 | After camera transformation: [-121.134852, -0.492087, 168.740354]
-0 | Before camera transformation: [122.116179, 101.247317, -35.569957]
-0 | After camera transformation: [90.206747, 49.329591, 173.352639]
-3 | Before camera transformation: [187.005677, -133.213727, -50.277684]
-3 | After camera transformation: [117.354737, -192.744019, 165.459651]
-4. triangle | Generating camera coordinate system 
-5 | Before camera transformation: [-80.899235, 94.288612, -109.759938]
-5 | After camera transformation: [123.141411, 102.941592, -33.550470]
-2 | Before camera transformation: [120.379542, 102.335665, -33.620704]
-2 | After camera transformation: [87.954765, 50.746403, 172.392838]
-1 | Before camera transformation: [-163.294864, -169.859073, 19.858946]
-1 | After camera transformation: [-20.119475, -134.840920, -161.221492]
-5. triangle | Generating camera coordinate system 
-5 | Before camera transformation: [123.141411, 102.941592, -33.550470]
-5 | After camera transformation: [88.427541, 50.559505, 175.175203]
-6 | Before camera transformation: [186.982254, -132.017923, -52.840788]
-6 | After camera transformation: [119.863474, -191.448481, 165.292859]
-2 | Before camera transformation: [87.954765, 50.746403, 172.392838]
-2 | After camera transformation: [-120.417156, -1.174965, 166.091092]
-6. triangle | Generating camera coordinate system 
-2 | Before camera transformation: [-120.417156, -1.174965, 166.091092]
-2 | After camera transformation: [-155.102881, 7.026984, -45.767412]
-3 | Before camera transformation: [117.354737, -192.744019, 165.459651]
-3 | After camera transformation: [-107.852798, -242.519993, 123.726865]
-0 | Before camera transformation: [90.206747, 49.329591, 173.352639]
-0 | After camera transformation: [-120.916667, -3.210512, 167.990313]
-7. triangle | Generating camera coordinate system 
-2 | Before camera transformation: [-155.102881, 7.026984, -45.767412]
-2 | After camera transformation: [45.839044, 36.220080, -115.942218]
-0 | Before camera transformation: [-120.916667, -3.210512, 167.990313]
-0 | After camera transformation: [-157.063183, 5.107297, -46.454451]
-1 | Before camera transformation: [-20.119475, -134.840920, -161.221492]
-1 | After camera transformation: [185.523507, -130.845696, -50.719953]
-8. triangle | Generating camera coordinate system 
-5 | Before camera transformation: [88.427541, 50.559505, 175.175203]
-5 | After camera transformation: [-123.052769, -1.639097, 167.006583]
-1 | Before camera transformation: [185.523507, -130.845696, -50.719953]
-1 | After camera transformation: [117.497741, -190.037598, 164.650430]
-4 | Before camera transformation: [-19.575900, -134.757898, -163.995953]
-4 | After camera transformation: [188.350694, -130.762917, -50.707169]
-9. triangle | Generating camera coordinate system 
-1 | Before camera transformation: [117.497741, -190.037598, 164.650430]
-1 | After camera transformation: [-107.031246, -239.918372, 124.472937]
-0 | Before camera transformation: [-157.063183, 5.107297, -46.454451]
-0 | After camera transformation: [46.128294, 34.958938, -118.457344]
-4 | Before camera transformation: [188.350694, -130.762917, -50.707169]
-4 | After camera transformation: [118.039662, -190.741275, 167.335791]
-10. triangle | Generating camera coordinate system 
-4 | Before camera transformation: [118.039662, -190.741275, 167.335791]
-4 | After camera transformation: [-109.558179, -240.892041, 125.289380]
-7 | Before camera transformation: [-121.134852, -0.492087, 168.740354]
-7 | After camera transformation: [-157.841448, 7.734087, -45.751402]
-5 | Before camera transformation: [-123.052769, -1.639097, 167.006583]
-5 | After camera transformation: [-156.517480, 7.260418, -48.205530]
-11. triangle | Generating camera coordinate system 
-6 | Before camera transformation: [119.863474, -191.448481, 165.292859]
-6 | After camera transformation: [-107.197240, -241.962143, 126.421128]
-5 | Before camera transformation: [-156.517480, 7.260418, -48.205530]
-5 | After camera transformation: [47.952390, 36.970438, -117.665800]
-7 | Before camera transformation: [-157.841448, 7.734087, -45.751402]
-7 | After camera transformation: [45.286267, 37.655413, -118.315877]
+0 | Before camera transformation: [3.000000, -2.000000, -7.414214]
+0 | After camera transformation: [39.237165, -18.315434, 37.456831]
+1 | Before camera transformation: [1.585786, -2.000000, -6.000000]
+1 | After camera transformation: [37.573064, -18.002343, 36.392527]
+2 | Before camera transformation: [3.000000, -2.000000, -4.585786]
+2 | After camera transformation: [36.463664, -18.471980, 37.988983]
+3 | Before camera transformation: [4.414214, -2.000000, -6.000000]
+3 | After camera transformation: [38.127764, -18.785070, 39.053287]
+4 | Before camera transformation: [3.000000, -4.000000, -7.414214]
+4 | After camera transformation: [39.237165, -20.234136, 36.892398]
+5 | Before camera transformation: [1.585786, -4.000000, -6.000000]
+5 | After camera transformation: [37.573064, -19.921045, 35.828094]
+6 | Before camera transformation: [3.000000, -4.000000, -4.585786]
+6 | After camera transformation: [36.463664, -20.390681, 37.424550]
+7 | Before camera transformation: [4.414214, -4.000000, -6.000000]
+7 | After camera transformation: [38.127764, -20.703772, 38.488855]
+0 | Before projection transformation: [39.237165, -18.315434, 37.456831]
+0 | After projection transformation: [39.237165, -18.315434, -1.079072]
+1 | Before projection transformation: [37.573064, -18.002343, 36.392527]
+1 | After projection transformation: [37.573064, -18.002343, -1.076939]
+2 | Before projection transformation: [36.463664, -18.471980, 37.988983]
+2 | After projection transformation: [36.463664, -18.471980, -1.080138]
+3 | Before projection transformation: [38.127764, -18.785070, 39.053287]
+3 | After projection transformation: [38.127764, -18.785070, -1.082271]
+4 | Before projection transformation: [39.237165, -20.234136, 36.892398]
+4 | After projection transformation: [39.237165, -20.234136, -1.077941]
+5 | Before projection transformation: [37.573064, -19.921045, 35.828094]
+5 | After projection transformation: [37.573064, -19.921045, -1.075808]
+6 | Before projection transformation: [36.463664, -20.390681, 37.424550]
+6 | After projection transformation: [36.463664, -20.390681, -1.079007]
+7 | Before projection transformation: [38.127764, -20.703772, 38.488855]
+7 | After projection transformation: [38.127764, -20.703772, -1.081140]
+Viewport matrix: 
+|350.000000|0.000000|0.000000|349.000000|
+|0.000000|350.000000|0.000000|349.000000|
+|0.000000|0.000000|0.000000|0.000000|
+|0.000000|0.000000|0.000000|1.000000|
+[14082.007600, -6061.401979, 0.000000]
+Viewport matrix: 
+|350.000000|0.000000|0.000000|349.000000|
+|0.000000|350.000000|0.000000|349.000000|
+|0.000000|0.000000|0.000000|0.000000|
+|0.000000|0.000000|0.000000|1.000000|
+[13499.572395, -5951.820188, 0.000000]
+Viewport matrix: 
+|350.000000|0.000000|0.000000|349.000000|
+|0.000000|350.000000|0.000000|349.000000|
+|0.000000|0.000000|0.000000|0.000000|
+|0.000000|0.000000|0.000000|1.000000|
+[13111.282257, -6116.192874, 0.000000]
+Viewport matrix: 
+|350.000000|0.000000|0.000000|349.000000|
+|0.000000|350.000000|0.000000|349.000000|
+|0.000000|0.000000|0.000000|0.000000|
+|0.000000|0.000000|0.000000|1.000000|
+[13693.717462, -6225.774665, 0.000000]
+Viewport matrix: 
+|350.000000|0.000000|0.000000|349.000000|
+|0.000000|350.000000|0.000000|349.000000|
+|0.000000|0.000000|0.000000|0.000000|
+|0.000000|0.000000|0.000000|1.000000|
+[14082.007600, -6732.947548, 0.000000]
+Viewport matrix: 
+|350.000000|0.000000|0.000000|349.000000|
+|0.000000|350.000000|0.000000|349.000000|
+|0.000000|0.000000|0.000000|0.000000|
+|0.000000|0.000000|0.000000|1.000000|
+[13499.572395, -6623.365757, 0.000000]
+Viewport matrix: 
+|350.000000|0.000000|0.000000|349.000000|
+|0.000000|350.000000|0.000000|349.000000|
+|0.000000|0.000000|0.000000|0.000000|
+|0.000000|0.000000|0.000000|1.000000|
+[13111.282257, -6787.738443, 0.000000]
+Viewport matrix: 
+|350.000000|0.000000|0.000000|349.000000|
+|0.000000|350.000000|0.000000|349.000000|
+|0.000000|0.000000|0.000000|0.000000|
+|0.000000|0.000000|0.000000|1.000000|
+[13693.717462, -6897.320234, 0.000000]
 ------------------------------------------------------
 TRANSFORMING FOR CAMERA 7
 0 (modelIndex) | Generating camera coordinate system 
-0. triangle | Generating camera coordinate system 
-6 | Before camera transformation: [-107.197240, -241.962143, 126.421128]
-6 | After camera transformation: [-112.630061, -258.157385, 86.696290]
-7 | Before camera transformation: [45.286267, 37.655413, -118.315877]
-7 | After camera transformation: [157.258793, 37.601771, 54.759983]
-3 | Before camera transformation: [-107.852798, -242.519993, 123.726865]
-3 | After camera transformation: [-110.116685, -259.173870, 85.890250]
-1. triangle | Generating camera coordinate system 
-6 | Before camera transformation: [-112.630061, -258.157385, 86.696290]
-6 | After camera transformation: [-74.742116, -278.473764, 82.047362]
-3 | Before camera transformation: [-110.116685, -259.173870, 85.890250]
-3 | After camera transformation: [-73.458816, -278.371077, 84.565813]
-2 | Before camera transformation: [45.839044, 36.220080, -115.942218]
-2 | After camera transformation: [155.039637, 36.756555, 56.296525]
-2. triangle | Generating camera coordinate system 
-7 | Before camera transformation: [157.258793, 37.601771, 54.759983]
-7 | After camera transformation: [9.503567, 100.832081, 183.846869]
-4 | Before camera transformation: [-109.558179, -240.892041, 125.289380]
-4 | After camera transformation: [-111.983309, -258.313426, 83.947224]
-0 | Before camera transformation: [46.128294, 34.958938, -118.457344]
-0 | After camera transformation: [157.562647, 35.531910, 56.663492]
-3. triangle | Generating camera coordinate system 
-7 | Before camera transformation: [9.503567, 100.832081, 183.846869]
-7 | After camera transformation: [-146.053722, 104.968060, 48.650988]
-0 | Before camera transformation: [157.562647, 35.531910, 56.663492]
-0 | After camera transformation: [7.696614, 99.269086, 185.360793]
-3 | Before camera transformation: [-73.458816, -278.371077, 84.565813]
-3 | After camera transformation: [-64.970899, -279.898007, 125.059146]
-4. triangle | Generating camera coordinate system 
-5 | Before camera transformation: [47.952390, 36.970438, -117.665800]
-5 | After camera transformation: [157.144209, 38.193768, 57.523389]
-2 | Before camera transformation: [155.039637, 36.756555, 56.296525]
-2 | After camera transformation: [7.561653, 99.247873, 182.535667]
-1 | Before camera transformation: [-107.031246, -239.918372, 124.472937]
-1 | After camera transformation: [-110.687149, -256.418851, 85.599663]
-5. triangle | Generating camera coordinate system 
-5 | Before camera transformation: [157.144209, 38.193768, 57.523389]
-5 | After camera transformation: [6.771354, 101.552744, 183.971980]
-6 | Before camera transformation: [-74.742116, -278.473764, 82.047362]
-6 | After camera transformation: [-62.753030, -280.761611, 123.530994]
-2 | Before camera transformation: [7.561653, 99.247873, 182.535667]
-2 | After camera transformation: [-145.148823, 102.594137, 47.407747]
-6. triangle | Generating camera coordinate system 
-2 | Before camera transformation: [-145.148823, 102.594137, 47.407747]
-2 | After camera transformation: [-42.593984, 28.010859, -112.314141]
-3 | Before camera transformation: [-64.970899, -279.898007, 125.059146]
-3 | After camera transformation: [-103.013261, -274.108979, 140.335012]
-0 | Before camera transformation: [7.696614, 99.269086, 185.360793]
-0 | After camera transformation: [-147.892619, 102.915352, 48.014712]
-7. triangle | Generating camera coordinate system 
-2 | Before camera transformation: [-42.593984, 28.010859, -112.314141]
-2 | After camera transformation: [134.138871, -8.475636, -17.311638]
-0 | Before camera transformation: [-147.892619, 102.915352, 48.014712]
-0 | After camera transformation: [-43.727265, 27.167244, -114.764445]
-1 | Before camera transformation: [-110.687149, -256.418851, 85.599663]
-1 | After camera transformation: [-73.285749, -276.168724, 82.799548]
-8. triangle | Generating camera coordinate system 
-5 | Before camera transformation: [6.771354, 101.552744, 183.971980]
-5 | After camera transformation: [-146.712235, 104.446503, 45.950185]
-1 | Before camera transformation: [-73.285749, -276.168724, 82.799548]
-1 | After camera transformation: [-63.204992, -277.998325, 123.930969]
-4 | Before camera transformation: [-111.983309, -258.313426, 83.947224]
-4 | After camera transformation: [-71.919597, -278.572025, 82.201405]
-9. triangle | Generating camera coordinate system 
-1 | Before camera transformation: [-63.204992, -277.998325, 123.930969]
-1 | After camera transformation: [-101.560670, -271.738380, 140.854856]
-0 | Before camera transformation: [-43.727265, 27.167244, -114.764445]
-0 | After camera transformation: [136.319337, -9.933865, -18.369530]
-4 | Before camera transformation: [-71.919597, -278.572025, 82.201405]
-4 | After camera transformation: [-62.350540, -279.618123, 126.086466]
-10. triangle | Generating camera coordinate system 
-4 | Before camera transformation: [-62.350540, -279.618123, 126.086466]
-4 | After camera transformation: [-103.506736, -272.637833, 142.699798]
-7 | Before camera transformation: [-146.053722, 104.968060, 48.650988]
-7 | After camera transformation: [-43.990548, 29.859086, -113.936998]
-5 | Before camera transformation: [-146.712235, 104.446503, 45.950185]
-5 | After camera transformation: [-41.471337, 28.873347, -114.762769]
-11. triangle | Generating camera coordinate system 
-6 | Before camera transformation: [-62.753030, -280.761611, 123.530994]
-6 | After camera transformation: [-101.079825, -274.058929, 142.398824]
-5 | Before camera transformation: [-41.471337, 28.873347, -114.762769]
-5 | After camera transformation: [136.760117, -7.428001, -17.134072]
-7 | Before camera transformation: [-43.990548, 29.859086, -113.936998]
-7 | After camera transformation: [135.456325, -7.559110, -19.640650]
+0 | Before camera transformation: [3.000000, -2.000000, -7.414214]
+0 | After camera transformation: [40.217745, -6.683580, 54.515017]
+1 | Before camera transformation: [1.585786, -2.000000, -6.000000]
+1 | After camera transformation: [38.553645, -7.171967, 53.518901]
+2 | Before camera transformation: [3.000000, -2.000000, -4.585786]
+2 | After camera transformation: [37.444244, -6.439387, 55.013075]
+3 | Before camera transformation: [4.414214, -2.000000, -6.000000]
+3 | After camera transformation: [39.108345, -5.951001, 56.009192]
+4 | Before camera transformation: [3.000000, -4.000000, -7.414214]
+4 | After camera transformation: [40.217745, -8.479355, 55.395468]
+5 | Before camera transformation: [1.585786, -4.000000, -6.000000]
+5 | After camera transformation: [38.553645, -8.967741, 54.399352]
+6 | Before camera transformation: [3.000000, -4.000000, -4.585786]
+6 | After camera transformation: [37.444244, -8.235162, 55.893526]
+7 | Before camera transformation: [4.414214, -4.000000, -6.000000]
+7 | After camera transformation: [39.108345, -7.746776, 56.889643]
+0 | Before projection transformation: [40.217745, -6.683580, 54.515017]
+0 | After projection transformation: [40.217745, -6.683580, -1.113257]
+1 | Before projection transformation: [38.553645, -7.171967, 53.518901]
+1 | After projection transformation: [38.553645, -7.171967, -1.111260]
+2 | Before projection transformation: [37.444244, -6.439387, 55.013075]
+2 | After projection transformation: [37.444244, -6.439387, -1.114255]
+3 | Before projection transformation: [39.108345, -5.951001, 56.009192]
+3 | After projection transformation: [39.108345, -5.951001, -1.116251]
+4 | Before projection transformation: [40.217745, -8.479355, 55.395468]
+4 | After projection transformation: [40.217745, -8.479355, -1.115021]
+5 | Before projection transformation: [38.553645, -8.967741, 54.399352]
+5 | After projection transformation: [38.553645, -8.967741, -1.113025]
+6 | Before projection transformation: [37.444244, -8.235162, 55.893526]
+6 | After projection transformation: [37.444244, -8.235162, -1.116019]
+7 | Before projection transformation: [39.108345, -7.746776, 56.889643]
+7 | After projection transformation: [39.108345, -7.746776, -1.118015]
+Viewport matrix: 
+|350.000000|0.000000|0.000000|349.000000|
+|0.000000|350.000000|0.000000|349.000000|
+|0.000000|0.000000|0.000000|0.000000|
+|0.000000|0.000000|0.000000|1.000000|
+[14425.210837, -1990.253165, 0.000000]
+Viewport matrix: 
+|350.000000|0.000000|0.000000|349.000000|
+|0.000000|350.000000|0.000000|349.000000|
+|0.000000|0.000000|0.000000|0.000000|
+|0.000000|0.000000|0.000000|1.000000|
+[13842.775631, -2161.188367, 0.000000]
+Viewport matrix: 
+|350.000000|0.000000|0.000000|349.000000|
+|0.000000|350.000000|0.000000|349.000000|
+|0.000000|0.000000|0.000000|0.000000|
+|0.000000|0.000000|0.000000|1.000000|
+[13454.485493, -1904.785565, 0.000000]
+Viewport matrix: 
+|350.000000|0.000000|0.000000|349.000000|
+|0.000000|350.000000|0.000000|349.000000|
+|0.000000|0.000000|0.000000|0.000000|
+|0.000000|0.000000|0.000000|1.000000|
+[14036.920699, -1733.850363, 0.000000]
+Viewport matrix: 
+|350.000000|0.000000|0.000000|349.000000|
+|0.000000|350.000000|0.000000|349.000000|
+|0.000000|0.000000|0.000000|0.000000|
+|0.000000|0.000000|0.000000|1.000000|
+[14425.210837, -2618.774254, 0.000000]
+Viewport matrix: 
+|350.000000|0.000000|0.000000|349.000000|
+|0.000000|350.000000|0.000000|349.000000|
+|0.000000|0.000000|0.000000|0.000000|
+|0.000000|0.000000|0.000000|1.000000|
+[13842.775631, -2789.709456, 0.000000]
+Viewport matrix: 
+|350.000000|0.000000|0.000000|349.000000|
+|0.000000|350.000000|0.000000|349.000000|
+|0.000000|0.000000|0.000000|0.000000|
+|0.000000|0.000000|0.000000|1.000000|
+[13454.485493, -2533.306654, 0.000000]
+Viewport matrix: 
+|350.000000|0.000000|0.000000|349.000000|
+|0.000000|350.000000|0.000000|349.000000|
+|0.000000|0.000000|0.000000|0.000000|
+|0.000000|0.000000|0.000000|1.000000|
+[14036.920699, -2362.371452, 0.000000]
 ------------------------------------------------------
 TRANSFORMING FOR CAMERA 8
 0 (modelIndex) | Generating camera coordinate system 
-0. triangle | Generating camera coordinate system 
-6 | Before camera transformation: [-101.079825, -274.058929, 142.398824]
-6 | After camera transformation: [-126.117177, -250.191214, 193.419896]
-7 | Before camera transformation: [135.456325, -7.559110, -19.640650]
-7 | After camera transformation: [79.164156, 80.234122, 149.751066]
-3 | Before camera transformation: [-103.013261, -274.108979, 140.335012]
-3 | After camera transformation: [-124.472620, -251.837718, 191.812271]
-1. triangle | Generating camera coordinate system 
-6 | Before camera transformation: [-126.117177, -250.191214, 193.419896]
-6 | After camera transformation: [-181.057683, -243.333132, 166.323880]
-3 | Before camera transformation: [-124.472620, -251.837718, 191.812271]
-3 | After camera transformation: [-179.158752, -243.600426, 168.402970]
-2 | Before camera transformation: [134.138871, -8.475636, -17.311638]
-2 | After camera transformation: [76.621998, 78.995021, 149.796488]
-2. triangle | Generating camera coordinate system 
-7 | Before camera transformation: [79.164156, 80.234122, 149.751066]
-7 | After camera transformation: [-97.977890, 127.530904, 72.590693]
-4 | Before camera transformation: [-103.506736, -272.637833, 142.699798]
-4 | After camera transformation: [-126.888262, -250.801399, 190.767897]
-0 | Before camera transformation: [136.319337, -9.933865, -18.369530]
-0 | After camera transformation: [78.086971, 79.305565, 152.195949]
-3. triangle | Generating camera coordinate system 
-7 | Before camera transformation: [-97.977890, 127.530904, 72.590693]
-7 | After camera transformation: [-57.056333, 29.090500, -95.352531]
-0 | Before camera transformation: [78.086971, 79.305565, 152.195949]
-0 | After camera transformation: [-100.586549, 126.464078, 72.828984]
-3 | Before camera transformation: [-179.158752, -243.600426, 168.402970]
-3 | After camera transformation: [-166.928877, -278.477680, 121.069804]
-4. triangle | Generating camera coordinate system 
-5 | Before camera transformation: [136.760117, -7.428001, -17.134072]
-5 | After camera transformation: [76.961948, 81.567020, 150.923100]
-2 | Before camera transformation: [76.621998, 78.995021, 149.796488]
-2 | After camera transformation: [-98.520988, 124.907113, 71.684730]
-1 | Before camera transformation: [-101.560670, -271.738380, 140.854856]
-1 | After camera transformation: [-124.697493, -249.076451, 191.242329]
-5. triangle | Generating camera coordinate system 
-5 | Before camera transformation: [76.961948, 81.567020, 150.923100]
-5 | After camera transformation: [-99.559053, 127.131619, 70.279741]
-6 | Before camera transformation: [-181.057683, -243.333132, 166.323880]
-6 | After camera transformation: [-165.262573, -279.876007, 119.262012]
-2 | Before camera transformation: [-98.520988, 124.907113, 71.684730]
-2 | After camera transformation: [-56.274474, 26.719842, -94.022615]
-6. triangle | Generating camera coordinate system 
-2 | Before camera transformation: [-56.274474, 26.719842, -94.022615]
-2 | After camera transformation: [114.500170, -37.135402, -18.902968]
-3 | Before camera transformation: [-166.928877, -278.477680, 121.069804]
-3 | After camera transformation: [-118.116413, -301.483147, 147.423422]
-0 | Before camera transformation: [-100.586549, 126.464078, 72.828984]
-0 | After camera transformation: [-57.801597, 26.570542, -96.398663]
-7. triangle | Generating camera coordinate system 
-2 | Before camera transformation: [114.500170, -37.135402, -18.902968]
-2 | After camera transformation: [74.330959, 44.830458, 155.889665]
-0 | Before camera transformation: [-57.801597, 26.570542, -96.398663]
-0 | After camera transformation: [116.530583, -38.616692, -20.200350]
-1 | Before camera transformation: [-124.697493, -249.076451, 191.242329]
-1 | After camera transformation: [-178.643979, -241.861509, 166.232446]
-8. triangle | Generating camera coordinate system 
-5 | Before camera transformation: [-99.559053, 127.131619, 70.279741]
-5 | After camera transformation: [-55.100350, 27.402557, -96.503609]
-1 | Before camera transformation: [-178.643979, -241.861509, 166.232446]
-1 | After camera transformation: [-164.699548, -277.180702, 119.908797]
-4 | Before camera transformation: [-126.888262, -250.801399, 190.767897]
-4 | After camera transformation: [-178.608406, -244.662334, 165.839872]
-9. triangle | Generating camera coordinate system 
-1 | Before camera transformation: [-164.699548, -277.180702, 119.908797]
-1 | After camera transformation: [-116.540745, -299.185981, 147.913625]
-0 | Before camera transformation: [116.530583, -38.616692, -20.200350]
-0 | After camera transformation: [76.001344, 44.988633, 158.166680]
-4 | Before camera transformation: [-178.608406, -244.662334, 165.839872]
-4 | After camera transformation: [-164.307621, -279.209987, 121.839702]
-10. triangle | Generating camera coordinate system 
-4 | Before camera transformation: [-164.307621, -279.209987, 121.839702]
-4 | After camera transformation: [-118.357290, -300.100697, 149.879193]
-7 | Before camera transformation: [-57.056333, 29.090500, -95.352531]
-7 | After camera transformation: [115.650925, -36.162128, -21.296397]
-5 | Before camera transformation: [-55.100350, 27.402557, -96.503609]
-5 | After camera transformation: [117.163250, -36.182514, -18.906322]
-11. triangle | Generating camera coordinate system 
-6 | Before camera transformation: [-165.262573, -279.876007, 119.262012]
-6 | After camera transformation: [-116.016938, -301.585794, 149.315952]
-5 | Before camera transformation: [117.163250, -36.182514, -18.906322]
-5 | After camera transformation: [74.856521, 47.338685, 157.086570]
-7 | Before camera transformation: [115.650925, -36.162128, -21.296397]
-7 | After camera transformation: [76.903591, 45.986785, 155.678781]
+0 | Before camera transformation: [3.000000, -2.000000, -7.414214]
+0 | After camera transformation: [41.198326, -5.054914, 54.832978]
+1 | Before camera transformation: [1.585786, -2.000000, -6.000000]
+1 | After camera transformation: [39.534225, -5.831650, 54.040860]
+2 | Before camera transformation: [3.000000, -2.000000, -4.585786]
+2 | After camera transformation: [38.424825, -4.666546, 55.229037]
+3 | Before camera transformation: [4.414214, -2.000000, -6.000000]
+3 | After camera transformation: [40.088926, -3.889811, 56.021155]
+4 | Before camera transformation: [3.000000, -4.000000, -7.414214]
+4 | After camera transformation: [41.198326, -6.482925, 56.233258]
+5 | Before camera transformation: [1.585786, -4.000000, -6.000000]
+5 | After camera transformation: [39.534225, -7.259661, 55.441140]
+6 | Before camera transformation: [3.000000, -4.000000, -4.585786]
+6 | After camera transformation: [38.424825, -6.094557, 56.629317]
+7 | Before camera transformation: [4.414214, -4.000000, -6.000000]
+7 | After camera transformation: [40.088926, -5.317822, 57.421435]
+0 | Before projection transformation: [41.198326, -5.054914, 54.832978]
+0 | After projection transformation: [41.198326, -5.054914, -1.113894]
+1 | Before projection transformation: [39.534225, -5.831650, 54.040860]
+1 | After projection transformation: [39.534225, -5.831650, -1.112306]
+2 | Before projection transformation: [38.424825, -4.666546, 55.229037]
+2 | After projection transformation: [38.424825, -4.666546, -1.114687]
+3 | Before projection transformation: [40.088926, -3.889811, 56.021155]
+3 | After projection transformation: [40.088926, -3.889811, -1.116275]
+4 | Before projection transformation: [41.198326, -6.482925, 56.233258]
+4 | After projection transformation: [41.198326, -6.482925, -1.116700]
+5 | Before projection transformation: [39.534225, -7.259661, 55.441140]
+5 | After projection transformation: [39.534225, -7.259661, -1.115113]
+6 | Before projection transformation: [38.424825, -6.094557, 56.629317]
+6 | After projection transformation: [38.424825, -6.094557, -1.117494]
+7 | Before projection transformation: [40.088926, -5.317822, 57.421435]
+7 | After projection transformation: [40.088926, -5.317822, -1.119081]
+Viewport matrix: 
+|350.000000|0.000000|0.000000|349.000000|
+|0.000000|350.000000|0.000000|349.000000|
+|0.000000|0.000000|0.000000|0.000000|
+|0.000000|0.000000|0.000000|1.000000|
+[14768.414073, -1420.219893, 0.000000]
+Viewport matrix: 
+|350.000000|0.000000|0.000000|349.000000|
+|0.000000|350.000000|0.000000|349.000000|
+|0.000000|0.000000|0.000000|0.000000|
+|0.000000|0.000000|0.000000|1.000000|
+[14185.978868, -1692.077367, 0.000000]
+Viewport matrix: 
+|350.000000|0.000000|0.000000|349.000000|
+|0.000000|350.000000|0.000000|349.000000|
+|0.000000|0.000000|0.000000|0.000000|
+|0.000000|0.000000|0.000000|1.000000|
+[13797.688730, -1284.291157, 0.000000]
+Viewport matrix: 
+|350.000000|0.000000|0.000000|349.000000|
+|0.000000|350.000000|0.000000|349.000000|
+|0.000000|0.000000|0.000000|0.000000|
+|0.000000|0.000000|0.000000|1.000000|
+[14380.123935, -1012.433684, 0.000000]
+Viewport matrix: 
+|350.000000|0.000000|0.000000|349.000000|
+|0.000000|350.000000|0.000000|349.000000|
+|0.000000|0.000000|0.000000|0.000000|
+|0.000000|0.000000|0.000000|1.000000|
+[14768.414073, -1920.023776, 0.000000]
+Viewport matrix: 
+|350.000000|0.000000|0.000000|349.000000|
+|0.000000|350.000000|0.000000|349.000000|
+|0.000000|0.000000|0.000000|0.000000|
+|0.000000|0.000000|0.000000|1.000000|
+[14185.978868, -2191.881250, 0.000000]
+Viewport matrix: 
+|350.000000|0.000000|0.000000|349.000000|
+|0.000000|350.000000|0.000000|349.000000|
+|0.000000|0.000000|0.000000|0.000000|
+|0.000000|0.000000|0.000000|1.000000|
+[13797.688730, -1784.095040, 0.000000]
+Viewport matrix: 
+|350.000000|0.000000|0.000000|349.000000|
+|0.000000|350.000000|0.000000|349.000000|
+|0.000000|0.000000|0.000000|0.000000|
+|0.000000|0.000000|0.000000|1.000000|
+[14380.123935, -1512.237567, 0.000000]
 ------------------------------------------------------
 TRANSFORMING FOR CAMERA 9
 0 (modelIndex) | Generating camera coordinate system 
-0. triangle | Generating camera coordinate system 
-6 | Before camera transformation: [-116.016938, -301.585794, 149.315952]
-6 | After camera transformation: [-84.480700, -341.409213, -4.590994]
-7 | Before camera transformation: [76.903591, 45.986785, 155.678781]
-7 | After camera transformation: [105.941296, -25.817450, 144.428523]
-3 | Before camera transformation: [-118.116413, -301.483147, 147.423422]
-3 | After camera transformation: [-86.910560, -340.588482, -5.783546]
-1. triangle | Generating camera coordinate system 
-6 | Before camera transformation: [-84.480700, -341.409213, -4.590994]
-6 | After camera transformation: [-83.740510, -296.066952, -160.190860]
-3 | Before camera transformation: [-86.910560, -340.588482, -5.783546]
-3 | After camera transformation: [-86.357063, -295.008227, -160.371842]
-2 | Before camera transformation: [74.330959, 44.830458, 155.889665]
-2 | After camera transformation: [103.459981, -27.174786, 144.455243]
-2. triangle | Generating camera coordinate system 
-7 | Before camera transformation: [105.941296, -25.817450, 144.428523]
-7 | After camera transformation: [132.208751, -79.223010, 93.600660]
-4 | Before camera transformation: [-118.357290, -300.100697, 149.879193]
-4 | After camera transformation: [-86.665143, -340.642035, -2.966295]
-0 | Before camera transformation: [76.001344, 44.988633, 158.166680]
-0 | After camera transformation: [105.544487, -28.004572, 146.177535]
-3. triangle | Generating camera coordinate system 
-7 | Before camera transformation: [132.208751, -79.223010, 93.600660]
-7 | After camera transformation: [147.997946, -97.366632, 19.121703]
-0 | Before camera transformation: [105.544487, -28.004572, 146.177535]
-0 | After camera transformation: [132.162657, -82.017222, 94.036844]
-3 | Before camera transformation: [-86.357063, -295.008227, -160.371842]
-3 | After camera transformation: [-116.131573, -178.799661, -268.002949]
-4. triangle | Generating camera coordinate system 
-5 | Before camera transformation: [74.856521, 47.338685, 157.086570]
-5 | After camera transformation: [104.210068, -25.555854, 146.649879]
-2 | Before camera transformation: [103.459981, -27.174786, 144.455243]
-2 | After camera transformation: [129.780862, -80.652937, 93.354365]
-1 | Before camera transformation: [-116.540745, -299.185981, 147.913625]
-1 | After camera transformation: [-85.269354, -338.695626, -4.470709]
-5. triangle | Generating camera coordinate system 
-5 | Before camera transformation: [104.210068, -25.555854, 146.649879]
-5 | After camera transformation: [130.946787, -80.274270, 95.903332]
-6 | Before camera transformation: [-83.740510, -296.066952, -160.190860]
-6 | After camera transformation: [-113.530338, -179.541946, -268.829141]
-2 | Before camera transformation: [129.780862, -80.652937, 93.354365]
-2 | After camera transformation: [145.568902, -98.718057, 18.598829]
-6. triangle | Generating camera coordinate system 
-2 | Before camera transformation: [145.568902, -98.718057, 18.598829]
-2 | After camera transformation: [146.389583, -75.546298, -56.410485]
-3 | Before camera transformation: [-116.131573, -178.799661, -268.002949]
-3 | After camera transformation: [-166.436079, -28.082473, -295.006528]
-0 | Before camera transformation: [132.162657, -82.017222, 94.036844]
-0 | After camera transformation: [148.038290, -99.996414, 18.081212]
-7. triangle | Generating camera coordinate system 
-2 | Before camera transformation: [146.389583, -75.546298, -56.410485]
-2 | After camera transformation: [132.483790, -18.195119, -108.193420]
-0 | Before camera transformation: [148.038290, -99.996414, 18.081212]
-0 | After camera transformation: [148.709504, -76.145143, -57.913599]
-1 | Before camera transformation: [-85.269354, -338.695626, -4.470709]
-1 | After camera transformation: [-84.490259, -293.866376, -158.579854]
-8. triangle | Generating camera coordinate system 
-5 | Before camera transformation: [130.946787, -80.274270, 95.903332]
-5 | After camera transformation: [147.212079, -99.543198, 20.748040]
-1 | Before camera transformation: [-84.490259, -293.866376, -158.579854]
-1 | After camera transformation: [-113.949584, -178.520914, -266.224966]
-4 | Before camera transformation: [-86.665143, -340.642035, -2.966295]
-4 | After camera transformation: [-85.563903, -296.430842, -158.059470]
-9. triangle | Generating camera coordinate system 
-1 | Before camera transformation: [-113.949584, -178.520914, -266.224966]
-1 | After camera transformation: [-163.947771, -28.509320, -293.731331]
-0 | Before camera transformation: [148.709504, -76.145143, -57.913599]
-0 | After camera transformation: [134.463875, -17.733129, -110.159590]
-4 | Before camera transformation: [-85.563903, -296.430842, -158.059470]
-4 | After camera transformation: [-114.900322, -181.096738, -266.904104]
-10. triangle | Generating camera coordinate system 
-4 | Before camera transformation: [-114.900322, -181.096738, -266.904104]
-4 | After camera transformation: [-165.013237, -30.486253, -295.450784]
-7 | Before camera transformation: [147.997946, -97.366632, 19.121703]
-7 | After camera transformation: [148.874000, -74.399947, -55.693862]
-5 | Before camera transformation: [147.212079, -99.543198, 20.748040]
-5 | After camera transformation: [148.422346, -77.162753, -55.290240]
-11. triangle | Generating camera coordinate system 
-6 | Before camera transformation: [-113.530338, -179.541946, -268.829141]
-6 | After camera transformation: [-164.047388, -28.052732, -296.520884]
-5 | Before camera transformation: [148.422346, -77.162753, -55.290240]
-5 | After camera transformation: [134.696776, -19.943208, -108.409932]
-7 | Before camera transformation: [148.874000, -74.399947, -55.693862]
-7 | After camera transformation: [135.060503, -17.316353, -107.426399]
+0 | Before camera transformation: [3.000000, -2.000000, -7.414214]
+0 | After camera transformation: [1.487695, 6.570704, -5.251969]
+1 | Before camera transformation: [1.585786, -2.000000, -6.000000]
+1 | After camera transformation: [0.378295, 5.726851, -3.817695]
+2 | Before camera transformation: [3.000000, -2.000000, -4.585786]
+2 | After camera transformation: [2.042395, 5.164282, -2.861512]
+3 | Before camera transformation: [4.414214, -2.000000, -6.000000]
+3 | After camera transformation: [3.151796, 6.008135, -4.295786]
+4 | Before camera transformation: [3.000000, -4.000000, -7.414214]
+4 | After camera transformation: [1.487695, 4.846920, -6.266154]
+5 | Before camera transformation: [1.585786, -4.000000, -6.000000]
+5 | After camera transformation: [0.378295, 4.003067, -4.831880]
+6 | Before camera transformation: [3.000000, -4.000000, -4.585786]
+6 | After camera transformation: [2.042395, 3.440499, -3.875697]
+7 | Before camera transformation: [4.414214, -4.000000, -6.000000]
+7 | After camera transformation: [3.151796, 4.284352, -5.309971]
+0 | Before projection transformation: [1.487695, 6.570704, -5.251969]
+0 | After projection transformation: [1.487695, 6.570704, -0.993483]
+1 | Before projection transformation: [0.378295, 5.726851, -3.817695]
+1 | After projection transformation: [0.378295, 5.726851, -0.996357]
+2 | Before projection transformation: [2.042395, 5.164282, -2.861512]
+2 | After projection transformation: [2.042395, 5.164282, -0.998274]
+3 | Before projection transformation: [3.151796, 6.008135, -4.295786]
+3 | After projection transformation: [3.151796, 6.008135, -0.995399]
+4 | Before projection transformation: [1.487695, 4.846920, -6.266154]
+4 | After projection transformation: [1.487695, 4.846920, -0.991451]
+5 | Before projection transformation: [0.378295, 4.003067, -4.831880]
+5 | After projection transformation: [0.378295, 4.003067, -0.994325]
+6 | Before projection transformation: [2.042395, 3.440499, -3.875697]
+6 | After projection transformation: [2.042395, 3.440499, -0.996241]
+7 | Before projection transformation: [3.151796, 4.284352, -5.309971]
+7 | After projection transformation: [3.151796, 4.284352, -0.993367]
+Viewport matrix: 
+|350.000000|0.000000|0.000000|349.000000|
+|0.000000|350.000000|0.000000|349.000000|
+|0.000000|0.000000|0.000000|0.000000|
+|0.000000|0.000000|0.000000|1.000000|
+[869.693292, 2648.746299, 0.000000]
+Viewport matrix: 
+|350.000000|0.000000|0.000000|349.000000|
+|0.000000|350.000000|0.000000|349.000000|
+|0.000000|0.000000|0.000000|0.000000|
+|0.000000|0.000000|0.000000|1.000000|
+[481.403154, 2353.397744, 0.000000]
+Viewport matrix: 
+|350.000000|0.000000|0.000000|349.000000|
+|0.000000|350.000000|0.000000|349.000000|
+|0.000000|0.000000|0.000000|0.000000|
+|0.000000|0.000000|0.000000|1.000000|
+[1063.838360, 2156.498707, 0.000000]
+Viewport matrix: 
+|350.000000|0.000000|0.000000|349.000000|
+|0.000000|350.000000|0.000000|349.000000|
+|0.000000|0.000000|0.000000|0.000000|
+|0.000000|0.000000|0.000000|1.000000|
+[1452.128497, 2451.847262, 0.000000]
+Viewport matrix: 
+|350.000000|0.000000|0.000000|349.000000|
+|0.000000|350.000000|0.000000|349.000000|
+|0.000000|0.000000|0.000000|0.000000|
+|0.000000|0.000000|0.000000|1.000000|
+[869.693292, 2045.422174, 0.000000]
+Viewport matrix: 
+|350.000000|0.000000|0.000000|349.000000|
+|0.000000|350.000000|0.000000|349.000000|
+|0.000000|0.000000|0.000000|0.000000|
+|0.000000|0.000000|0.000000|1.000000|
+[481.403154, 1750.073619, 0.000000]
+Viewport matrix: 
+|350.000000|0.000000|0.000000|349.000000|
+|0.000000|350.000000|0.000000|349.000000|
+|0.000000|0.000000|0.000000|0.000000|
+|0.000000|0.000000|0.000000|1.000000|
+[1063.838360, 1553.174582, 0.000000]
+Viewport matrix: 
+|350.000000|0.000000|0.000000|349.000000|
+|0.000000|350.000000|0.000000|349.000000|
+|0.000000|0.000000|0.000000|0.000000|
+|0.000000|0.000000|0.000000|1.000000|
+[1452.128497, 1848.523137, 0.000000]
