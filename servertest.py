@@ -10,7 +10,7 @@ def server():
     server = Server(host, port)
     server.accept()
 
-    with open('test1.json') as json_file:
+    with open('./inputs/test1.json') as json_file:
         board_data = json.load(json_file)
 
     server.send(board_data)
