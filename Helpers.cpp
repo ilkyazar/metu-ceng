@@ -240,30 +240,35 @@ Matrix4 scaleAroundPoint(Scaling* s, Vec3* point){
 }
 
 Vec3 getV(double x, double y, double z){
-    double minimum = min({x,y,z});
-    if(minimum == x){
+    double minimum = min({abs(x),abs(y),abs(z)});
+    if(minimum == abs(x)){
+        cout << "(x',y',z') = " << 0 << " " << -z << " " << y << endl;
         return Vec3(0,-z,y,-1);
     }
-    else if(minimum == y){
+    else if(minimum == abs(y)){
+        cout << "(x',y',z') = " << -z << " " << 0 << " " << x << endl;
         return Vec3(-z,0,x,-1);
     }
     else{
+        cout << "(x',y',z') = " << -y << " " << x << " " << 0 << endl;
         return Vec3(-y,x,0,-1);
     }
 }
 
 Matrix4 getRotationMatrix(Rotation* r){
     double pi = 3.14159265;
-    double radian = r->angle * pi / 180.0;
-    Matrix4 matrix = getIdentityMatrix();
+    double radian = r->angle * (pi / 180.0);
     
     Vec3 u(r->ux, r->uy, r->uz, -1);
+    cout << "u is: " << u << endl;
     Vec3 unit_u(normalizeVec3(u));
     
     Vec3 v(getV(unit_u.x, unit_u.y, unit_u.z));
+    cout << "v is: " << v << endl;
     Vec3 unit_v(normalizeVec3(v));
     
     Vec3 w(crossProductVec3(u,v));
+    cout << "w is: " << w << endl;
     Vec3 unit_w(normalizeVec3(w));
 
     double m_val[4][4] = {{unit_u.x, unit_u.y, unit_u.z, 0},
@@ -283,7 +288,7 @@ Matrix4 getRotationMatrix(Rotation* r){
     Matrix4 inverse_M(inverse_m_val);
     Matrix4 R(rotation_x);
     
-    return multiplyMatrixWithMatrix(multiplyMatrixWithMatrix(inverse_M, R),M);
+    return multiplyMatrixWithMatrix(multiplyMatrixWithMatrix(inverse_M, R), M);
 
 }
 

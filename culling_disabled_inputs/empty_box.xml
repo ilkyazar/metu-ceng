@@ -1,7 +1,7 @@
 <Scene>
 	<BackgroundColor>255 255 255</BackgroundColor>
 	<Culling>0</Culling>
-	<ProjectionType>0</ProjectionType>
+	<ProjectionType>1</ProjectionType>
 	<Cameras>
 		<Camera id="1">
 			<Position>-10 -40 -26</Position>

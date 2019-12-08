@@ -50,26 +50,30 @@ public:
 
 	void transformAllModels();
 	void transformModel(int m);
-	void rotateModel(int modelIndex, int transformIndex);
-	void scaleModel(int modelIndex, int transformIndex);
-	void translateModel(int modelIndex, int transformIndex);
+	void transformAllVertices(int modelIndex, Matrix4 M);
+	
+	//void rotateModel(int modelIndex, int transformIndex);
+	//void scaleModel(int modelIndex, int transformIndex);
+	//void translateModel(int modelIndex, int transformIndex);
 
-	void translateTriangle(Triangle tri, Translation* tr);
-	void scaleTriangle(Triangle tri, Scaling* s);
+	//void translateTriangle(Triangle tri, Translation* tr);
+	//void scaleTriangle(Triangle tri, Scaling* s);
 	Matrix4 calculateCameraMatrix(Camera *camera);
-	void cameraTransformation(int modelIndex, Matrix4 M_camera);
+	Matrix4 calculateProjectionMatrix(Camera *camera);
+	//void cameraTransformation(int modelIndex, Matrix4 M_camera);
 
 	std::vector<int> getUniqueVerticesOfModel(int modelIndex);
-	void rotateVertex(int vertex_id, Rotation* r);
-	void scaleVertex(int vertex_id, Scaling* s);
-	void translateVertex(int vertex_id, Translation* tr);
+	//void rotateVertex(int vertex_id, Rotation* r);
+	//void scaleVertex(int vertex_id, Scaling* s);
+	//void translateVertex(int vertex_id, Translation* tr);
 	void restoreVertices();
 	void saveVertices();
 	Matrix4 ortographicProjection(Camera *camera);
 	Matrix4 perspectiveProjection(Camera *camera);
-	void projectionTransformation(int ModelIndex, Camera *camera);
+	
 	void viewportTransformation(int modelIndex, Matrix4 M_viewport );
 	Matrix4 calculateViewportMatrix(Camera* camera);
+	
 };
 
 #endif

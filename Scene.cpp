@@ -21,7 +21,7 @@
 using namespace tinyxml2;
 using namespace std;
 
-
+/*
 void Scene::translateVertex(int vertex_id, Translation* tr) {
 	Matrix4 T = getTranslationMatrix(tr);
 	Vec4 vert(Vec3toVec4(this->vertices[vertex_id]));
@@ -126,19 +126,68 @@ void Scene::rotateModel(int modelIndex, int transformIndex) {
 	}
 		
 }
+*/
 
-void Scene::transformModel(int m) {
-	for (int t = 0; t < this->models[m]->numberOfTransformations; t++) {
-		if (models[m]->transformationTypes[t] == 'r') {
-			this->rotateModel(m, t);
+void Scene::transformAllVertices(int modelIndex, Matrix4 M){
+	std::vector<int> modelVerticeIds = this->getUniqueVerticesOfModel(modelIndex);
+	int vertex_id;
+
+	for (int i = 0; i < modelVerticeIds.size(); i++ ){
+		vertex_id = modelVerticeIds[i] - 1;
+		cout << "vertex id = " << vertex_id << endl;
+
+		Vec4 vertex = Vec3toVec4(this->vertices[vertex_id]);
+		cout << "vertex : " << vertex << endl;
+		vertex = multiplyMatrixWithVec4(M, vertex);
+		cout << "matrix : " << endl;
+		cout << M << endl;
+		cout << "vertex multiplied : " << vertex << endl;
+
+		//cout << "Before transform" << endl;
+		//cout << *this->vertices[vertex_id] << endl;
+
+		this->vertices[vertex_id]->x = vertex.x;
+		this->vertices[vertex_id]->y = vertex.y;
+		this->vertices[vertex_id]->z = vertex.z;
+
+		cout << "---------------" << endl;
+		cout << "After transform" << endl;
+		cout << *this->vertices[vertex_id] << endl;
+		
+	}
+}
+
+void Scene::transformModel(int modelIndex) {
+	//Matrix4 M = getIdentityMatrix();
+	std::vector<int> modelVerticeIds = this->getUniqueVerticesOfModel(modelIndex);
+
+	for (int t = 0; t < this->models[modelIndex]->numberOfTransformations; t++) {
+
+		if (models[modelIndex]->transformationTypes[t] == 'r') {
+			Rotation* r = this->rotations[(this->models[modelIndex]->transformationIds[t]) - 1];
+			cout << "Rotation : " << *r << endl;
+			
+			Matrix4 R = getRotationMatrix(r);
+			this->transformAllVertices(modelIndex, R);
+			
 		}
-		else if (models[m]->transformationTypes[t] == 's') {
-			this->scaleModel(m, t);
+
+		else if (models[modelIndex]->transformationTypes[t] == 's') {
+			Scaling* s = this->scalings[(this->models[modelIndex]->transformationIds[t]) - 1];
+			cout << "Scaling : " << *s << endl;
+
+			Matrix4 S = getScalingMatrix(s);
+			this->transformAllVertices(modelIndex, S);
+			
 		}
 		else {
-			this->translateModel(m, t);
+			Translation* tr = this->translations[this->models[modelIndex]->transformationIds[t] - 1];
+			cout << "Translation : " << *tr << endl;
+			
+			Matrix4 T = getTranslationMatrix(tr);
+			this->transformAllVertices(modelIndex, T);
 		}
-	}	
+	}
 }
 
 std::vector<int> Scene::getUniqueVerticesOfModel(int modelIndex) {
@@ -170,15 +219,18 @@ void Scene::transformAllModels() {
 Matrix4 Scene::calculateCameraMatrix(Camera *camera){
 	Matrix4 matrix = getIdentityMatrix();
     
-	Translation tr(-1, camera->pos.x, camera->pos.y, camera->pos.z );
+	Translation tr(-1, -camera->pos.x, -camera->pos.y, -camera->pos.z );
 	Matrix4 T = getTranslationMatrix(&tr);
 
     Vec3 u = camera->u;
-    Vec3 unit_u(normalizeVec3(u));
+    //Vec3 unit_u(normalizeVec3(u));
+	Vec3 unit_u(u);
     Vec3 v = camera->v;
-    Vec3 unit_v(normalizeVec3(v));
+    //Vec3 unit_v(normalizeVec3(v));
+	Vec3 unit_v(v);
     Vec3 w = camera->w;
-    Vec3 unit_w(normalizeVec3(w));
+    //Vec3 unit_w(normalizeVec3(w));
+	Vec3 unit_w(w);
 
     double m_val[4][4] = {{unit_u.x, unit_u.y, unit_u.z, 0},
                         {unit_v.x, unit_v.y, unit_v.z, 0},
@@ -188,27 +240,17 @@ Matrix4 Scene::calculateCameraMatrix(Camera *camera){
 	matrix = multiplyMatrixWithMatrix(R, T);
 	return matrix;
 }
-
+/*
 void Scene::cameraTransformation(int modelIndex, Matrix4 M_camera){
 	//multiply all points of a model with camera transformation matrix
-	
 	std::vector<int> modelVerticeIds = this->getUniqueVerticesOfModel(modelIndex);
-
 	cout << modelIndex << " (modelIndex) | Generating camera coordinate system " << endl;
+
 	for (int i = 0; i < modelVerticeIds.size(); i++ ){
-		int vertex_id = modelVerticeIds[i] - 1;
-
-		Vec4 vert(Vec3toVec4(this->vertices[vertex_id]));
-		Vec3 vertex = Vec4toVec3(multiplyMatrixWithVec4(M_camera, vert));
-		
-		cout << vertex_id << " | Before camera transformation: " << *this->vertices[vertex_id] << endl;
-		Vec3* vertex_ptr = &vertex;
-		*this->vertices[vertex_id] = *vertex_ptr;
-		cout << vertex_id << " | After camera transformation: " << *this->vertices[vertex_id] << endl;
-
+		this->transformVertex(modelVerticeIds[i] - 1, M_camera);
 	}
 }
-
+*/
 void Scene::saveVertices(){
 	for(int i = 0; i < this->vertices.size(); i++){
 		this->transformedVertices.push_back( *this->vertices[i]);
@@ -221,8 +263,8 @@ void Scene::restoreVertices(){
 	}
 }
 
-void Scene::projectionTransformation(int modelIndex, Camera *camera){
-	std::vector<int> modelVerticeIds = this->getUniqueVerticesOfModel(modelIndex);
+
+Matrix4 Scene::calculateProjectionMatrix(Camera *camera){
 	Matrix4 projectionMatrix;
 
 	if(this->projectionType == 0){
@@ -231,7 +273,7 @@ void Scene::projectionTransformation(int modelIndex, Camera *camera){
 	else{
 		projectionMatrix = this->perspectiveProjection(camera);
 	}
-
+/*
 	for (int i = 0; i < modelVerticeIds.size(); i++ ){
 		int vertex_id = modelVerticeIds[i] - 1;
 		Vec4 vert(Vec3toVec4(this->vertices[vertex_id]));
@@ -247,6 +289,8 @@ void Scene::projectionTransformation(int modelIndex, Camera *camera){
 		 *this->vertices[vertex_id] = *vertex_ptr;
 		cout << vertex_id << " | After projection transformation: " << *this->vertices[vertex_id] << endl;
 	}
+*/
+	return projectionMatrix;
 }
 
 Matrix4 Scene::ortographicProjection(Camera *camera){
@@ -258,6 +302,7 @@ Matrix4 Scene::ortographicProjection(Camera *camera){
 	return Matrix4(m_val);
 }
 
+//TODO: perspectiveDevide() after perspective projection
 Matrix4 Scene::perspectiveProjection(Camera *camera){
 	double m_val[4][4] = {{(2*camera->near)/(camera->right - camera->left), 0, (camera->right + camera->left)/(camera->right - camera->left), 0},
 						{0, (2*camera->near)/(camera->top - camera->bottom), -(camera->top + camera->bottom)/(camera->top - camera->bottom), 0 },
@@ -276,7 +321,7 @@ Matrix4 Scene::calculateViewportMatrix(Camera* camera){
 }
 
 void Scene::viewportTransformation(int modelIndex, Matrix4 M_viewport ){
-	Color c(0,0,0);
+	//Color c(0,0,0);
 	std::vector<int> modelVerticeIds = this->getUniqueVerticesOfModel(modelIndex);
 	
 	for (int i = 0; i < modelVerticeIds.size(); i++ ){
@@ -291,6 +336,9 @@ void Scene::viewportTransformation(int modelIndex, Matrix4 M_viewport ){
 		//this->image[int(round(coordinate.x))][int(round(coordinate.y))].r = c.r;
 		//this->image[int(round(coordinate.x))][int(round(coordinate.y))].g = c.g;
 		//this->image[int(round(coordinate.x))][int(round(coordinate.y))].b = c.b;
+
+
+		
 	}
 }
 
@@ -303,37 +351,32 @@ void Scene::forwardRenderingPipeline(Camera *camera)
 	// TODO: Implement this function.
 
 	if(!this->isTransformed){
-    	cout << "TRANSFORMING THE MODEL" << endl;
+		cout << "TRANSFORMING THE MODEL" << endl;
 		this->transformAllModels();
 		this->isTransformed = true;
 		this->saveVertices();
-
 	}
 
 	this->restoreVertices();
 	cout << "------------------------------------------------------" << endl;
 	cout << "TRANSFORMING FOR CAMERA " << camera->cameraId << endl;
 	
+	
 	Matrix4 M_camera = calculateCameraMatrix(camera);
+
 	Matrix4 M_viewport = calculateViewportMatrix(camera);
-	Matrix4 M_ortographic = ortographicProjection(camera);
-	Matrix4 M_perspective = perspectiveProjection(camera);
-	/*
-	Matrix4 compositeTransformation = multiplyMatrixWithMatrix(multiplyMatrixWithMatrix(M_viewport, M_ortographic),M_camera);
-	for(int vertex_id=0; vertex_id < this->vertices.size(); vertex_id++){
-		Vec4 vert = Vec3toVec4(this->vertices[vertex_id]);
-		Vec3 vertex = Vec4toVec3(multiplyMatrixWithVec4(compositeTransformation, vert));
-		Vec3* vertex_ptr = &vertex;
-
-		*this->vertices[vertex_id] = *vertex_ptr;
-		cout << "VERTICE " << vertex_id << " " << *this->vertices[vertex_id] << endl; 
-	}
-
-	*/
+	Matrix4 M_projection = calculateProjectionMatrix(camera);
+	
 	for (int modelIndex = 0; modelIndex < this->models.size(); modelIndex++){
-		this->cameraTransformation(modelIndex, M_camera);	
-		this->projectionTransformation(modelIndex, camera);
-		this->viewportTransformation(modelIndex, M_viewport);
+		cout << "----Camera Transformation----" << endl;
+		cout << M_camera << endl;
+		cout << "---------" << endl;
+		this->transformAllVertices(modelIndex, M_camera);
+		cout << "----Projection Transformation----" << endl;
+		cout << M_projection << endl;
+		cout << "---------" << endl;	
+		this->transformAllVertices(modelIndex, M_projection);
+		//this->viewportTransformation(modelIndex, M_viewport);
 	}
 }
 
