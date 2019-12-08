@@ -21,6 +21,8 @@ from pymunk.vec2d import Vec2d
 import json, socket, pickle
 import threading
 
+from colors import colors
+
 ''' TODO:
         create instances of class library
         let clients connect and interact with them
@@ -41,31 +43,29 @@ import threading
     7    In first phase, some methods were excluded for convenience, all given methods and functionalities should be implemented in this phase.
 
 '''
-class bcolors:
-    HEADER = '\033[95m'
-    OKBLUE = '\033[94m'
-    OKGREEN = '\033[92m'
-    WARNING = '\033[93m'
-    FAIL = '\033[91m'
-    ENDC = '\033[0m'
-    BOLD = '\033[1m'
-    UNDERLINE = '\033[4m'
 
 class Server():
-    def __init__(self, host, port):
+    def __init__(self, host, listening_port, notifying_port):
         self.host = host
-        self.port = port
-        self.serverSocket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
 
-        self.serverSocket.setsockopt(socket.SOL_SOCKET, socket.SO_REUSEADDR, 1)
+        self.listeningPort = listening_port
+        self.notifyingPort = notifying_port
 
-        self.serverSocket.bind((self.host, self.port))
+        self.listenSocket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+        self.listenSocket.setsockopt(socket.SOL_SOCKET, socket.SO_REUSEADDR, 1)
+        self.listenSocket.bind((self.host, self.listeningPort))
+
+        self.notifySocket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+        self.notifySocket.setsockopt(socket.SOL_SOCKET, socket.SO_REUSEADDR, 1)
+        self.notifySocket.bind((self.host, self.notifyingPort))       
 
     def listen(self):
         while True:
-            self.serverSocket.listen(1)
-            client, address = self.serverSocket.accept()
+            self.listenSocket.listen(1)
+            client, address = self.listenSocket.accept()
+
             threading.Thread(target = self.listenToClient, args = (client, address)).start()
+
 
     def listenToClient(self, client, address):
         userNameSet = False
@@ -76,30 +76,56 @@ class Server():
                 userName = message
 
                 if userName:
-                    print(bcolors.OKBLUE + 'User name set as: ' + bcolors.ENDC + userName)
+                    print(colors.BLUE + 'User name set as: ' + colors.ENDC + userName)
                     userNameSet = True
-                    client.send('Your user name is set as: ' + userName)
-                    #print(bcolors.OKGREEN + 'Sent: ' + bcolors.ENDC + data)
-
+                    threading.Thread(target = self.notifyClient, args = ()).start()
+                    #notfiyClient()
+            '''
             while True:
                 try:
                     message = pickle.loads(client.recv(1024))
-                    print('Got a message: ' + message)
+                    print(colors.GREEN + userName + ': ' + colors.ENDC + message)
+                    #print('Got a message: ' + message + ' from ' + userName)
                 except:
                     client.close()
                     return False
+            '''
 
         except:
             client.close()
             return False
 
+    def notifyClient(self):
+        while True:
+            self.notifySocket.listen(1)
+            client, address = self.notifySocket.accept()
+            self.sendNotification(client, address)
+            self.sendOtherNotification(client, address)
+
+    def sendNotification(self, client, address):
+        print(colors.YELLOW + 'Sending notification' + colors.ENDC)
+        print(colors.GREEN + str(client) + colors.GREEN)
+        #print(colors.BLUE + userName + colors.BLUE)
+        data = 'Hello this is server.'
+        notification = pickle.dumps(data)
+        client.send(notification)
+        print(colors.YELLOW + 'Notificiation sent' + colors.ENDC)
+    
+    def sendOtherNotification(self, client, address):
+        print(colors.YELLOW + 'Sending notification' + colors.ENDC)
+        data = 'Hello this is server, AGAIIIINNN.'
+        notification = pickle.dumps(data)
+        client.send(notification)
+        print(colors.YELLOW + 'Notificiation sent' + colors.ENDC)
+
 if __name__ == "__main__":
     while True:
         try:
             host = 'localhost'
-            port = 8000
+            listening_port = 8000
+            notifying_port = 5000
             break
         except ValueError:
             pass
 
-    Server(host, port).listen()
+    Server(host, listening_port, notifying_port).listen()

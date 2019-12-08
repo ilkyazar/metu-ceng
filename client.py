@@ -20,6 +20,9 @@ from pymunk.vec2d import Vec2d
 
 import json, socket, pickle
 import threading
+import socket
+
+from colors import colors
 
 ''' TODO:
         create instances of class library
@@ -42,51 +45,73 @@ import threading
 
 '''
 
-import socket
+class Client():
+    def __init__(self, host, sending_port, receiving_port):
+        self.host = host
 
-class bcolors:
-    HEADER = '\033[95m'
-    OKBLUE = '\033[94m'
-    OKGREEN = '\033[92m'
-    WARNING = '\033[93m'
-    FAIL = '\033[91m'
-    ENDC = '\033[0m'
-    BOLD = '\033[1m'
-    UNDERLINE = '\033[4m'
+        self.sendingPort = sending_port
+        self.receivingPort = receiving_port
 
-host = 'localhost'
-port = 8000
+        self.userNameSet = False
+        self.userName = ''
 
-clientSocket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
-clientSocket.connect((host,port))
+    def connectToServer(self):
+        self.sendSocket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+        self.sendSocket.connect((self.host, self.sendingPort))
+        print(colors.RED + 'Client connected to' + colors.ENDC)
+        print(self.sendSocket)
 
-userNameSet = False
+        self.receiveSocket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
 
+    def getNotification(self):
+        self.receiveSocket.connect((self.host, self.receivingPort))
+        print(colors.RED + 'Client connected to' + colors.ENDC)
+        print(self.receiveSocket)
 
-if (userNameSet == False):
-    userName = input('Set a user name: ')
+        while True:
+            try:
+                notification = pickle.loads(self.receiveSocket.recv(2048))
 
-    while (userName == 'admin'):
-        print(bcolors.FAIL + 'You cannot set your user name as admin.' + bcolors.ENDC)
-        userName = input('Set a user name: ')
+                print('Message from server: ' + notification)
+            except:
+                self.receiveSocket.close()    
+            
+    def setUserName(self):
+        if (self.userNameSet == False):
+            data = input('Set a user name: ')
 
-userNameSet = True   
+            while (data == 'admin'):
+                print(colors.RED + 'You cannot set your user name as admin.' + colors.ENDC)
+                data = input('Set a user name: ')
 
-data = pickle.dumps(userName)
+        self.userNameSet = True   
 
-clientSocket.send(data)
+        self.userName = pickle.dumps(data)
 
+        self.sendSocket.send(self.userName)
+        '''
+        while True:
+            message = input('Message: ')
 
-usrNameSetMsg = clientSocket.recv(1024)
-print(usrNameSetMsg)
+            data = pickle.dumps(message)
+            self.sendSocket.send(data)
 
-while True:
-    message = input('Message: ')
+            #received = sendSocket.recv(1024)
 
-    data = pickle.dumps(message)
-    clientSocket.send(data)
+            #print("response: ", received)
+        '''
 
-    #received = clientSocket.recv(1024)
+if __name__ == "__main__":
+    while True:
+        try:
+            host = 'localhost'
+            sending_port = 8000
+            receiving_port = 5000
+            break
+        except ValueError:
+            pass
 
-    #print("response: ", received)
-
+    client = Client(host, sending_port, receiving_port)
+    client.connectToServer()
+    client.setUserName()
+    threading.Thread(target = client.getNotification, args = ()).start()
