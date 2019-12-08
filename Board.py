@@ -37,7 +37,8 @@ class Board():
 
     def setSpace(self):
         self.space = pymunk.Space()
-        self.space.gravity = 0, 0
+        self.space.gravity = 0, -9820
+        self.space.damping = 0.99
     
     def setGravity(self, gravity):
         self.space.gravity = gravity

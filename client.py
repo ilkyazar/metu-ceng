@@ -79,16 +79,17 @@ class Client():
     def setUserName(self):
         if (self.userNameSet == False):
             data = input('Set a user name: ')
-
+            
             while (data == 'admin'):
                 print(colors.RED + 'You cannot set your user name as admin.' + colors.ENDC)
                 data = input('Set a user name: ')
 
-        self.userNameSet = True   
+            self.userNameSet = True   
 
         self.userName = pickle.dumps(data)
 
         self.sendSocket.send(self.userName)
+        threading.Thread(target = client.getNotification, args = ()).start()
         '''
         while True:
             message = input('Message: ')
@@ -114,4 +115,4 @@ if __name__ == "__main__":
     client = Client(host, sending_port, receiving_port)
     client.connectToServer()
     client.setUserName()
-    threading.Thread(target = client.getNotification, args = ()).start()
+    

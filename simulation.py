@@ -25,7 +25,7 @@ font = pygame.font.Font(None, 24)
 
 board1 = Board()
 board1.start((1./60.0), 60, 1000)
-board1.load('test2.json')
+board1.load('./inputs/test2.json')
 
 help_txt = font.render(
     "Move objects with left click. Toggle connections with right click. Have fun! :)", 
