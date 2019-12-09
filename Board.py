@@ -131,9 +131,6 @@ class Board():
         if(user.userName not in self.users.keys()):
             self.users[user.userName] = user
 
-            greenUserName = colors.writeGreen(user.userName)
-            greenBoardName = colors.writeGreen(self.boardName)
-            print(colors.writeYellow('User ') + greenUserName + colors.writeYellow(' is attached to the board ') + greenBoardName)
         else:
             print (colors.RED + 'User already attached!' + colors.ENDC)
 

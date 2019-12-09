@@ -51,59 +51,111 @@ class Server():
         self.listeningPort = listening_port
         self.notifyingPort = notifying_port
 
-        self.listenSocket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
-        self.listenSocket.setsockopt(socket.SOL_SOCKET, socket.SO_REUSEADDR, 1)
-        self.listenSocket.bind((self.host, self.listeningPort))
-
-        self.notifySocket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
-        self.notifySocket.setsockopt(socket.SOL_SOCKET, socket.SO_REUSEADDR, 1)
-        self.notifySocket.bind((self.host, self.notifyingPort))
         #boardDict holds boardname-board pairs
-        self.boardDict = {}   
-        #user class instance-client socket pairs
-        self.attachedUsers = {}    
+        self.boardDict = {}
+        #username - client pairs
+        self.userDict = {}    
 
-    def listen(self):
+    def startListening(self):
+        threading.Thread(target = self.listenRequest, args = ()).start()
+        threading.Thread(target = self.listenNotify, args = ()).start()
+
+    def listenRequest(self):
+        try:
+            self.requestSocket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+            self.requestSocket.setsockopt(socket.SOL_SOCKET, socket.SO_REUSEADDR, 1)
+            self.requestSocket.bind((self.host, self.listeningPort))
+            self.requestSocket.listen()
+
+        except:
+            print('Exception') 
+
         while True:
-            self.listenSocket.listen(1)
-            client, address = self.listenSocket.accept()
+            
+            client, address = self.requestSocket.accept()
 
             print(colors.GREEN + 'New client connected' + colors.ENDC)
             print(address)
 
             threading.Thread(target = self.listenToClient, args = (client, address)).start()
+            
+
+    def listenNotify(self):
+        try:
+            self.notifySocket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+            self.notifySocket.setsockopt(socket.SOL_SOCKET, socket.SO_REUSEADDR, 1)
+            self.notifySocket.bind((self.host, self.notifyingPort))
+            self.notifySocket.listen()
+
+        except:
+            print('Exception') 
+
+        while True:
+            
+            client, address = self.notifySocket.accept()
+
+            print(colors.GREEN + 'New client connected' + colors.ENDC)
+            print(address)
+            threading.Thread(target = self.notifyClient, args = (client, address)).start()
 
 
     def listenToClient(self, client, address):
         userNameSet = False
-        try:
-            message = pickle.loads(client.recv(1024))
+        userName = ''
+        boardNameSet = False
+        boardName = ''
 
-            if userNameSet == False:
-                userName = message
+        while True:
+            try:
+                data = client.recv(1024)
+                message = pickle.loads(data)
 
-                if userName:
+                if userNameSet == False:
+                    userName = message
                     print(colors.BLUE + 'User name set as: ' + colors.ENDC + userName)
                     userNameSet = True
                     newUser = User(userName)
+                
+                elif boardNameSet == False:
+                    boardName = message
+                    print(colors.BLUE + 'Board name set as: ' + colors.ENDC + boardName)
+                    boardNameSet = True
 
-                    threading.Thread(target = self.notifyClient, args = ()).start()
+                    if boardName in self.boardDict.keys():
+                        self.attachUser(newUser, boardDict[boardName])
+                    else:
+                        newBoard = self.createBoard(boardName)
+                        self.attachUser(newUser, newBoard)
+                        greenUserName = colors.writeGreen(userName)
+                        greenBoardName = colors.writeGreen(boardName)
+                        print(colors.writeYellow('User ') + greenUserName + colors.writeYellow(' is attached to the board ') + greenBoardName)
+                else:
+                    print(color.writeRed('Other Message Received'))
 
-                    self.getBoardSelection(client, address, newUser)
-            '''
-            while True:
-                try:
-                    message = pickle.loads(client.recv(1024))
-                    print(colors.GREEN + userName + ': ' + colors.ENDC + message)
-                    #print('Got a message: ' + message + ' from ' + userName)
-                except:
-                    client.close()
-                    return False
-            '''
+            except:
+                client.close()
+                return False
 
-        except:
-            client.close()
-            return False
+
+    def notifyClient(self, client, address):
+
+        data = client.recv(1024)
+        userName = pickle.loads(data)
+
+        self.userDict[userName] = client
+        print(colors.GREEN + 'New client connected' + colors.ENDC)
+        print(userName)
+        print(self.notifySocket)
+
+        #self.sendNotification(client, address)
+
+
+    def createBoard(self, boardString):
+        newBoard = Board(5, 5, boardString)
+        return newBoard
+
+    def attachUser(self, newUser, board):
+        board.attach(newUser)
 
     def getBoardSelection(self, client, address, newUser):
         try:
@@ -129,29 +181,6 @@ class Server():
             client.close()
             return False
 
-    def notifyClient(self):
-        while True:
-            self.notifySocket.listen(1)
-            client, address = self.notifySocket.accept()
-
-            print(colors.GREEN + 'New client connected' + colors.ENDC)
-            print(address)
-            print(self.notifySocket)
-
-            self.sendNotification(client, address)
-
-            print('Before forforofroforforfor')
-            
-            attachNotificationNotSend = 1
-
-            while attachNotificationNotSend:
-                for key,value in self.attachedUsers.items():
-                    print(client)
-                    print(value)
-                    if client == value:
-                        user = key
-                        self.sendAttachNotification(user)
-                        attachNotificationNotSend = 0
             
     def sendNotification(self, client, address):
         print(colors.YELLOW + 'Sending notification' + colors.ENDC)
@@ -179,25 +208,9 @@ class Server():
         client.send(notification)
         print(colors.YELLOW + 'User attached notificiation sent' + colors.ENDC)
 
-    def createBoard(self, boardString):
-        newBoard = Board(5, 5, 'dummy')
-        newBoard.start((1./60.0), 60, 1000)
 
-        if (boardString == 'board1'):
-            newBoard.load('./inputs/test4.json')
 
-        options = pymunk.pygame_util.DrawOptions(newBoard.screen)
 
-        self.createContainers(newBoard)
-
-        newBoard.screen.fill(pygame.color.THECOLORS["white"])
-
-        #self.updateSpace(newBoard, options)
-
-        return newBoard
-
-    def attachUser(self, newUser, board):
-        board.attach(newUser)
 
 
     def createContainers(self, board):
@@ -225,4 +238,4 @@ if __name__ == "__main__":
         except ValueError:
             pass
 
-    Server(host, listening_port, notifying_port).listen()
+    Server(host, listening_port, notifying_port).startListening()

@@ -53,6 +53,7 @@ class Client():
         self.receivingPort = receiving_port
 
         self.userNameSet = False
+        self.boarNameSet = False
         self.user = None
         
 
@@ -64,6 +65,32 @@ class Client():
 
         self.receiveSocket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
 
+    def setUserName(self):
+        if (self.userNameSet == False):
+            data = input('Set a user name: ')
+            
+            while (data == 'admin'):
+                print(colors.RED + 'You cannot set your user name as admin.' + colors.ENDC)
+                data = input('Set a user name: ')
+
+            self.userNameSet = True 
+            self.userName = data
+
+        userNameBytes = pickle.dumps(data)
+        self.sendSocket.send(userNameBytes)
+    
+    def setBoardName(self):
+        if (self.boarNameSet == False):
+            data = input('Select a board: ')
+            
+            self.boarNameSet = True 
+            self.boardName = data
+
+        boardNameBytes = pickle.dumps(data)
+        self.sendSocket.send(boardNameBytes)
+
+
+        
     def getNotification(self):
         self.receiveSocket.connect((self.host, self.receivingPort))
         print(colors.RED + 'Client connected to' + colors.ENDC)
@@ -72,7 +99,8 @@ class Client():
         while True:
             try:
                 print(colors.writeRed('GONnA GET NOTIFICATIIOOON'))
-                notification = pickle.loads(self.receiveSocket.recv(2048))
+                data = self.receiveSocket.recv(2048)
+                notification = pickle.loads(data)
 
                 print(colors.writeRed('Notification from server: ') + notification)
 
@@ -83,44 +111,11 @@ class Client():
                 print(colors.writeRed('Receive socket is closed.'))
                 self.receiveSocket.close()    
 
-        
-
-    def selectBoard(self):
-        data = input()
-        boardSelection = pickle.dumps(data)
-        self.sendSocket.send(boardSelection)
-
-    def setUserName(self):
-        if (self.userNameSet == False):
-            data = input('Set a user name: ')
-            
-            while (data == 'admin'):
-                print(colors.RED + 'You cannot set your user name as admin.' + colors.ENDC)
-                data = input('Set a user name: ')
-
-            self.userNameSet = True 
-            self.user = User(data)
-
-        userNameBytes = pickle.dumps(data)
-
-        self.sendSocket.send(userNameBytes)
-        threading.Thread(target = client.getNotification, args = ()).start()
-        '''
-        while True:
-            message = input('Message: ')
-
-            data = pickle.dumps(message)
-            self.sendSocket.send(data)
-
-            #received = sendSocket.recv(1024)
-
-            #print("response: ", received)
-        '''
 
     def initializeGame(self):
         pymunk.pygame_util.positive_y_is_up = False
         pygame.init()
-        pygame.display.set_caption(self.user.getName())
+        pygame.display.set_caption(self.userName)
         #clock = pygame.time.Clock()
         font = pygame.font.Font(None, 24)
 
@@ -145,6 +140,9 @@ if __name__ == "__main__":
     client = Client(host, sending_port, receiving_port)
     client.connectToServer()
     client.setUserName()
+    client.setBoardName()
+    threading.Thread(target = client.getNotification, args = ()).start()
+
     #client.initializeGame()
     #client.createBoard('./inputs/test4.json')
 
