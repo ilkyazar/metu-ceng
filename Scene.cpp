@@ -233,7 +233,7 @@ void Scene::midpointY(Vec3 v0, Vec3 v1, bool isNegative){
 				d += 2*(v0.x - v1.x);
 			}
 		}
-		else{
+		else{ // this is problematic probably
 			if( d > 0){ //choose NW
 				x--;
 				d += 2*((v0.x - v1.x) - (v1.y - v0.y));
