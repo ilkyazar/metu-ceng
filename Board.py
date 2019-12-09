@@ -36,6 +36,8 @@ class Board():
         self.y = y
         self.screen = pygame.display.set_mode((x, y))
 
+        print(colors.writeBlue('A new board with ') + colors.writeGreen(str(self.x) + ' ') + colors.writeGreen(str(self.y) + ' ') + colors.writeBlue('dimensions are created.'))
+
     def setSpace(self):
         self.space = pymunk.Space()
         self.space.gravity = 0, -9820
@@ -261,7 +263,7 @@ class Board():
             shape2 = self.allShapes[shape2_id] 
             self.connect(shape1, shape2)
         
-        print("JSON file loaded successfully.")
+        print(colors.writeBold("JSON file loaded successfully from " + file))
 
     def state(self, update):
         state = []

@@ -112,7 +112,7 @@ class Client():
         font = pygame.font.Font(None, 24)
 
     def createBoard(self, inputFile):
-        newBoard = Board()
+        newBoard = Board(5, 5, 'dummy')
         newBoard.start((1./60.0), 60, 1000)
         newBoard.load(inputFile)
         options = pymunk.pygame_util.DrawOptions(newBoard.screen)
