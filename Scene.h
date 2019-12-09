@@ -64,7 +64,9 @@ public:
 
 	void rasterization(Triangle tri);
 	void draw(int x, int y, Color color);
-	void midpointX(Vec3 v0, Vec3 v1);
+	void midpointX(Vec3 v0, Vec3 v1, bool isNegative);
+	void midpointY(Vec3 v0, Vec3 v1, bool isNegative);
+	void rasterizeLine(Vec3 v0, Vec3 v1);
 	
 };
 

@@ -190,6 +190,11 @@ void Scene::viewportTransformation(int modelIndex, Matrix4 M_viewport ){
 		cout << "Viewport matrix: " << endl;
 		cout << M_viewport << endl;
 		Vec3 coordinate = Vec4toVec3(multiplyMatrixWithVec4(M_viewport, vert));
+		
+		this->vertices[vertex_id]->x = coordinate.x;
+		this->vertices[vertex_id]->y = coordinate.y;
+		this->vertices[vertex_id]->z = coordinate.z;
+
 		cout << coordinate << endl;
 
 		this->image[round(coordinate.x)][round(coordinate.y)].r = c.r;
@@ -205,7 +210,45 @@ void Scene::draw(int x, int y, Color color){
 	this->image[x][y].b = color.b;
 }
 
-void Scene::midpointX(Vec3 v0, Vec3 v1){
+void Scene::midpointY(Vec3 v0, Vec3 v1, bool isNegative){
+	int x = v0.x;
+	int d = 2*(v0.x - v1.x) + (v1.y - v0.y);
+	Color* c0 = this->colorsOfVertices[v0.colorId - 1];
+	Color* c1 = this->colorsOfVertices[v1.colorId - 1];
+	Color c(c0->r, c0->g, c0->b);
+	Color dc; 
+    dc.r = (c1->r - c0->r) / (v1.y - v0.y );
+    dc.g = (c1->g - c0->g) / (v1.y - v0.y );
+    dc.b = (c1->b - c0->b) / (v1.y - v0.y ); 
+
+	for(int y = v0.y; y <= v1.y; y++ ){
+		this->draw(x, y, c);
+		
+		if(!isNegative){
+			if(d < 0){ //choose NE
+				x++;
+				d += 2*((v0.x - v1.x) + (v1.y - v0.y));
+			}
+			else{ //choose N
+				d += 2*(v0.x - v1.x);
+			}
+		}
+		else{
+			if( d > 0){ //choose NW
+				x--;
+				d += 2*((v0.x - v1.x) - (v1.y - v0.y));
+			}
+			else{ //choose N
+				d += 2*(v0.x - v1.x);
+			}
+		}
+		c.r += dc.r;
+		c.g += dc.g;
+		c.b += dc.b;
+	}
+}
+
+void Scene::midpointX(Vec3 v0, Vec3 v1, bool isNegative){
 	int y = v0.y;
 	int d = 2*(v0.y - v1.y) + (v1.x - v0.x);
 	Color* c0 = this->colorsOfVertices[v0.colorId - 1];
@@ -216,14 +259,27 @@ void Scene::midpointX(Vec3 v0, Vec3 v1){
     dc.g = (c1->g - c0->g) / (v1.x - v0.x );
     dc.b = (c1->b - c0->b) / (v1.x - v0.x ); 
 
-	for(int x = v0.x; x < v1.x; x++ ){
+
+	for(int x = v0.x; x <= v1.x; x++ ){
 		this->draw(x, y, c);
-		if(d < 0){ //choose NE
-			y++;
-			d += 2*((v0.y - v1.y) + (v1.x - v0.x));
+		
+		if(!isNegative){
+			if(d < 0){ //choose NE
+				y++;
+				d += 2*((v0.y - v1.y) + (v1.x - v0.x));
+			}
+			else{ //choose E
+				d += 2*(v0.y - v1.y);
+			}
 		}
-		else{ //choose E
-			d += 2*(v0.y - v1.y);
+		else{
+			if( d > 0){ //choose SE
+				y--;
+				d += 2*((v0.y - v1.y) - (v1.x - v0.x));
+			}
+			else{ //choose E
+				d += 2*(v0.y - v1.y);
+			}
 		}
 		c.r += dc.r;
 		c.g += dc.g;
@@ -231,13 +287,43 @@ void Scene::midpointX(Vec3 v0, Vec3 v1){
 	}
 }
 
+void Scene::rasterizeLine(Vec3 v0, Vec3 v1){
+	if(v0.x > v1.x){
+		Vec3 temp(v0);
+		v0 = v1;
+		v1 = temp;
+	}
+	cout << "comparing vertices: "<< endl;
+	cout << "v0 is: " << v0 << endl;
+	cout << "v1 is: " << v1 << endl;
+
+	float slope = (v1.y - v0.y)/(v1.x - v0.x);
+	bool isNegative = false;
+
+	if(slope < 1 && slope > -1){ //x ekseninde ilerle
+		if(v1.y < v0.y){
+			isNegative = true;		
+		}
+		this->midpointX(v0, v1, isNegative);		 
+	}
+	else{ //y ekseninde ilerle
+		if(v1.x < v0.x){
+			isNegative = true;
+		}
+		this->midpointY(v0, v1, isNegative);
+	}
+}
+
 void Scene::rasterization(Triangle tri){
-	Vec3* v0 = this->vertices[tri.getFirstVertexId()-1];
-	Vec3* v1 = this->vertices[tri.getSecondVertexId()-1];
-	Vec3* v2 = this->vertices[tri.getThirdVertexId()-1];
+	Vec3 v0 = *this->vertices[tri.getFirstVertexId()-1];
+	Vec3 v1 = *this->vertices[tri.getSecondVertexId()-1];
+	Vec3 v2 = *this->vertices[tri.getThirdVertexId()-1];
 
 	//todo: write midpointY for slopes greater than 1
-	//then call midpointX or midpoinitY for each vertice pair 
+	//then call midpointX or midpointY for each vertice pair
+	this->rasterizeLine(v0, v1);
+	this->rasterizeLine(v1, v2);
+	this->rasterizeLine(v0, v2);
 }
 
 /*
@@ -282,7 +368,7 @@ void Scene::forwardRenderingPipeline(Camera *camera)
 		for(int triIndex=0; triIndex < this->models[modelIndex]->numberOfTriangles; triIndex++){
 			Triangle tri = this->models[modelIndex]->triangles[triIndex];
 			cout << "Line rasterization for triangle: " << triIndex << endl;
-			//this->rasterization(tri);
+			this->rasterization(tri);
 		}
 
 	}
