@@ -52,27 +52,19 @@ public:
 	void transformModel(int m);
 	void transformAllVertices(int modelIndex, Matrix4 M);
 	
-	//void rotateModel(int modelIndex, int transformIndex);
-	//void scaleModel(int modelIndex, int transformIndex);
-	//void translateModel(int modelIndex, int transformIndex);
-
-	//void translateTriangle(Triangle tri, Translation* tr);
-	//void scaleTriangle(Triangle tri, Scaling* s);
-	Matrix4 calculateCameraMatrix(Camera *camera);
-	Matrix4 calculateProjectionMatrix(Camera *camera);
-	//void cameraTransformation(int modelIndex, Matrix4 M_camera);
-
 	std::vector<int> getUniqueVerticesOfModel(int modelIndex);
-	//void rotateVertex(int vertex_id, Rotation* r);
-	//void scaleVertex(int vertex_id, Scaling* s);
-	//void translateVertex(int vertex_id, Translation* tr);
 	void restoreVertices();
 	void saveVertices();
-	Matrix4 ortographicProjection(Camera *camera);
-	Matrix4 perspectiveProjection(Camera *camera);
-	
-	void viewportTransformation(int modelIndex, Matrix4 M_viewport );
+
+	Matrix4 calculateCameraMatrix(Camera *camera);
 	Matrix4 calculateViewportMatrix(Camera* camera);
+	Matrix4 ortographicProjection(Camera *camera);
+	void perspectiveProjection(int modelIndex, Camera *camera);
+	void viewportTransformation(int modelIndex, Matrix4 M_viewport );
+
+	void rasterization(Triangle tri);
+	void draw(int x, int y, Color color);
+	void midpointX(Vec3 v0, Vec3 v1);
 	
 };
 
