@@ -109,8 +109,6 @@ class Server():
 
             self.sendNotification(client, address)
 
-            self.initializeGame()
-            self.createBoard()
 
             #self.sendOtherNotification(client, address)
 
@@ -130,45 +128,6 @@ class Server():
         client.send(notification)
         print(colors.YELLOW + 'Notificiation sent' + colors.ENDC)
 
-    def initializeGame(self):
-        pymunk.pygame_util.positive_y_is_up = False
-        pygame.init()
-        #clock = pygame.time.Clock()
-        font = pygame.font.Font(None, 24)
-
-    def createBoard(self):
-        newBoard = Board()
-        newBoard.start((1./60.0), 60, 1000)
-        newBoard.load('./inputs/test4.json')
-        options = pymunk.pygame_util.DrawOptions(newBoard.screen)
-
-        self.createContainers(newBoard)
-
-        newBoard.screen.fill(pygame.color.THECOLORS["white"])
-
-        self.updateSpace(newBoard, options)
-
-    def createContainers(self, board):
-        box_size = 200
-        w = board.screen.get_width()
-        h = board.screen.get_height()
-        for i in range(4):
-            sw = pymunk.Segment(board.space.static_body, 
-                (0, i*box_size), (w, i* box_size), 1)
-            sw.friction = 1
-            sw.elasticity = 1
-            sh = pymunk.Segment(board.space.static_body, 
-                (i*box_size, 0), (i*box_size, h-box_size), 1)
-            sh.friction = 1
-            sh.elasticity = 1
-            board.space.add(sw, sh)
-
-    def updateSpace(self, board, options):
-        board.updateSpace()
-        board.space.debug_draw(options)
-        pygame.display.flip()
-        clock = pygame.time.Clock()
-        clock.tick(60)        
 
 if __name__ == "__main__":
     while True:
