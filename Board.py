@@ -13,6 +13,7 @@ from Segment import *
 from RotatingSegment import *
 from Connector import * 
 from pymunk.vec2d import Vec2d
+from colors import colors
 
 class Board():
     def __init__(self, x=0, y=0, name=''):
@@ -127,14 +128,18 @@ class Board():
     def attach(self, user):
         if(user.userName not in self.users.keys()):
             self.users[user.userName] = user
+
+            greenUserName = colors.writeGreen(user.userName)
+            greenBoardName = colors.writeGreen(self.boardName)
+            print(colors.writeYellow('User ') + greenUserName + colors.writeYellow(' is attached to the board ') + greenBoardName)
         else:
-            print ('User already attached!')
+            print (colors.RED + 'User already attached!' + colors.ENDC)
 
     def detach(self, user):
         if(user.userName in self.users.keys()):
             self.users.pop(user.userName)
         else:
-            print ('User is not attached, you can not detach it!')
+            print (colors.RED + 'User is not attached, you can not detach it!' + colors.ENDC)
 
     def list(self):
         #an admin user will store all boards

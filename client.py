@@ -118,6 +118,7 @@ class Client():
         options = pymunk.pygame_util.DrawOptions(newBoard.screen)
 
         self.createContainers(newBoard)
+        newBoard.attach(self.user)
 
         newBoard.screen.fill(pygame.color.THECOLORS["white"])
 
