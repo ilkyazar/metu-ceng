@@ -71,12 +71,25 @@ class Client():
 
         while True:
             try:
+                print(colors.writeRed('GONnA GET NOTIFICATIIOOON'))
                 notification = pickle.loads(self.receiveSocket.recv(2048))
 
-                print('Message from server: ' + notification)
-            except:
-                self.receiveSocket.close()    
+                print(colors.writeRed('Notification from server: ') + notification)
+
+                if (notification == 'Hello this is server. \n Type <boardname> to attach yourself to a board.'):
+                    self.selectBoard()
             
+            except:
+                print(colors.writeRed('Receive socket is closed.'))
+                self.receiveSocket.close()    
+
+        
+
+    def selectBoard(self):
+        data = input()
+        boardSelection = pickle.dumps(data)
+        self.sendSocket.send(boardSelection)
+
     def setUserName(self):
         if (self.userNameSet == False):
             data = input('Set a user name: ')
@@ -111,33 +124,6 @@ class Client():
         #clock = pygame.time.Clock()
         font = pygame.font.Font(None, 24)
 
-    def createBoard(self, inputFile):
-        newBoard = Board(5, 5, 'dummy')
-        newBoard.start((1./60.0), 60, 1000)
-        newBoard.load(inputFile)
-        options = pymunk.pygame_util.DrawOptions(newBoard.screen)
-
-        self.createContainers(newBoard)
-        newBoard.attach(self.user)
-
-        newBoard.screen.fill(pygame.color.THECOLORS["white"])
-
-        self.updateSpace(newBoard, options)
-
-    def createContainers(self, board):
-        box_size = 200
-        w = board.screen.get_width()
-        h = board.screen.get_height()
-        for i in range(4):
-            sw = pymunk.Segment(board.space.static_body, 
-                (0, i*box_size), (w, i* box_size), 1)
-            sw.friction = 1
-            sw.elasticity = 1
-            sh = pymunk.Segment(board.space.static_body, 
-                (i*box_size, 0), (i*box_size, h-box_size), 1)
-            sh.friction = 1
-            sh.elasticity = 1
-            board.space.add(sw, sh)
 
     def updateSpace(self, board, options):
         board.updateSpace()
@@ -159,6 +145,6 @@ if __name__ == "__main__":
     client = Client(host, sending_port, receiving_port)
     client.connectToServer()
     client.setUserName()
-    client.initializeGame()
-    client.createBoard('./inputs/test4.json')
+    #client.initializeGame()
+    #client.createBoard('./inputs/test4.json')
 
