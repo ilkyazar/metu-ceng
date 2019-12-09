@@ -62,7 +62,7 @@ public:
 	void perspectiveProjection(int modelIndex, Camera *camera);
 	void viewportTransformation(int modelIndex, Matrix4 M_viewport );
 
-	void rasterization(Triangle tri);
+	void wireframeRasterization(Triangle tri);
 	void draw(int x, int y, Color color);
 	void midpointX(Vec3 v0, Vec3 v1, bool isNegative);
 	void midpointY(Vec3 v0, Vec3 v1, bool isNegative);

@@ -288,25 +288,26 @@ void Scene::midpointX(Vec3 v0, Vec3 v1, bool isNegative){
 }
 
 void Scene::rasterizeLine(Vec3 v0, Vec3 v1){
-	if(v0.x > v1.x){
+	float slope = (v1.y - v0.y)/(v1.x - v0.x);
+	
+	if(!(slope < -1 && v1.x < v0.x) && (v0.x > v1.x)) {
 		Vec3 temp(v0);
 		v0 = v1;
 		v1 = temp;
 	}
+
 	cout << "comparing vertices: "<< endl;
 	cout << "v0 is: " << v0 << endl;
 	cout << "v1 is: " << v1 << endl;
 
-	float slope = (v1.y - v0.y)/(v1.x - v0.x);
 	bool isNegative = false;
-
-	if(slope < 1 && slope > -1){ //x ekseninde ilerle
+	if(slope < 1 && slope > -1){ //move on x axis
 		if(v1.y < v0.y){
 			isNegative = true;		
 		}
 		this->midpointX(v0, v1, isNegative);		 
 	}
-	else{ //y ekseninde ilerle
+	else{ //move on y axis
 		if(v1.x < v0.x){
 			isNegative = true;
 		}
@@ -314,7 +315,7 @@ void Scene::rasterizeLine(Vec3 v0, Vec3 v1){
 	}
 }
 
-void Scene::rasterization(Triangle tri){
+void Scene::wireframeRasterization(Triangle tri){
 	Vec3 v0 = *this->vertices[tri.getFirstVertexId()-1];
 	Vec3 v1 = *this->vertices[tri.getSecondVertexId()-1];
 	Vec3 v2 = *this->vertices[tri.getThirdVertexId()-1];
@@ -362,13 +363,22 @@ void Scene::forwardRenderingPipeline(Camera *camera)
 			this->perspectiveProjection(modelIndex, camera);
 		}
 		
+		//TODO: clipping and backface culling
+
 		cout << "----Viewport Transformation----" << endl;
 		this->viewportTransformation(modelIndex, M_viewport);
 
 		for(int triIndex=0; triIndex < this->models[modelIndex]->numberOfTriangles; triIndex++){
 			Triangle tri = this->models[modelIndex]->triangles[triIndex];
-			cout << "Line rasterization for triangle: " << triIndex << endl;
-			this->rasterization(tri);
+			if(this->models[modelIndex]->type == 0){
+				cout << "Line rasterization for triangle: " << triIndex << endl;
+				this->wireframeRasterization(tri);
+			}
+			else{
+				//TODO: solid shape
+				cout << "Triangle rasterization for triangle: " << triIndex << endl;
+			}
+			
 		}
 
 	}
