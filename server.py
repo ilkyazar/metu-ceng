@@ -138,14 +138,12 @@ class Server():
 
                     elif(messageList[0] == 'remove'):
                         shapeid = messageList[1]
-                        print(shapeid)
-                        print(board.allShapes.keys())
+                        
                         if(shapeid in board.allShapes.keys()):
+                            print('removing sth')
                             board.removeShapeWithID(shapeid)
                         else:
-                            print('else')
                             self.sendNotification(self.userDict[userName],'Enter a valid shape id.')
-
 
                     elif(messageList[0] == 'move'):
                         shapeid = messageList[1]
@@ -169,8 +167,16 @@ class Server():
 
                         board.connect(board.allShapes[id1], board.allShapes[id2])
 
-                        notification = board.allShapes[id1] + ' and ' + board.allShapes[id2] + ' are connected. \n'
-                        self.sendNotification(elf.userDict[userName], notification)
+                        notification = str(board.allShapes[id1]) + ' and ' + str(board.allShapes[id2]) + ' are connected. \n'
+                        self.sendNotification(self.userDict[userName], notification)
+
+                    elif(messageList[0] == 'disconnect'):
+                        id1 = messageList[1]
+                        id2 = messageList[2]
+
+                        board.disconnectShapes(board.allShapes[id1], board.allShapes[id1])
+                        notification = str(board.allShapes[id1]) + ' and ' + str(board.allShapes[id2]) + ' are disconnected. \n'
+                        self.sendNotification(self.userDict[userName], notification)
 
                     else:
                         print('Undefined Action')
@@ -227,6 +233,9 @@ class Server():
 
     def createBoard(self, boardString):
         newBoard = Board(1000, 1000, boardString)
+        #self.createContainers(newBoard)
+        #self.initializeGame()
+        #self.updateSpace(newBoard)
         return newBoard
 
     def attachUser(self, newUser, board):
@@ -245,21 +254,6 @@ class Server():
         client.send(notification)
         print(colors.YELLOW + 'Notificiation sent' + colors.ENDC)
     
-    def sendAttachNotification(self, user):
-
-        client = self.attachedUsers[user]
-        b = user.getBoard[0]
-
-        boardName = b.getName()
-
-        print(colors.YELLOW + 'Sending user attached notification' + colors.ENDC)
-        data = 'You are attached to the board: ' + boardName
-        notification = pickle.dumps(data)
-        print('client:')
-        print(client)
-        client.send(notification)
-        print(colors.YELLOW + 'User attached notificiation sent' + colors.ENDC)
-
     def createContainers(self, board):
         box_size = 200
         w = board.screen.get_width()
@@ -274,6 +268,23 @@ class Server():
             sh.friction = 1
             sh.elasticity = 1
             board.space.add(sw, sh)
+
+    def initializeGame(self):
+        pymunk.pygame_util.positive_y_is_up = False
+        pygame.init()
+        #pygame.display.set_caption(self.userName)
+        #clock = pygame.time.Clock()
+        font = pygame.font.Font(None, 24)
+
+
+    def updateSpace(self, board):
+        board.start()
+        board.updateSpace()
+        options = pymunk.pygame_util.DrawOptions(board.screen)
+        board.space.debug_draw(options)
+        pygame.display.flip()
+        clock = pygame.time.Clock()
+        clock.tick(60)        
 
 if __name__ == "__main__":
     while True:

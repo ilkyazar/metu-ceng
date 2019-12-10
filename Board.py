@@ -77,9 +77,10 @@ class Board():
                 return 
 
     def removeShapeWithID(self, shape_id):
-        shape = self.allShapes.pop[shape_id]
+        shape = self.allShapes[shape_id]
+        del self.allShapes[shape_id]
         self.space.remove(shape)
-
+        
     def moveShape(self, shape, offset):
         pos = shape.getPosition()
         center = (pos[0]+offset[0], pos[1]+offset[1])

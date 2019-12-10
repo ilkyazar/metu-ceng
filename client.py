@@ -131,20 +131,6 @@ class Client():
                 break
 
 
-    def initializeGame(self):
-        pymunk.pygame_util.positive_y_is_up = False
-        pygame.init()
-        pygame.display.set_caption(self.userName)
-        #clock = pygame.time.Clock()
-        font = pygame.font.Font(None, 24)
-
-
-    def updateSpace(self, board, options):
-        board.updateSpace()
-        board.space.debug_draw(options)
-        pygame.display.flip()
-        clock = pygame.time.Clock()
-        clock.tick(60)        
 
 if __name__ == "__main__":
     while True:
@@ -162,7 +148,5 @@ if __name__ == "__main__":
     client.setUserName()
     
     
-
-    #client.initializeGame()
     #client.createBoard('./inputs/test4.json')
 
