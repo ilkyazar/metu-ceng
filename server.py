@@ -95,6 +95,8 @@ class Server():
                 message = pickle.loads(data)
                 print('RECEIVED MESSAGE: ' + message)
 
+                userWillNotified = False
+
                 if message.split('/')[0] == 'u':
                     userName = message.split('/')[1]
                     newUser = User(userName)
@@ -116,7 +118,7 @@ class Server():
 
                     print('Board dictionary is: ')
                     print(self.boardDict)
-                    self.sendNotification(self.userDict[userName], 'Send me actions')
+                    self.sendNotification(self.userDict[userName], 'Your board is set! Send me actions')
                 else:
                     messageList = message.split(' ')
                     if(messageList[0] == 'add'):
@@ -135,35 +137,48 @@ class Server():
                             board.addShape(tennisBall)
 
                     elif(messageList[0] == 'remove'):
-                        id = messageList[1]
-
-                        if(id in board.allShapes.keys()):
-                            print('removing sth')
-                            board.removeShape(board.allShapes[id])
+                        shapeid = messageList[1]
+                        print(shapeid)
+                        print(board.allShapes.keys())
+                        if(shapeid in board.allShapes.keys()):
+                            board.removeShapeWithID(shapeid)
                         else:
-                            sendNotification(self.userDict[userName],'Enter a valid shape id.')
+                            print('else')
+                            self.sendNotification(self.userDict[userName],'Enter a valid shape id.')
 
 
                     elif(messageList[0] == 'move'):
-                        id = messageList[1]
+                        shapeid = messageList[1]
                         x = int(messageList[2])
                         y = int(messageList[3])
 
-                        if(id in board.allShapes.keys()):
+                        if(shapeid in board.allShapes.keys()):
                             print('moving sth')
-                            board.moveShape(board.allShapes[id], offset = (x, y))
+                            board.moveShape(board.allShapes[shapeid], offset = (x, y))
                         else:
-                            sendNotification(self.userDict[userName],'Enter a valid shape id.')
+                            self.sendNotification(self.userDict[userName],'Enter a valid shape id.')
 
                     elif(messageList[0] == 'state'):
                         self.sendNotification(self.userDict[userName], 'State = ' + str(board.state()))
                         newUser.notify(board.state())
-                    
+                        userWillNotified = True
+
+                    elif(messageList[0] == 'connect'):
+                        id1 = messageList[1]
+                        id2 = messageList[2]
+
+                        board.connect(board.allShapes[id1], board.allShapes[id2])
+
+                        notification = board.allShapes[id1] + ' and ' + board.allShapes[id2] + ' are connected. \n'
+                        self.sendNotification(elf.userDict[userName], notification)
+
                     else:
                         print('Undefined Action')
 
                     print('Board state: \n' + str(board.state()))                    
-                    self.sendNotification(self.userDict[userName], 'Send me actions')
+                    
+                    if userWillNotified == False:
+                        self.sendNotification(self.userDict[userName], 'Send me actions')
 
             except:
                 client.close()
@@ -211,7 +226,7 @@ class Server():
 
 
     def createBoard(self, boardString):
-        newBoard = Board(5, 5, boardString)
+        newBoard = Board(1000, 1000, boardString)
         return newBoard
 
     def attachUser(self, newUser, board):
