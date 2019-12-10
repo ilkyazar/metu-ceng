@@ -55,6 +55,8 @@ class Client():
         self.userNameSet = False
         self.boarNameSet = False
         self.user = None
+
+        self.getN = True
         
 
     def connectToServer(self):
@@ -90,6 +92,7 @@ class Client():
             self.receiveSocket.send(userNameBytes)
         
     def setBoardName(self):
+        self.getN = False
         if (self.userNameSet == True and self.boarNameSet == False):
             data = input('Select a board: ')
             
@@ -98,6 +101,7 @@ class Client():
 
             boardNameBytes = pickle.dumps(data)
             self.sendSocket.send(boardNameBytes)
+            self.getN = True
 
     def sendAction(self):
         #while True:
@@ -107,7 +111,7 @@ class Client():
         
     def getNotification(self):
 
-        while True:
+        while self.getN == True:
             try:
                 print(colors.writeRed('GONnA GET NOTIFICATIIOOON'))
                 data = self.receiveSocket.recv(2048)
@@ -121,7 +125,12 @@ class Client():
                 elif(notification == 'You chose wisely.'):
                     self.userNameSet = True 
                     self.setBoardName()
-                    
+
+                elif(notification == 'You are detached.'):
+                    self.boarNameSet == False  
+                    self.userNameSet == True
+                    self.setBoardName()  
+
                 else:
                     self.sendAction()
 

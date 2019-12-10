@@ -56,6 +56,8 @@ class Server():
         #username - client pairs
         self.userDict = {}   
 
+        self.mutex = threading.RLock()
+
     def startListening(self):
         
         threading.Thread(target = self.listenRequest, args = ()).start()
@@ -96,6 +98,7 @@ class Server():
                 print('RECEIVED MESSAGE: ' + message)
 
                 userWillNotified = False
+                detachingUser = False
 
                 if message.split('/')[0] == 'u':
                     userName = message.split('/')[1]
@@ -153,7 +156,9 @@ class Server():
                         
                         if(shapeid in board.allShapes.keys()):
                             print('removing sth')
+                            self.mutex.acquire()
                             board.removeShapeWithID(shapeid)
+                            self.mutex.release()
                         else:
                             self.sendNotification(self.userDict[userName],'Enter a valid shape id.')
 
@@ -164,7 +169,9 @@ class Server():
 
                         if(shapeid in board.allShapes.keys()):
                             print('moving sth')
+                            self.mutex.acquire()
                             board.moveShape(board.allShapes[shapeid], offset = (x, y))
+                            self.mutex.release()
                         else:
                             self.sendNotification(self.userDict[userName],'Enter a valid shape id.')
 
@@ -194,6 +201,28 @@ class Server():
                         filename = messageList[1]
                         board.save(filename)
                     
+                    elif(messageList[0] == 'load'):
+                        filename = messageList[1]
+                        board.load(filename)
+                        self.sendNotification(self.userDict[userName], str(board.state()))
+
+                    elif (messageList[0] == 'list'):
+                        self.sendNotification(self.userDict[userName], str(self.boardDict))
+
+                    elif (messageList[0] == 'detach'):
+                        print('Detaching ' + str(newUser))
+                        board.detach(newUser)
+                        detachingUser = True
+                        self.sendNotification(self.userDict[userName], 'You are detached.')
+                    
+                    elif (messageList[0] == 'pick'):
+                        x = int(messageList[1])
+                        y = int(messageList[2])
+
+                        pick = str(board.pick(x, y))
+                        print(pick)
+                        self.sendNotification(self.userDict[userName], pick)
+
                     else:
                         print('Undefined Action')
 
@@ -201,7 +230,7 @@ class Server():
                     self.updateSpace(board)
 
 
-                    if userWillNotified == False:
+                    if userWillNotified == False and detachingUser == False:
                         self.sendNotification(self.userDict[userName], 'Send me actions')
 
             except:
