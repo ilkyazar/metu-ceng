@@ -182,7 +182,9 @@ class Server():
                         print('Undefined Action')
 
                     print('Board state: \n' + str(board.state()))                    
-                    
+                    self.updateSpace(board)
+
+
                     if userWillNotified == False:
                         self.sendNotification(self.userDict[userName], 'Send me actions')
 
@@ -232,10 +234,11 @@ class Server():
 
 
     def createBoard(self, boardString):
-        newBoard = Board(1000, 1000, boardString)
-        #self.createContainers(newBoard)
-        #self.initializeGame()
-        #self.updateSpace(newBoard)
+        newBoard = Board(800, 600, boardString)
+        newBoard.start((1./60.0), 60, 1000)
+        self.createContainers(newBoard)
+        self.initializeGame(boardString)
+
         return newBoard
 
     def attachUser(self, newUser, board):
@@ -269,17 +272,18 @@ class Server():
             sh.elasticity = 1
             board.space.add(sw, sh)
 
-    def initializeGame(self):
+    def initializeGame(self, boardName):
         pymunk.pygame_util.positive_y_is_up = False
         pygame.init()
-        #pygame.display.set_caption(self.userName)
+        pygame.display.set_caption(boardName)
         #clock = pygame.time.Clock()
         font = pygame.font.Font(None, 24)
 
 
     def updateSpace(self, board):
-        board.start()
+        
         board.updateSpace()
+        board.screen.fill(pygame.color.THECOLORS["white"])
         options = pymunk.pygame_util.DrawOptions(board.screen)
         board.space.debug_draw(options)
         pygame.display.flip()

@@ -40,7 +40,7 @@ class Board():
 
     def setSpace(self):
         self.space = pymunk.Space()
-        self.space.gravity = 0, -9820
+        self.space.gravity = 0, 0
         self.space.damping = 0.99
     
     def setGravity(self, gravity):
@@ -80,7 +80,7 @@ class Board():
         shape = self.allShapes[shape_id]
         del self.allShapes[shape_id]
         self.space.remove(shape)
-        
+
     def moveShape(self, shape, offset):
         pos = shape.getPosition()
         center = (pos[0]+offset[0], pos[1]+offset[1])
