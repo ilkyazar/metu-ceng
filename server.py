@@ -54,13 +54,15 @@ class Server():
         #boardDict holds boardname-board pairs
         self.boardDict = {}
         #username - client pairs
-        self.userDict = {}    
+        self.userDict = {}   
 
     def startListening(self):
+        
         threading.Thread(target = self.listenRequest, args = ()).start()
         threading.Thread(target = self.listenNotify, args = ()).start()
 
     def listenRequest(self):
+        print("Listen request thread is started.")
         try:
             self.requestSocket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
             self.requestSocket.setsockopt(socket.SOL_SOCKET, socket.SO_REUSEADDR, 1)
@@ -74,13 +76,54 @@ class Server():
             
             client, address = self.requestSocket.accept()
 
-            print(colors.GREEN + 'New client connected' + colors.ENDC)
-            print(address)
+            print(colors.GREEN + 'New client connected' + colors.ENDC + " " + str(address))
 
             threading.Thread(target = self.listenToClient, args = (client, address)).start()
-            
+
+    def listenToClient(self, client, address):
+        print("Listening to client: " + str(address))
+        userNameSet = False
+        userName = ''
+        boardNameSet = False
+        boardName = ''
+
+        while True:
+            try:
+                data = client.recv(1024)
+                message = pickle.loads(data)
+                
+                if boardNameSet == False:
+                    boardName = message
+                    print(colors.BLUE + 'Board name set as: ' + colors.ENDC + boardName)
+                    boardNameSet = True
+
+                    if boardName in self.boardDict.keys():
+                        print('This board name is already in the board dictionary. ')
+                        print(client)
+                        print(self.boardDict[boardName])
+                        #self.attachUser(newUser, self.boardDict[boardName])
+                        #print(self.boardDict[boardName].users.keys())
+                    else:
+                        newBoard = self.createBoard(boardName)
+                        self.boardDict[boardName] = newBoard
+                        print(client)
+                        print(newBoard)
+                        #self.attachUser(newUser, newBoard)
+                        #print(self.boardDict[newBoard].users.keys())
+
+                    print('Board dictionary is: ')
+                    print(self.boardDict)
+
+                else:
+                    print(color.writeRed('Other Message Received'))
+
+            except:
+                client.close()
+                return False
+
 
     def listenNotify(self):
+        print("Listen notify thread is started.")
         try:
             self.notifySocket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
             self.notifySocket.setsockopt(socket.SOL_SOCKET, socket.SO_REUSEADDR, 1)
@@ -94,58 +137,27 @@ class Server():
             
             client, address = self.notifySocket.accept()
 
-            print(colors.GREEN + 'New client connected' + colors.ENDC)
-            print(address)
+            print(colors.GREEN + 'New client connected' + colors.ENDC + " " + str(address))
             threading.Thread(target = self.notifyClient, args = (client, address)).start()
 
 
-    def listenToClient(self, client, address):
-        userNameSet = False
-        userName = ''
-        boardNameSet = False
-        boardName = ''
-
-        while True:
-            try:
-                data = client.recv(1024)
-                message = pickle.loads(data)
-
-                if userNameSet == False:
-                    userName = message
-                    print(colors.BLUE + 'User name set as: ' + colors.ENDC + userName)
-                    userNameSet = True
-                    newUser = User(userName)
-                
-                elif boardNameSet == False:
-                    boardName = message
-                    print(colors.BLUE + 'Board name set as: ' + colors.ENDC + boardName)
-                    boardNameSet = True
-
-                    if boardName in self.boardDict.keys():
-                        self.attachUser(newUser, boardDict[boardName])
-                    else:
-                        newBoard = self.createBoard(boardName)
-                        self.attachUser(newUser, newBoard)
-                        greenUserName = colors.writeGreen(userName)
-                        greenBoardName = colors.writeGreen(boardName)
-                        print(colors.writeYellow('User ') + greenUserName + colors.writeYellow(' is attached to the board ') + greenBoardName)
-                else:
-                    print(color.writeRed('Other Message Received'))
-
-            except:
-                client.close()
-                return False
-
 
     def notifyClient(self, client, address):
+        print("Notifying the client: " + str(address))
+        notUnique = 1
+        while notUnique:
+            data = client.recv(1024)
+            userName = pickle.loads(data)
 
-        data = client.recv(1024)
-        userName = pickle.loads(data)
-
-        self.userDict[userName] = client
-        print(colors.GREEN + 'New client connected' + colors.ENDC)
-        print(userName)
-        print(self.notifySocket)
+            if userName not in self.userDict.keys():
+                self.userDict[userName] = client
+                print(userName + " is added to the client dictionary. ")
+                notUnique = 0
+                data = 'You chose wisely.'
+                self.sendNotification(client, data)
+            else:
+                data = 'Set another user name for gods sake!'
+                self.sendNotification(client, data)
 
         #self.sendNotification(client, address)
 
@@ -155,44 +167,20 @@ class Server():
         return newBoard
 
     def attachUser(self, newUser, board):
+        print("Attaching user")
         board.attach(newUser)
-
-    def getBoardSelection(self, client, address, newUser):
-        try:
-            boardSelection = pickle.loads(client.recv(1024))
-            print('Board selected by ' + colors.writeGreen(newUser.getName()) + ' is ' + colors.writeBlue(boardSelection))
+        greenUserName = colors.writeGreen(newUser.getName())
+        greenBoardName = colors.writeGreen(board.getName())
+        print(colors.writeYellow('User ') + greenUserName + colors.writeYellow(' is attached to the board ') + greenBoardName)
             
-            if (boardSelection in self.boardDict.keys()):
-                print(self.boardDict[boardSelection])
-                self.attachUser(newUser, self.boardDict[boardSelection])
-                newUser.addBoard(boardDict[boardSelection])
-
-            else:
-                newBoard = self.createBoard(boardSelection)
-                self.boardDict[boardSelection] = newBoard
-                self.attachUser(newUser, newBoard)
-                newUser.addBoard(newBoard)
-
-            self.attachedUsers[newUser] = client
-            print(colors.writeRed('attached users'))
-            print(self.attachedUsers)
-
-        except:
-            client.close()
-            return False
-
-            
-    def sendNotification(self, client, address):
+    def sendNotification(self, client, data):
         print(colors.YELLOW + 'Sending notification' + colors.ENDC)
         print(colors.GREEN + str(client) + colors.GREEN)
         #print(colors.BLUE + userName + colors.BLUE)
-        data = 'Hello this is server. \n Type <boardname> to attach yourself to a board.'
         notification = pickle.dumps(data)
         client.send(notification)
         print(colors.YELLOW + 'Notificiation sent' + colors.ENDC)
     
-    #def sendMessage(self, message, user):
-
     def sendAttachNotification(self, user):
 
         client = self.attachedUsers[user]
@@ -207,11 +195,6 @@ class Server():
         print(client)
         client.send(notification)
         print(colors.YELLOW + 'User attached notificiation sent' + colors.ENDC)
-
-
-
-
-
 
     def createContainers(self, board):
         box_size = 200

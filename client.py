@@ -58,12 +58,22 @@ class Client():
         
 
     def connectToServer(self):
-        self.sendSocket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
-        self.sendSocket.connect((self.host, self.sendingPort))
-        print(colors.RED + 'Client connected to' + colors.ENDC)
-        print(self.sendSocket)
+        try:
+            self.sendSocket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+            self.sendSocket.connect((self.host, self.sendingPort))
+            print(colors.RED + 'Client connected to' + colors.ENDC)
+            print(self.sendSocket)
+        except:
+            self.sendSocket.close()
 
-        self.receiveSocket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+
+        try:
+            self.receiveSocket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+            self.receiveSocket.connect((self.host, self.receivingPort))
+            print(colors.RED + 'Client connected to' + colors.ENDC)
+            print(self.receiveSocket)
+        except:
+            self.receiveSocket.close()
 
     def setUserName(self):
         if (self.userNameSet == False):
@@ -72,29 +82,24 @@ class Client():
             while (data == 'admin'):
                 print(colors.RED + 'You cannot set your user name as admin.' + colors.ENDC)
                 data = input('Set a user name: ')
-
-            self.userNameSet = True 
-            self.userName = data
-
-        userNameBytes = pickle.dumps(data)
-        self.sendSocket.send(userNameBytes)
-    
+                self.userName = data
+            
+            userNameBytes = pickle.dumps(data)
+            self.receiveSocket.send(userNameBytes)
+        
     def setBoardName(self):
-        if (self.boarNameSet == False):
+        if (self.userNameSet == True and self.boarNameSet == False):
             data = input('Select a board: ')
             
             self.boarNameSet = True 
             self.boardName = data
 
-        boardNameBytes = pickle.dumps(data)
-        self.sendSocket.send(boardNameBytes)
+            boardNameBytes = pickle.dumps(data)
+            self.sendSocket.send(boardNameBytes)
 
 
         
     def getNotification(self):
-        self.receiveSocket.connect((self.host, self.receivingPort))
-        print(colors.RED + 'Client connected to' + colors.ENDC)
-        print(self.receiveSocket)
 
         while True:
             try:
@@ -102,14 +107,26 @@ class Client():
                 data = self.receiveSocket.recv(2048)
                 notification = pickle.loads(data)
 
-                print(colors.writeRed('Notification from server: ') + notification)
+                print(colors.writeYellow('Notification from server: ') + notification)
 
                 if (notification == 'Hello this is server. \n Type <boardname> to attach yourself to a board.'):
                     self.selectBoard()
+
+                elif (notification == 'Set another user name for gods sake!'):
+                    self.setUserName()
+                
+                elif(notification == 'You chose wisely.'):
+                    self.userNameSet = True 
+                    self.setBoardName()
+                    
+
+                else:
+                    print("Another notification")
             
             except:
                 print(colors.writeRed('Receive socket is closed.'))
                 self.receiveSocket.close()    
+                break
 
 
     def initializeGame(self):
@@ -139,9 +156,10 @@ if __name__ == "__main__":
 
     client = Client(host, sending_port, receiving_port)
     client.connectToServer()
-    client.setUserName()
-    client.setBoardName()
     threading.Thread(target = client.getNotification, args = ()).start()
+    client.setUserName()
+    
+    
 
     #client.initializeGame()
     #client.createBoard('./inputs/test4.json')

@@ -36,7 +36,7 @@ class Board():
         self.y = y
         self.screen = pygame.display.set_mode((x, y))
 
-        print(colors.writeBlue('A new board with ') + colors.writeGreen(str(self.x) + ' ') + colors.writeGreen(str(self.y) + ' ') + colors.writeBlue('dimensions are created.'))
+        print(colors.writeBlue('A new board with ') + colors.writeGreen(str(self.x) + ' ') + colors.writeGreen(str(self.y) + ' ') + colors.writeBlue('dimensions is created.'))
 
     def setSpace(self):
         self.space = pymunk.Space()
