@@ -86,15 +86,18 @@ class Server():
         userName = ''
         boardNameSet = False
         boardName = ''
+        board = None
+        newUser = None
 
         while True:
             try:
                 data = client.recv(1024)
                 message = pickle.loads(data)
-                if userNameSet == False:
-                    userName = message
+                print('RECEIVED MESSAGE: ' + message)
+
+                if message.split('/')[0] == 'u':
+                    userName = message.split('/')[1]
                     newUser = User(userName)
-                    userNameSet = True 
 
                 elif boardNameSet == False:
                     boardName = message
@@ -103,21 +106,64 @@ class Server():
 
                     if boardName in self.boardDict.keys():
                         print('This board name is already in the board dictionary. ')
-                        print(self.userDict)
                         self.attachUser(newUser, self.boardDict[boardName])
-                        print(self.boardDict[boardName].users.keys())
+                        board = self.boardDict[boardName]
                     else:
-                        newBoard = self.createBoard(boardName)
+                        newBoard = self.createBoard(boardName)      
                         self.boardDict[boardName] = newBoard
-                        print(self.userDict)
                         self.attachUser(newUser, newBoard)
-                        print(self.boardDict[newBoard].users.keys())
+                        board = newBoard
 
                     print('Board dictionary is: ')
                     print(self.boardDict)
-
+                    self.sendNotification(self.userDict[userName], 'Send me actions')
                 else:
-                    print(color.writeRed('Other Message Received'))
+                    messageList = message.split(' ')
+                    if(messageList[0] == 'add'):
+                        x = int(messageList[2])
+                        y = int(messageList[3])
+                        if(messageList[1] == 'bowlingball'):
+                            bowlingBall = BowlingBall(center = (x, y))
+                            board.addShape(bowlingBall)
+                            
+                        elif(messageList[1] == 'marbleball'):
+                            marbleBall = MarbleBall(center = (x, y))
+                            board.addShape(marbleBall)
+
+                        elif(messageList[1] == 'tennisball'):
+                            tennisBall = TennisBall(center = (x, y))
+                            board.addShape(tennisBall)
+
+                    elif(messageList[0] == 'remove'):
+                        id = messageList[1]
+
+                        if(id in board.allShapes.keys()):
+                            print('removing sth')
+                            board.removeShape(board.allShapes[id])
+                        else:
+                            sendNotification(self.userDict[userName],'Enter a valid shape id.')
+
+
+                    elif(messageList[0] == 'move'):
+                        id = messageList[1]
+                        x = int(messageList[2])
+                        y = int(messageList[3])
+
+                        if(id in board.allShapes.keys()):
+                            print('moving sth')
+                            board.moveShape(board.allShapes[id], offset = (x, y))
+                        else:
+                            sendNotification(self.userDict[userName],'Enter a valid shape id.')
+
+                    elif(messageList[0] == 'state'):
+                        self.sendNotification(self.userDict[userName], 'State = ' + str(board.state()))
+                        newUser.notify(board.state())
+                    
+                    else:
+                        print('Undefined Action')
+
+                    print('Board state: \n' + str(board.state()))                    
+                    self.sendNotification(self.userDict[userName], 'Send me actions')
 
             except:
                 client.close()
@@ -150,10 +196,10 @@ class Server():
         while notUnique:
             data = client.recv(1024)
             userName = pickle.loads(data)
+            userName = userName.split('/')[1]
 
             if userName not in self.userDict.keys():
                 self.userDict[userName] = client
-                print(userName + " is added to the client dictionary. ")
                 notUnique = 0
                 data = 'You chose wisely.'
                 self.sendNotification(client, data)
@@ -171,6 +217,7 @@ class Server():
     def attachUser(self, newUser, board):
         print("Attaching user")
         board.attach(newUser)
+
         greenUserName = colors.writeGreen(newUser.getName())
         greenBoardName = colors.writeGreen(board.getName())
         print(colors.writeYellow('User ') + greenUserName + colors.writeYellow(' is attached to the board ') + greenBoardName)

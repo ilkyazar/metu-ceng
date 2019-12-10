@@ -82,8 +82,9 @@ class Client():
             while (data == 'admin'):
                 print(colors.RED + 'You cannot set your user name as admin.' + colors.ENDC)
                 data = input('Set a user name: ')
-                self.userName = data
-            
+            self.userName = data
+            data = 'u/' + str(data)
+                
             userNameBytes = pickle.dumps(data)
             self.sendSocket.send(userNameBytes)
             self.receiveSocket.send(userNameBytes)
@@ -98,7 +99,11 @@ class Client():
             boardNameBytes = pickle.dumps(data)
             self.sendSocket.send(boardNameBytes)
 
-
+    def sendAction(self):
+        #while True:
+        data = input('New Action: ')
+        actionBytes = pickle.dumps(data)
+        self.sendSocket.send(actionBytes)
         
     def getNotification(self):
 
@@ -110,20 +115,16 @@ class Client():
 
                 print(colors.writeYellow('Notification from server: ') + notification)
 
-                if (notification == 'Hello this is server. \n Type <boardname> to attach yourself to a board.'):
-                    self.selectBoard()
-
-                elif (notification == 'Set another user name for gods sake!'):
+                if (notification == 'Set another user name for gods sake!'):
                     self.setUserName()
                 
                 elif(notification == 'You chose wisely.'):
                     self.userNameSet = True 
                     self.setBoardName()
                     
-
                 else:
-                    print("Another notification")
-            
+                    self.sendAction()
+
             except:
                 print(colors.writeRed('Receive socket is closed.'))
                 self.receiveSocket.close()    

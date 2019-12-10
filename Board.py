@@ -49,7 +49,8 @@ class Board():
     def updateSpace(self):
         self.space.step(self.step_size)
 
-    def addShape(self, shape, body, offset=0):
+    def addShape(self, shape, offset=0):
+        body = shape.getBody()
         self.space.add(shape)
         self.space.add(body)
         new_id = self.id_counter
@@ -81,7 +82,7 @@ class Board():
 
     def moveShape(self, shape, offset):
         pos = shape.getPosition()
-        center = (pos[0]+offset[0], pos[0]+offset[1])
+        center = (pos[0]+offset[0], pos[1]+offset[1])
         shape.setPosition(center)
 
     def connect(self, shape1, shape2, connectorClass = None):
@@ -262,7 +263,7 @@ class Board():
         
         print(colors.writeBold("JSON file loaded successfully from " + file))
 
-    def state(self, update):
+    def state(self, update = False):
         state = []
         for key,value in self.allShapes.items():
             item = [value, key, value.getPosition()]
