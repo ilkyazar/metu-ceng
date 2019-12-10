@@ -85,6 +85,7 @@ class Client():
                 self.userName = data
             
             userNameBytes = pickle.dumps(data)
+            self.sendSocket.send(userNameBytes)
             self.receiveSocket.send(userNameBytes)
         
     def setBoardName(self):

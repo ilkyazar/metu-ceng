@@ -91,25 +91,27 @@ class Server():
             try:
                 data = client.recv(1024)
                 message = pickle.loads(data)
-                
-                if boardNameSet == False:
+                if userNameSet == False:
+                    userName = message
+                    newUser = User(userName)
+                    userNameSet = True 
+
+                elif boardNameSet == False:
                     boardName = message
                     print(colors.BLUE + 'Board name set as: ' + colors.ENDC + boardName)
                     boardNameSet = True
 
                     if boardName in self.boardDict.keys():
                         print('This board name is already in the board dictionary. ')
-                        print(client)
-                        print(self.boardDict[boardName])
-                        #self.attachUser(newUser, self.boardDict[boardName])
-                        #print(self.boardDict[boardName].users.keys())
+                        print(self.userDict)
+                        self.attachUser(newUser, self.boardDict[boardName])
+                        print(self.boardDict[boardName].users.keys())
                     else:
                         newBoard = self.createBoard(boardName)
                         self.boardDict[boardName] = newBoard
-                        print(client)
-                        print(newBoard)
-                        #self.attachUser(newUser, newBoard)
-                        #print(self.boardDict[newBoard].users.keys())
+                        print(self.userDict)
+                        self.attachUser(newUser, newBoard)
+                        print(self.boardDict[newBoard].users.keys())
 
                     print('Board dictionary is: ')
                     print(self.boardDict)
