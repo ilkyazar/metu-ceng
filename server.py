@@ -135,7 +135,19 @@ class Server():
                         elif(messageList[1] == 'tennisball'):
                             tennisBall = TennisBall(center = (x, y))
                             board.addShape(tennisBall)
+                        
+                        elif(messageList[1] == 'bookblock'):
+                            bookBlock = BookBlock(center = (x,y))
+                            board.addShape(bookBlock)
+                        
+                        elif(messageList[1] == 'dominoblock'):
+                            dominoBlock = DominoBlock(center = (x,y))
+                            board.addShape(dominoBlock)
 
+                        elif(messageList[1] == 'rotatingsegment'):
+                            segment = RotatingSegment(rotationCenter = (x,y), length = 100,  radius = 5.0)
+                            board.addShape(segment)
+                    
                     elif(messageList[0] == 'remove'):
                         shapeid = messageList[1]
                         
@@ -177,7 +189,11 @@ class Server():
                         board.disconnectShapes(board.allShapes[id1], board.allShapes[id1])
                         notification = str(board.allShapes[id1]) + ' and ' + str(board.allShapes[id2]) + ' are disconnected. \n'
                         self.sendNotification(self.userDict[userName], notification)
-
+                    
+                    elif(messageList[0] == 'save'):
+                        filename = messageList[1]
+                        board.save(filename)
+                    
                     else:
                         print('Undefined Action')
 
