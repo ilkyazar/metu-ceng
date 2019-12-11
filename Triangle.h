@@ -6,7 +6,7 @@ class Triangle
 {
 public:
     int vertexIds[3];
-    bool backFacing = false;
+    bool backFacing = true;
 
     Triangle();
     Triangle(int vid1, int vid2, int vid3);
