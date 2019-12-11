@@ -63,12 +63,12 @@ public:
 	void perspectiveProjection(int modelIndex, Camera *camera);
 	void viewportTransformation(int modelIndex, Matrix4 M_viewport );
 
-	void wireframeRasterization(Triangle tri);
+	void wireframeRasterization(Triangle tri, Camera* camera);
 	void draw(int x, int y, Color color);
-	void midpointX(Vec3 v0, Vec3 v1, bool isNegative);
-	void midpointY(Vec3 v0, Vec3 v1, bool isNegative);
-	void rasterizeLine(Vec3 v0, Vec3 v1);
-	void triangleRasterization(Triangle tri);
+	void midpointX(Vec3 v0, Vec3 v1, bool isNegative, Camera* camera);
+	void midpointY(Vec3 v0, Vec3 v1, bool isNegative, Camera* camera);
+	void rasterizeLine(Vec3 v0, Vec3 v1, Camera* camera);
+	void triangleRasterization(Triangle tri, Camera* camera);
 	double lineEquation(Vec3 v0, Vec3 v1, int x, int y);
 	
 };

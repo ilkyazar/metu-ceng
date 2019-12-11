@@ -187,8 +187,8 @@ void Scene::viewportTransformation(int modelIndex, Matrix4 M_viewport ){
 		int vertex_id = modelVerticeIds[i] - 1;
 		Vec4 vert(Vec3toVec4(this->vertices[vertex_id]));
 
-		cout << "Viewport matrix: " << endl;
-		cout << M_viewport << endl;
+		//cout << "Viewport matrix: " << endl;
+		//cout << M_viewport << endl;
 		Vec3 coordinate = Vec4toVec3(multiplyMatrixWithVec4(M_viewport, vert));
 		
 		this->vertices[vertex_id]->x = coordinate.x;
@@ -197,9 +197,9 @@ void Scene::viewportTransformation(int modelIndex, Matrix4 M_viewport ){
 
 		cout << coordinate << endl;
 
-		this->image[round(coordinate.x)][round(coordinate.y)].r = c.r;
-		this->image[round(coordinate.x)][round(coordinate.y)].g = c.g;
-		this->image[round(coordinate.x)][round(coordinate.y)].b = c.b;
+		//this->image[round(coordinate.x)][round(coordinate.y)].r = c.r;
+		//this->image[round(coordinate.x)][round(coordinate.y)].g = c.g;
+		//this->image[round(coordinate.x)][round(coordinate.y)].b = c.b;
 		
 	}
 }
@@ -210,7 +210,7 @@ void Scene::draw(int x, int y, Color color){
 	this->image[x][y].b = color.b;
 }
 
-void Scene::midpointY(Vec3 v0, Vec3 v1, bool isNegative){
+void Scene::midpointY(Vec3 v0, Vec3 v1, bool isNegative, Camera* camera){
 	int x = v0.x;
 	int d = 2*(v0.x - v1.x) + (v1.y - v0.y);
 	Color* c0 = this->colorsOfVertices[v0.colorId - 1];
@@ -222,7 +222,9 @@ void Scene::midpointY(Vec3 v0, Vec3 v1, bool isNegative){
     dc.b = (c1->b - c0->b) / (v1.y - v0.y ); 
 
 	for(int y = v0.y; y <= v1.y; y++ ){
-		this->draw(x, y, c);
+		if(x >= 0 && x < camera->horRes && y >= 0 && y < camera->verRes){
+			this->draw(x, y, c);
+		}
 		
 		if(!isNegative){
 			if(d < 0){ //choose NE
@@ -248,7 +250,7 @@ void Scene::midpointY(Vec3 v0, Vec3 v1, bool isNegative){
 	}
 }
 
-void Scene::midpointX(Vec3 v0, Vec3 v1, bool isNegative){
+void Scene::midpointX(Vec3 v0, Vec3 v1, bool isNegative, Camera* camera){
 	int y = v0.y;
 	int d = 2*(v0.y - v1.y) + (v1.x - v0.x);
 	Color* c0 = this->colorsOfVertices[v0.colorId - 1];
@@ -261,7 +263,9 @@ void Scene::midpointX(Vec3 v0, Vec3 v1, bool isNegative){
 
 
 	for(int x = v0.x; x <= v1.x; x++ ){
-		this->draw(x, y, c);
+		if(x >= 0 && x < camera->horRes && y >= 0 && y < camera->verRes){
+			this->draw(x, y, c);
+		}
 		
 		if(!isNegative){
 			if(d < 0){ //choose NE
@@ -287,9 +291,9 @@ void Scene::midpointX(Vec3 v0, Vec3 v1, bool isNegative){
 	}
 }
 
-void Scene::rasterizeLine(Vec3 v0, Vec3 v1){
-	float slope = (v1.y - v0.y)/(v1.x - v0.x);
-	
+void Scene::rasterizeLine(Vec3 v0, Vec3 v1, Camera* camera){
+
+	double slope = (v1.y - v0.y)/(v1.x - v0.x);
 	if(!(slope < -1 && v1.x < v0.x) && (v0.x > v1.x)) {
 		Vec3 temp(v0);
 		v0 = v1;
@@ -305,33 +309,33 @@ void Scene::rasterizeLine(Vec3 v0, Vec3 v1){
 		if(v1.y < v0.y){
 			isNegative = true;		
 		}
-		this->midpointX(v0, v1, isNegative);		 
+		this->midpointX(v0, v1, isNegative, camera);		 
 	}
 	else{ //move on y axis
 		if(v1.x < v0.x){
 			isNegative = true;
 		}
-		this->midpointY(v0, v1, isNegative);
+		this->midpointY(v0, v1, isNegative, camera);
 	}
 }
 
-void Scene::wireframeRasterization(Triangle tri){
+void Scene::wireframeRasterization(Triangle tri, Camera* camera){
 	Vec3 v0 = *this->vertices[tri.getFirstVertexId()-1];
 	Vec3 v1 = *this->vertices[tri.getSecondVertexId()-1];
 	Vec3 v2 = *this->vertices[tri.getThirdVertexId()-1];
 
 	//todo: write midpointY for slopes greater than 1
 	//then call midpointX or midpointY for each vertice pair
-	this->rasterizeLine(v0, v1);
-	this->rasterizeLine(v1, v2);
-	this->rasterizeLine(v0, v2);
+	this->rasterizeLine(v0, v1, camera);
+	this->rasterizeLine(v1, v2, camera);
+	this->rasterizeLine(v0, v2, camera);
 }
 
 double Scene::lineEquation(Vec3 v0, Vec3 v1, int x, int y){
 	return x*(v0.y - v1.y) + y*(v1.x - v0.x) + v0.x*v1.y - v0.y*v1.x;
 }
 
-void Scene::triangleRasterization(Triangle tri){
+void Scene::triangleRasterization(Triangle tri, Camera* camera){
 	Vec3 v0 = *this->vertices[tri.getFirstVertexId()-1];
 	Vec3 v1 = *this->vertices[tri.getSecondVertexId()-1];
 	Vec3 v2 = *this->vertices[tri.getThirdVertexId()-1];
@@ -344,18 +348,20 @@ void Scene::triangleRasterization(Triangle tri){
 
 	for(int y = yMin; y<= yMax; y++){
 		for(int x = xMin; x <= xMax; x++){
-			alpha = lineEquation(v1, v2, x, y) / lineEquation(v1, v2, v0.x, v0.y);
-			beta = lineEquation(v2, v0, x, y) / lineEquation(v2, v0, v1.x, v1.y);
-			gamma = lineEquation(v0, v1, x, y) / lineEquation(v0, v1, v2.x, v2.y);
+			alpha = (double)lineEquation(v1, v2, round(x), round(y)) / (double)lineEquation(v1, v2, round(v0.x), round(v0.y));
+			beta = (double)lineEquation(v2, v0, round(x), round(y)) / (double)lineEquation(v2, v0, round(v1.x), round(v1.y));
+			gamma = (double)lineEquation(v0, v1, round(x), round(y)) / (double)lineEquation(v0, v1, round(v2.x), round(v2.y));
 
-			if(alpha >= 0 && beta >= 0 && gamma >= 0){
+			if(alpha >= 0 && beta >= 0 && gamma >= 0 && alpha + beta + gamma <= 3){
 				Color* c0 = this->colorsOfVertices[v0.colorId - 1];
 				Color* c1 = this->colorsOfVertices[v1.colorId - 1];
 				Color* c2 = this->colorsOfVertices[v2.colorId - 1];
-				
-				this->image[x][y].r = (int)(c0->r * alpha + c1->r * beta + c2->r * gamma);
-				this->image[x][y].g = (int)(c0->g * alpha + c1->g * beta + c2->g * gamma);
-				this->image[x][y].b = (int)(c0->b * alpha + c1->b * beta + c2->b * gamma);
+
+				if(x >= 0 && x < camera->horRes  && y >= 0 && y < camera->verRes){
+					this->image[x][y].r = round(c0->r * alpha) + round(c1->r * beta) + round(c2->r * gamma);
+					this->image[x][y].g = round(c0->g * alpha) + round(c1->g * beta) + round(c2->g * gamma);
+					this->image[x][y].b = round(c0->b * alpha) + round(c1->b * beta) + round(c2->b * gamma);
+				}				
 			}
 		}
 	}
@@ -370,7 +376,7 @@ void Scene::forwardRenderingPipeline(Camera *camera)
 	// TODO: Implement this function.
 
 	if(!this->isTransformed){
-		cout << "TRANSFORMING THE MODEL" << endl;
+		cout << "TRANSFORMING THE MODELS" << endl;
 		this->transformAllModels();
 		this->isTransformed = true;
 		this->saveVertices();
@@ -385,7 +391,7 @@ void Scene::forwardRenderingPipeline(Camera *camera)
 	Matrix4 M_viewport = calculateViewportMatrix(camera);
 
 	for (int modelIndex = 0; modelIndex < this->models.size(); modelIndex++){
-		cout << "----Camera Transformation----" << endl;
+		cout << "----Camera Transformation----"<< modelIndex << endl;
 		this->transformAllVertices(modelIndex, M_camera);
 
 		cout << "----Projection Transformation----" << endl;
@@ -406,12 +412,12 @@ void Scene::forwardRenderingPipeline(Camera *camera)
 			Triangle tri = this->models[modelIndex]->triangles[triIndex];
 			if(this->models[modelIndex]->type == 0){
 				cout << "Line rasterization for triangle: " << triIndex << endl;
-				this->wireframeRasterization(tri);
+				this->wireframeRasterization(tri, camera);
 			}
 			else{
 				//TODO: segmentation fault in brazil flag 3 
 				cout << "Triangle rasterization for triangle: " << triIndex << endl;
-				this->triangleRasterization(tri);
+				this->triangleRasterization(tri, camera);
 			}
 			
 		}
