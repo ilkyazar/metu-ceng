@@ -3,7 +3,6 @@
 #include <cstdlib>
 #include <fstream>
 #include <cmath>
-
 #include <set>
 
 #include "Scene.h"
@@ -31,19 +30,9 @@ void Scene::transformAllVertices(int modelIndex, Matrix4 M){
 		Vec4 vertex = Vec3toVec4(this->vertices[vertex_id]);
 		vertex = multiplyMatrixWithVec4(M, vertex);
 
-		/*
-		cout << "matrix : " << endl;
-		cout << M << endl;
-		cout << "vertex multiplied : " << vertex << endl;
-		*/
 		this->vertices[vertex_id]->x = vertex.x;
 		this->vertices[vertex_id]->y = vertex.y;
 		this->vertices[vertex_id]->z = vertex.z;
-		/*
-		cout << "---------------" << endl;
-		cout << "After transform" << endl;
-		cout << *this->vertices[vertex_id] << endl;
-		*/
 	}
 }
 
@@ -54,7 +43,7 @@ void Scene::transformModel(int modelIndex) {
 
 		if (models[modelIndex]->transformationTypes[t] == 'r') {
 			Rotation* r = this->rotations[(this->models[modelIndex]->transformationIds[t]) - 1];
-			cout << "Rotation : " << *r << endl;
+			//cout << "Rotation : " << *r << endl;
 			Matrix4 R = getRotationMatrix(r);
 			this->transformAllVertices(modelIndex, R);
 			
@@ -62,14 +51,14 @@ void Scene::transformModel(int modelIndex) {
 
 		else if (models[modelIndex]->transformationTypes[t] == 's') {
 			Scaling* s = this->scalings[(this->models[modelIndex]->transformationIds[t]) - 1];
-			cout << "Scaling : " << *s << endl;
+			//cout << "Scaling : " << *s << endl;
 			Matrix4 S = getScalingMatrix(s);
 			this->transformAllVertices(modelIndex, S);
 			
 		}
 		else {
 			Translation* tr = this->translations[this->models[modelIndex]->transformationIds[t] - 1];
-			cout << "Translation : " << *tr << endl;
+			//cout << "Translation : " << *tr << endl;
 			Matrix4 T = getTranslationMatrix(tr);
 			this->transformAllVertices(modelIndex, T);
 		}
@@ -98,23 +87,18 @@ std::vector<int> Scene::getUniqueVerticesOfModel(int modelIndex) {
 
 
 Matrix4 Scene::calculateCameraMatrix(Camera *camera){
-	double camera_coords[3] = {camera->pos.getElementAt(0), camera->pos.getElementAt(1) ,  camera->pos.getElementAt(2)};
+	Vec3 u = camera->u;
+	Vec3 unit_u(normalizeVec3(u));
+	Vec3 v = camera->v;
+    Vec3 unit_v(normalizeVec3(v));
+	Vec3 w = camera->w;
+    Vec3 unit_w(normalizeVec3(w));
 
-	Matrix4 empty_matrix;
-	empty_matrix.val[0][0] = camera->u.getElementAt(0);
-	empty_matrix.val[0][1] = camera->u.getElementAt(1);
-	empty_matrix.val[0][2] = camera->u.getElementAt(2);
-	empty_matrix.val[0][3] = -(empty_matrix.val[0][0]*camera_coords[0]+empty_matrix.val[0][1]*camera_coords[1]+empty_matrix.val[0][2]*camera_coords[2]);
-	empty_matrix.val[1][0] = camera->v.getElementAt(0);
-	empty_matrix.val[1][1] = camera->v.getElementAt(1);
-	empty_matrix.val[1][2] = camera->v.getElementAt(2);
-	empty_matrix.val[1][3] = -(empty_matrix.val[1][0]*camera_coords[0]+empty_matrix.val[1][1]*camera_coords[1]+empty_matrix.val[1][2]*camera_coords[2]);
-	empty_matrix.val[2][0] = camera->w.getElementAt(0);
-	empty_matrix.val[2][1] = camera->w.getElementAt(1);
-	empty_matrix.val[2][2] = camera->w.getElementAt(2);
-	empty_matrix.val[2][3] = -(empty_matrix.val[2][0]*camera_coords[0]+empty_matrix.val[2][1]*camera_coords[1]+empty_matrix.val[2][2]*camera_coords[2]);
-	empty_matrix.val[3][3]=1;
-	return empty_matrix;
+	double m_val[4][4] = {{unit_u.x, unit_u.y, unit_u.z, -(unit_u.x * camera->pos.x + unit_u.y * camera->pos.y + unit_u.z * camera->pos.z)},
+						  {unit_v.x, unit_v.y, unit_v.z, -(unit_v.x * camera->pos.x + unit_v.y * camera->pos.y + unit_v.z * camera->pos.z)},
+						  {unit_w.x, unit_w.y, unit_w.z, -(unit_w.x * camera->pos.x + unit_w.y * camera->pos.y + unit_w.z * camera->pos.z)},
+						  {0,0,0,1}};
+	return Matrix4(m_val);
 }
 
 void Scene::saveVertices(){
@@ -157,7 +141,7 @@ void Scene::perspectiveProjection(int modelIndex, Camera *camera){
 		this->vertices[vertex_id]->x = (vertex.x)/t;
 		this->vertices[vertex_id]->y = (vertex.y)/t;
 		this->vertices[vertex_id]->z = (vertex.z)/t;
-		cout << "Vertice no: " << vertex_id << " " << *this->vertices[vertex_id] << endl; 
+		
 	}
 }
 
@@ -177,19 +161,11 @@ void Scene::viewportTransformation(int modelIndex, Matrix4 M_viewport ){
 		int vertex_id = modelVerticeIds[i] - 1;
 		Vec4 vert(Vec3toVec4(this->vertices[vertex_id]));
 
-		//cout << "Viewport matrix: " << endl;
-		//cout << M_viewport << endl;
 		Vec3 coordinate = Vec4toVec3(multiplyMatrixWithVec4(M_viewport, vert));
 		
 		this->vertices[vertex_id]->x = coordinate.x;
 		this->vertices[vertex_id]->y = coordinate.y;
 		this->vertices[vertex_id]->z = coordinate.z;
-
-		cout << coordinate << endl;
-
-		//this->image[round(coordinate.x)][round(coordinate.y)].r = c.r;
-		//this->image[round(coordinate.x)][round(coordinate.y)].g = c.g;
-		//this->image[round(coordinate.x)][round(coordinate.y)].b = c.b;
 		
 	}
 }
@@ -299,10 +275,6 @@ void Scene::rasterizeLine(Vec3 v0, Vec3 v1, Camera* camera){
 		}
 	}
 
-	cout << "comparing vertices: "<< endl;
-	cout << "v0 is: " << v0 << endl;
-	cout << "v1 is: " << v1 << endl;
-
 	bool isNegative = false;
 	if(slope < 1 && slope > -1){ //move on x axis
 		if(v1.y < v0.y){
@@ -323,8 +295,6 @@ void Scene::wireframeRasterization(Triangle tri, Camera* camera){
 	Vec3 v1 = *this->vertices[tri.getSecondVertexId()-1];
 	Vec3 v2 = *this->vertices[tri.getThirdVertexId()-1];
 
-	//todo: write midpointY for slopes greater than 1
-	//then call midpointX or midpointY for each vertice pair
 	this->rasterizeLine(v0, v1, camera);
 	this->rasterizeLine(v1, v2, camera);
 	this->rasterizeLine(v0, v2, camera);
@@ -405,17 +375,20 @@ bool Scene::backfaceCulling(Triangle tri, Camera* camera) {
 	eyeToTri.y = center.y - camera->pos.y;
 	eyeToTri.z = center.z - camera->pos.z;
 
-	//cout << "center.x - " << center.x << " camera.x " << camera->pos.x << " = " << eyeToTri.x << endl;
-	//cout << "center.y - " << center.y << " camera.y " << camera->pos.y << " = " << eyeToTri.y << endl;
-	//cout << "center.z - " << center.z << " camera.z " << camera->pos.z << " = " << eyeToTri.z << endl;
-
-	cout << dotProductVec3(eyeToTri, N_normalized) << endl;
+	//cout << dotProductVec3(eyeToTri, N_normalized) << endl;
 
 	if (dotProductVec3(eyeToTri, N_normalized) >= 0)
 		backFacing = true;
 
-	cout << " " << backFacing << endl;
+	//cout << " " << backFacing << endl;
 	return backFacing;
+}
+
+void Scene::transformAllModels() {
+
+	for (int m = 0; m < this->models.size(); m++) {
+		this->transformModel(m);
+	}
 }
 
 /*
@@ -425,15 +398,10 @@ bool Scene::backfaceCulling(Triangle tri, Camera* camera) {
 void Scene::forwardRenderingPipeline(Camera *camera)
 {
 	// TODO: Implement this function.
-//	void Scene::transformAllModels() {
-//
-//		for (int m = 0; m < this->models.size(); m++) {
-//			this->transformModel(m);
-//		}
-//	}
 	if(!this->isTransformed){
-		cout << "TRANSFORMING THE MODELS" << endl;
-//		this->transformAllModels();
+
+		//this->transformAllModels();
+
 		this->isTransformed = true;
 		this->saveVertices();
 	}
@@ -441,33 +409,35 @@ void Scene::forwardRenderingPipeline(Camera *camera)
 		this->restoreVertices();
 	}
 
-	cout << "------------------------------------------------------" << endl;
-	cout << "TRANSFORMING FOR CAMERA " << camera->cameraId << endl;
+	//cout << "------------------------------------------------------" << endl;
+	//cout << "TRANSFORMING FOR CAMERA " << camera->cameraId << endl;
 	
 	
 	Matrix4 M_camera = calculateCameraMatrix(camera);
 	Matrix4 M_viewport = calculateViewportMatrix(camera);
 
 	for (int modelIndex = 0; modelIndex < this->models.size(); modelIndex++){
+		
 		this->transformModel(modelIndex);
-		//cout << "----Camera Transformation----"<< modelIndex << endl;
+		
 		for (int triIndex = 0; triIndex < this->models[modelIndex]->numberOfTriangles; triIndex++) {
 			Triangle tri = this->models[modelIndex]->triangles[triIndex];
-			cout << endl;
-			cout << "Triangle " << triIndex << endl;
+			//cout << endl;
+			//cout << "Triangle " << triIndex << endl;
+
+			// backface culling here
 
 			if (this->cullingEnabled) {
 				this->models[modelIndex]->triangles[triIndex].backFacing = !this->backfaceCulling(tri, camera);
-				cout << "set as " << this->models[modelIndex]->triangles[triIndex].backFacing << endl;
+				
+				//cout << "set as " << this->models[modelIndex]->triangles[triIndex].backFacing << endl;
 			}
 		}
+
+		//cout << "----Camera Transformation----"<< modelIndex << endl;
 		this->transformAllVertices(modelIndex, M_camera);
 
-		// backface culling here
-
-		
-
-		cout << "----Projection Transformation----" << endl;
+		//cout << "----Projection Transformation----" << endl;
 		if(this->projectionType == 0){
 			Matrix4 M_ortographic = this->ortographicProjection(camera);
 			this->transformAllVertices(modelIndex, M_ortographic);
@@ -477,8 +447,7 @@ void Scene::forwardRenderingPipeline(Camera *camera)
 		}
 		
 		
-
-		cout << "----Viewport Transformation----" << endl;
+		//cout << "----Viewport Transformation----" << endl;
 		this->viewportTransformation(modelIndex, M_viewport);
 
 		for(int triIndex=0; triIndex < this->models[modelIndex]->numberOfTriangles; triIndex++){
@@ -498,6 +467,7 @@ void Scene::forwardRenderingPipeline(Camera *camera)
 		
 
 		}
+
 		this->restoreVertices();
 
 	}
