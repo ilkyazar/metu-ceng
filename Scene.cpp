@@ -294,10 +294,19 @@ void Scene::midpointX(Vec3 v0, Vec3 v1, bool isNegative, Camera* camera){
 void Scene::rasterizeLine(Vec3 v0, Vec3 v1, Camera* camera){
 
 	double slope = (v1.y - v0.y)/(v1.x - v0.x);
-	if(!(slope < -1 && v1.x < v0.x) && (v0.x > v1.x)) {
-		Vec3 temp(v0);
-		v0 = v1;
-		v1 = temp;
+	if(slope <= 1 && slope >= -1){
+		if(v1.x < v0.x){
+			Vec3 temp(v0);
+			v0 = v1;
+			v1 = temp;	
+		}
+	}
+	else{
+		if(v1.y < v0.y){
+			Vec3 temp(v0);
+			v0 = v1;
+			v1 = temp;
+		}
 	}
 
 	cout << "comparing vertices: "<< endl;
@@ -396,8 +405,16 @@ bool Scene::backfaceCulling(Triangle tri, Camera* camera) {
 	eyeToTri.x = center.x - camera->pos.x;
 	eyeToTri.y = center.y - camera->pos.y;
 	eyeToTri.z = center.z - camera->pos.z;
+	cout << "CAMERA: "<< camera->cameraId << endl;
+	cout << "center.x - " << center.x << " camera.x " << camera->pos.x << " = " << eyeToTri.x << endl;
+	cout << "center.y - " << center.y << " camera.y " << camera->pos.y << " = " << eyeToTri.y << endl;
+	cout << "center.z - " << center.z << " camera.z " << camera->pos.z << " = " << eyeToTri.z << endl;
+	cout << endl;
 
-	if (dotProductVec3(eyeToTri, N_normalized) > 0)
+	cout << dotProductVec3(eyeToTri, N_normalized) << endl;
+	cout << endl;
+
+	if (dotProductVec3(eyeToTri, N_normalized) >= 0)
 		backFacing = true;
 
 	return backFacing;
@@ -449,7 +466,8 @@ void Scene::forwardRenderingPipeline(Camera *camera)
 
 			bool backFacing = this->backfaceCulling(tri, camera);
 
-			if (backFacing == true) {
+			if (!(this->cullingEnabled) || backFacing == true){
+				
 				if(this->models[modelIndex]->type == 0){
 					cout << "Line rasterization for triangle: " << triIndex << endl;
 					this->wireframeRasterization(tri, camera);
