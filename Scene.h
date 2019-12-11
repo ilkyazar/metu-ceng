@@ -7,6 +7,7 @@
 #include <iostream>
 #include <string>
 #include <vector>
+#include <algorithm>
 
 #include "Camera.h"
 #include "Color.h"
@@ -67,6 +68,8 @@ public:
 	void midpointX(Vec3 v0, Vec3 v1, bool isNegative);
 	void midpointY(Vec3 v0, Vec3 v1, bool isNegative);
 	void rasterizeLine(Vec3 v0, Vec3 v1);
+	void triangleRasterization(Triangle tri);
+	double lineEquation(Vec3 v0, Vec3 v1, int x, int y);
 	
 };
 

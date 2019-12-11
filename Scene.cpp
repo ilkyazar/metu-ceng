@@ -327,6 +327,40 @@ void Scene::wireframeRasterization(Triangle tri){
 	this->rasterizeLine(v0, v2);
 }
 
+double Scene::lineEquation(Vec3 v0, Vec3 v1, int x, int y){
+	return x*(v0.y - v1.y) + y*(v1.x - v0.x) + v0.x*v1.y - v0.y*v1.x;
+}
+
+void Scene::triangleRasterization(Triangle tri){
+	Vec3 v0 = *this->vertices[tri.getFirstVertexId()-1];
+	Vec3 v1 = *this->vertices[tri.getSecondVertexId()-1];
+	Vec3 v2 = *this->vertices[tri.getThirdVertexId()-1];
+	
+	double xMin = min({v0.x, v1.x, v2.x});
+	double xMax = max({v0.x, v1.x, v2.x});
+	double yMin = min({v0.y,v1.y,v2.y});
+	double yMax = max({v0.y,v1.y,v2.y});
+	double alpha, beta, gamma;
+
+	for(int y = yMin; y<= yMax; y++){
+		for(int x = xMin; x <= xMax; x++){
+			alpha = lineEquation(v1, v2, x, y) / lineEquation(v1, v2, v0.x, v0.y);
+			beta = lineEquation(v2, v0, x, y) / lineEquation(v2, v0, v1.x, v1.y);
+			gamma = lineEquation(v0, v1, x, y) / lineEquation(v0, v1, v2.x, v2.y);
+
+			if(alpha >= 0 && beta >= 0 && gamma >= 0){
+				Color* c0 = this->colorsOfVertices[v0.colorId - 1];
+				Color* c1 = this->colorsOfVertices[v1.colorId - 1];
+				Color* c2 = this->colorsOfVertices[v2.colorId - 1];
+				
+				this->image[x][y].r = (int)(c0->r * alpha + c1->r * beta + c2->r * gamma);
+				this->image[x][y].g = (int)(c0->g * alpha + c1->g * beta + c2->g * gamma);
+				this->image[x][y].b = (int)(c0->b * alpha + c1->b * beta + c2->b * gamma);
+			}
+		}
+	}
+}
+
 /*
 	Transformations, clipping, culling, rasterization are done here.
 	You can define helper functions inside Scene class implementation.
@@ -363,7 +397,7 @@ void Scene::forwardRenderingPipeline(Camera *camera)
 			this->perspectiveProjection(modelIndex, camera);
 		}
 		
-		//TODO: clipping and backface culling
+		//TODO: clipping and backface culling here
 
 		cout << "----Viewport Transformation----" << endl;
 		this->viewportTransformation(modelIndex, M_viewport);
@@ -375,8 +409,9 @@ void Scene::forwardRenderingPipeline(Camera *camera)
 				this->wireframeRasterization(tri);
 			}
 			else{
-				//TODO: solid shape
+				//TODO: segmentation fault in brazil flag 3 
 				cout << "Triangle rasterization for triangle: " << triIndex << endl;
+				this->triangleRasterization(tri);
 			}
 			
 		}
