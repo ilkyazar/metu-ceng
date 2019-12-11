@@ -173,7 +173,7 @@ void Scene::perspectiveProjection(int modelIndex, Camera *camera){
 
 Matrix4 Scene::calculateViewportMatrix(Camera* camera){
 	double m_val[4][4] = {{(camera->horRes)/2, 0, 0, (camera->horRes - 1)/2},
-						{0, (camera->verRes)/2, 0, (camera->horRes - 1)/2 },
+						{0, (camera->verRes)/2, 0, (camera->verRes - 1)/2 },
 						{0, 0, 1/2, 1/2},
 						{0, 0, 0, 1}};
 	return Matrix4(m_val);
@@ -405,18 +405,17 @@ bool Scene::backfaceCulling(Triangle tri, Camera* camera) {
 	eyeToTri.x = center.x - camera->pos.x;
 	eyeToTri.y = center.y - camera->pos.y;
 	eyeToTri.z = center.z - camera->pos.z;
-	cout << "CAMERA: "<< camera->cameraId << endl;
-	cout << "center.x - " << center.x << " camera.x " << camera->pos.x << " = " << eyeToTri.x << endl;
-	cout << "center.y - " << center.y << " camera.y " << camera->pos.y << " = " << eyeToTri.y << endl;
-	cout << "center.z - " << center.z << " camera.z " << camera->pos.z << " = " << eyeToTri.z << endl;
-	cout << endl;
+
+	//cout << "center.x - " << center.x << " camera.x " << camera->pos.x << " = " << eyeToTri.x << endl;
+	//cout << "center.y - " << center.y << " camera.y " << camera->pos.y << " = " << eyeToTri.y << endl;
+	//cout << "center.z - " << center.z << " camera.z " << camera->pos.z << " = " << eyeToTri.z << endl;
 
 	cout << dotProductVec3(eyeToTri, N_normalized) << endl;
-	cout << endl;
 
-	if (dotProductVec3(eyeToTri, N_normalized) >= 0)
+	if (dotProductVec3(eyeToTri, N_normalized) > 0)
 		backFacing = true;
 
+	cout << " " << backFacing << endl;
 	return backFacing;
 }
 
@@ -456,30 +455,40 @@ void Scene::forwardRenderingPipeline(Camera *camera)
 			this->perspectiveProjection(modelIndex, camera);
 		}
 		
-		//TODO: clipping and backface culling here
+		// backface culling here
+
+		for (int triIndex = 0; triIndex < this->models[modelIndex]->numberOfTriangles; triIndex++) {
+			Triangle tri = this->models[modelIndex]->triangles[triIndex];
+			cout << endl;
+			cout << "Triangle " << triIndex << endl;
+
+			if (this->cullingEnabled) {
+				this->models[modelIndex]->triangles[triIndex].backFacing = this->backfaceCulling(tri, camera);
+				cout << "set as " << this->models[modelIndex]->triangles[triIndex].backFacing << endl;
+			}
+		}
 
 		cout << "----Viewport Transformation----" << endl;
 		this->viewportTransformation(modelIndex, M_viewport);
 
 		for(int triIndex=0; triIndex < this->models[modelIndex]->numberOfTriangles; triIndex++){
 			Triangle tri = this->models[modelIndex]->triangles[triIndex];
+			if (this->models[modelIndex]->triangles[triIndex].backFacing == true){
 
-			bool backFacing = this->backfaceCulling(tri, camera);
-
-			if (!(this->cullingEnabled) || backFacing == true){
-				
 				if(this->models[modelIndex]->type == 0){
-					cout << "Line rasterization for triangle: " << triIndex << endl;
+					//cout << "Line rasterization for triangle: " << triIndex << endl;
 					this->wireframeRasterization(tri, camera);
 				}
 				else{
 					//TODO: segmentation fault in brazil flag 3 
-					cout << "Triangle rasterization for triangle: " << triIndex << endl;
+					//cout << "Triangle rasterization for triangle: " << triIndex << endl;
 					this->triangleRasterization(tri, camera);
 				}
 			}
-		}
+		
 
+		}
+		
 	}
 }
 
