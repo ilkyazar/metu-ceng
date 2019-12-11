@@ -332,7 +332,7 @@ void Scene::wireframeRasterization(Triangle tri, Camera* camera){
 }
 
 double Scene::lineEquation(Vec3 v0, Vec3 v1, int x, int y){
-	return x*(v0.y - v1.y) + y*(v1.x - v0.x) + v0.x*v1.y - v0.y*v1.x;
+	return double(x*(v0.y - v1.y) + y*(v1.x - v0.x) + (v0.x*v1.y) - (v0.y*v1.x));
 }
 
 void Scene::triangleRasterization(Triangle tri, Camera* camera){
@@ -348,9 +348,9 @@ void Scene::triangleRasterization(Triangle tri, Camera* camera){
 
 	for(int y = yMin; y<= yMax; y++){
 		for(int x = xMin; x <= xMax; x++){
-			alpha = (double)lineEquation(v1, v2, round(x), round(y)) / (double)lineEquation(v1, v2, round(v0.x), round(v0.y));
-			beta = (double)lineEquation(v2, v0, round(x), round(y)) / (double)lineEquation(v2, v0, round(v1.x), round(v1.y));
-			gamma = (double)lineEquation(v0, v1, round(x), round(y)) / (double)lineEquation(v0, v1, round(v2.x), round(v2.y));
+			alpha = lineEquation(v1, v2, x, y) / lineEquation(v1, v2, int(v0.x), int(v0.y));
+			beta = lineEquation(v2, v0, x, y) / lineEquation(v2, v0, int(v1.x), int(v1.y));
+			gamma = lineEquation(v0, v1, x, y) / lineEquation(v0, v1, int(v2.x), int(v2.y));
 
 			if(alpha >= 0 && beta >= 0 && gamma >= 0 && alpha + beta + gamma <= 3){
 				Color* c0 = this->colorsOfVertices[v0.colorId - 1];
@@ -358,13 +358,49 @@ void Scene::triangleRasterization(Triangle tri, Camera* camera){
 				Color* c2 = this->colorsOfVertices[v2.colorId - 1];
 
 				if(x >= 0 && x < camera->horRes  && y >= 0 && y < camera->verRes){
-					this->image[x][y].r = round(c0->r * alpha) + round(c1->r * beta) + round(c2->r * gamma);
-					this->image[x][y].g = round(c0->g * alpha) + round(c1->g * beta) + round(c2->g * gamma);
-					this->image[x][y].b = round(c0->b * alpha) + round(c1->b * beta) + round(c2->b * gamma);
+					this->image[x][y].r = (c0->r * alpha) + (c1->r * beta) + (c2->r * gamma);
+					this->image[x][y].g = (c0->g * alpha) + (c1->g * beta) + (c2->g * gamma);
+					this->image[x][y].b = (c0->b * alpha) + (c1->b * beta) + (c2->b * gamma);
 				}				
 			}
 		}
 	}
+}
+
+bool Scene::backfaceCulling(Triangle tri, Camera* camera) {
+	bool backFacing = false;
+
+	Vec3 v0 = *this->vertices[tri.getFirstVertexId()-1];
+	Vec3 v1 = *this->vertices[tri.getSecondVertexId()-1];
+	Vec3 v2 = *this->vertices[tri.getThirdVertexId()-1];
+
+	// Find normal of the triangle N(n_x, n_y, n_z):
+	Vec3 v, w;
+ 	v.x = v1.x - v0.x;
+	v.y = v1.y - v0.y;
+	v.z = v1.z - v0.z;
+
+	w.x = v2.x - v1.x;
+	w.y = v2.y - v1.y;
+	w.z = v2.z - v1.z;
+
+	Vec3 N = crossProductVec3(v, w);
+	Vec3 N_normalized = normalizeVec3(N);
+
+	Vec3 center;
+	center.x = (v1.x + v2.x + v0.x) / 3;
+	center.y = (v1.y + v2.y + v0.y) / 3;
+	center.z = (v1.z + v2.z + v0.z) / 3;
+
+	Vec3 eyeToTri;
+	eyeToTri.x = center.x - camera->pos.x;
+	eyeToTri.y = center.y - camera->pos.y;
+	eyeToTri.z = center.z - camera->pos.z;
+
+	if (dotProductVec3(eyeToTri, N_normalized) > 0)
+		backFacing = true;
+
+	return backFacing;
 }
 
 /*
@@ -410,16 +446,20 @@ void Scene::forwardRenderingPipeline(Camera *camera)
 
 		for(int triIndex=0; triIndex < this->models[modelIndex]->numberOfTriangles; triIndex++){
 			Triangle tri = this->models[modelIndex]->triangles[triIndex];
-			if(this->models[modelIndex]->type == 0){
-				cout << "Line rasterization for triangle: " << triIndex << endl;
-				this->wireframeRasterization(tri, camera);
+
+			bool backFacing = this->backfaceCulling(tri, camera);
+
+			if (backFacing == true) {
+				if(this->models[modelIndex]->type == 0){
+					cout << "Line rasterization for triangle: " << triIndex << endl;
+					this->wireframeRasterization(tri, camera);
+				}
+				else{
+					//TODO: segmentation fault in brazil flag 3 
+					cout << "Triangle rasterization for triangle: " << triIndex << endl;
+					this->triangleRasterization(tri, camera);
+				}
 			}
-			else{
-				//TODO: segmentation fault in brazil flag 3 
-				cout << "Triangle rasterization for triangle: " << triIndex << endl;
-				this->triangleRasterization(tri, camera);
-			}
-			
 		}
 
 	}

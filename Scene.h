@@ -70,6 +70,7 @@ public:
 	void rasterizeLine(Vec3 v0, Vec3 v1, Camera* camera);
 	void triangleRasterization(Triangle tri, Camera* camera);
 	double lineEquation(Vec3 v0, Vec3 v1, int x, int y);
+	bool backfaceCulling(Triangle tri, Camera* camera);
 	
 };
 
