@@ -24,6 +24,7 @@ public class CPU extends Part {
 
     @Override
 	public String toString(){
-		return "\nBrand="+getBrand()+"\tModel=="+getModel()+"\tPrice="+String.valueOf(getPrice())+"\tCoreCount="+String.valueOf(getCoreCount())+"\tClockSpeed="+String.valueOf(getClockSpeed());
-	}
+		//return "\nBrand="+getBrand()+"\tModel=="+getModel()+"\tPrice="+String.valueOf(getPrice())+"\tCoreCount="+String.valueOf(getCoreCount())+"\tClockSpeed="+String.valueOf(getClockSpeed());
+        return "\n" + getCsvLine();
+    }
 }

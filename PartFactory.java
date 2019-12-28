@@ -111,6 +111,8 @@ public class PartFactory {
         
         newPart.setBrand(brand);
         newPart.setModel(model);
+        newPart.setType(type);
+        newPart.setCsvLine(line);
 
         return newPart;
     }

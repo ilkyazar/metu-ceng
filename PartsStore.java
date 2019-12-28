@@ -4,13 +4,12 @@ import java.io.FileNotFoundException;
 import java.io.FileReader;
 import java.util.ArrayList;
 import java.io.IOException;
-import java.lang.reflect.*;
-import java.lang.reflect.Constructor;
-import java.lang.reflect.Field;
-import java.lang.reflect.Method;
-import java.lang.reflect.Modifier;
+import java.util.stream.*; 
+import java.util.List;
 
 public class PartsStore {
+  private ArrayList<Part> pcParts;
+
   public PartsStore(){
     /* 
       read the csv file, process it, and store the processed data as private fields in PartsStore
@@ -18,13 +17,13 @@ public class PartsStore {
       it will be in the same path as your .class files. So just "pcparts.csv" as file path is enough.
     */
 
-    ArrayList<Part> pcParts = new ArrayList<>();
+    this.pcParts = new ArrayList<>();
 
     BufferedReader bufReader = null;
 
     try {
-      bufReader = new BufferedReader(new FileReader("pcparts-2.csv"));
-      //bufReader = new BufferedReader(new FileReader("pcparts.csv"));
+      //bufReader = new BufferedReader(new FileReader("pcparts-2.csv"));
+      bufReader = new BufferedReader(new FileReader("pcparts.csv"));
     }
     catch(FileNotFoundException e) {
       e.printStackTrace();
@@ -44,7 +43,7 @@ public class PartsStore {
 
       newPart = PartFactory.getPart(line);
 
-      pcParts.add(newPart);
+      this.pcParts.add(newPart);
 
       try {
         line = bufReader.readLine();
@@ -54,7 +53,6 @@ public class PartsStore {
       }
     }
 
-    
     try {
       bufReader.close();
     }
@@ -62,11 +60,25 @@ public class PartsStore {
       e.printStackTrace();
     }
 
-    System.out.println(pcParts);
+    //System.out.println(this.pcParts);
   }
 
   public void FindPartsWithBrand(String type, String brand){
-    System.out.println("OK");
+    List<Part> newList = null;
+
+    if (type == null) {
+      newList = this.pcParts.stream().filter(p -> p.getBrand().equals(brand)).collect(Collectors.toList());
+    }
+
+    else {
+      newList = this.pcParts.stream().filter(p -> p.getType().equals(type) && p.getBrand().equals(brand))
+                                                .collect(Collectors.toList());
+    }
+    
+    for (Part p : newList) { 		      
+      System.out.println(p.getCsvLine());	
+    }
+
   }
 
   public void TotalPrice(String type, String brand, String model){
