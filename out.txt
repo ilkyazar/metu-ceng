@@ -1,0 +1,11 @@
+[
+Brand=ADATA	Model=Premier	Price=129.98	Capacity=960, 
+Brand=LG	Model=IPS234V-PN	Price=0.0	Size=23.0	AspectRatio=16:9, 
+Brand=SeaSonic	Model=PRIME Gold	Price=0.0	Wattage=1000	FormFactor=ATX, 
+Brand=Gigabyte	Model=B360M GAMING HD	Price=0.0	Socket=LGA1151	RamSlots=2, 
+Brand=Intel	Model==Xeon E5-2630	Price=74.77	CoreCount=6	ClockSpeed=2.3, 
+Brand=AMD	Model=FirePro V5800	Price=0.0	Chipset=100-505839	Capacity=1	ClockSpeed=700.0, 
+Brand=Acco	Model=KENSINGTON K64327F	Price=37.31	ConnectionType=Wired, 
+Brand=Corsair	Model=Vengeance 8 GB	Price=42.99	Socket=DDR3	Capacity=4	ClockSpeed=1600.0, 
+Brand=Cherry	Model=Classic Line G83-6101 PC Keyboard	Price=0.0	Wired=Wired]
+OK
