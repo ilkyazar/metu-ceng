@@ -132,7 +132,7 @@ public class PartsStore {
 
     newList = this.pcParts.stream().filter(p -> p.getType().equals("Memory"))
                                    .filter(p -> ((Memory) p).getCapacity() >= capacity)
-                                   .filter(p -> p.getPrice() != 0)
+                                   //.filter(p -> p.getPrice() != 0)
                                    .collect(Collectors.toList());
 
     part =  Collections.min(newList, Comparator.comparing(p -> p.getPrice()));
@@ -152,7 +152,7 @@ public class PartsStore {
     List<Part> newList = null;
 
     newList = this.pcParts.stream().filter(p -> p.getType().equals("CPU"))
-                                   .filter(p -> p.getPrice() != 0)
+                                   //.filter(p -> p.getPrice() != 0)
                                    .collect(Collectors.toList());
                           
     part =  Collections.max(newList, Comparator.comparing(p -> ((CPU) p).getCoreCount() * ((CPU) p).getClockSpeed()));
