@@ -109,7 +109,21 @@ public class PartsStore {
   }
 
   public void UpdateStock(){
+    List<Part> newList = null;
 
+    newList = this.pcParts.stream().filter(p -> p.getPrice() != 0)
+                                   .collect(Collectors.toList());
+
+    int itemsRemoved = this.pcParts.size() - newList.size();
+
+    System.out.println(itemsRemoved + " items removed.\n");
+    
+    this.pcParts = new ArrayList<Part>(newList);
+/*
+    for (Part p : this.pcParts) { 		      
+      System.out.println(p.getCsvLine());	
+    }    
+*/
   }
 
   public void FindCheapestMemory(int capacity){
@@ -120,6 +134,7 @@ public class PartsStore {
                                    .filter(p -> ((Memory) p).getCapacity() >= capacity)
                                    .filter(p -> p.getPrice() != 0)
                                    .collect(Collectors.toList());
+
     part =  Collections.min(newList, Comparator.comparing(p -> p.getPrice()));
 
     System.out.println(part.getCsvLine());	

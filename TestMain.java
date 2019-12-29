@@ -5,7 +5,9 @@ public class TestMain {
         //ps.TotalPrice("GPU", "Asus", "GeForce RTX 2080");
         //ps.TotalPrice(null, "Asus", null);
         //ps.TotalPrice(null, null, null);
+        ps.UpdateStock();
         ps.FindCheapestMemory(16);
         //ps.FindFastestCPU();
+
     }
 }
