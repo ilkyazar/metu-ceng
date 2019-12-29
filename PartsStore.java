@@ -6,6 +6,8 @@ import java.util.ArrayList;
 import java.io.IOException;
 import java.util.stream.*; 
 import java.util.List;
+import java.util.Collections;
+import java.util.Comparator;
 
 public class PartsStore {
   private ArrayList<Part> pcParts;
@@ -82,7 +84,28 @@ public class PartsStore {
   }
 
   public void TotalPrice(String type, String brand, String model){
+    double price = 0;
+    price = this.pcParts.stream().filter(p -> ((type != null) ? p.getType().equals(type) : true))
+                                 .filter(p -> ((brand != null) ? p.getBrand().equals(brand) : true))
+                                 .filter(p -> ((model != null) ? p.getModel().equals(model) : true))
+                                 .mapToDouble(p -> p.getPrice())
+                                 .sum();
+    
+    String priceStr = String.format("%.2f", price);
+    String totalPrice = priceStr + " USD";
+    System.out.printf(totalPrice);
+    /*
+    List<Part> newList = null;
+    newList = this.pcParts.stream().filter(p -> ((type != null) ? p.getType().equals(type) : true))
+                                   .filter(p -> ((brand != null) ? p.getBrand().equals(brand) : true))
+                                   .filter(p -> ((model != null) ? p.getModel().equals(model) : true))
+                                   .collect(Collectors.toList());
 
+    for (Part p : newList) { 		      
+      System.out.println(p.getCsvLine());	
+    }
+    */
+    
   }
 
   public void UpdateStock(){
@@ -90,10 +113,41 @@ public class PartsStore {
   }
 
   public void FindCheapestMemory(int capacity){
+    Part part = null;
+    List<Part> newList = null;
 
+    newList = this.pcParts.stream().filter(p -> p.getType().equals("Memory"))
+                                   .filter(p -> ((Memory) p).getCapacity() >= capacity)
+                                   .filter(p -> p.getPrice() != 0)
+                                   .collect(Collectors.toList());
+    part =  Collections.min(newList, Comparator.comparing(p -> p.getPrice()));
+
+    System.out.println(part.getCsvLine());	
+
+/*
+    for (Part p : newList) { 		      
+      System.out.println(p.getCsvLine());	
+      System.out.println(p.getPrice());	
+    }
+*/
   }
 
   public void FindFastestCPU(){
+    Part part = null;
+    List<Part> newList = null;
 
+    newList = this.pcParts.stream().filter(p -> p.getType().equals("CPU"))
+                                   .filter(p -> p.getPrice() != 0)
+                                   .collect(Collectors.toList());
+                          
+    part =  Collections.max(newList, Comparator.comparing(p -> ((CPU) p).getCoreCount() * ((CPU) p).getClockSpeed()));
+
+    System.out.println(part.getCsvLine());	
+/*
+    for (Part p : newList) { 		      
+      System.out.println(p.getCsvLine());	
+      System.out.println(((CPU) p).getCoreCount() * ((CPU) p).getClockSpeed());	
+    }
+*/
   }
 }
