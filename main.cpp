@@ -32,9 +32,20 @@ void customizedRenderFunction(){
 }
 
 void createTriangles(){
-    vertex_count = 3 * 2 * widthTexture * heightTexture;
-    vertices = new glm::vec3[vertex_count];
+    glm::vec3 vertex;
+    //int vertex_count = 3 * 2 * widthTexture * heightTexture;
+    std::vector<glm::vec3> vertices;
     //TODO: create vertices of 2 triangles for each pixel
+    
+    for(int i=0; i <  widthTexture; i++){
+        for(int j=0; j < heightTexture; j++){
+            vertex = glm::vec3(i,0,j);
+            vertices.push_back(vertex);
+            vertex = glm::vec3(i+1,0,j+1);
+            
+
+        }
+    }
 }
 
 int main(int argc, char * argv[]){

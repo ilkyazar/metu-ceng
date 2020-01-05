@@ -2,7 +2,9 @@
 #define __HELPER__H__
 
 #include <iostream>
+#include <cstdlib>
 #include <string>
+#include <vector>
 #include <fstream>
 #include <jpeglib.h>
 #include <GL/glew.h>
