@@ -30,7 +30,7 @@ void customizedRenderFunction(){
     glVertex3f(0.5, -0.5, 0); // third vertex
     glEnd();
 }
-
+/*
 void createTriangles(){
     glm::vec3 vertex;
     //int vertex_count = 3 * 2 * widthTexture * heightTexture;
@@ -47,7 +47,7 @@ void createTriangles(){
         }
     }
 }
-
+*/
 int main(int argc, char * argv[]){
     std::cout << "height map image: " << argv[1] << std::endl;
     std::cout << "texture map image: " << argv[2] << std::endl;

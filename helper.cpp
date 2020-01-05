@@ -6,12 +6,14 @@ void initTexture(char *filename, int *w, int *h)
 
     unsigned char *raw_image = NULL;
     struct jpeg_decompress_struct cinfo;
+    struct jpeg_error_mgr jerr;
     JSAMPROW row_pointer[1];
 
     FILE *infile = fopen( filename, "rb" );
     unsigned long location = 0;
     int i = 0, j = 0;
-    
+
+    cinfo.err = jpeg_std_error( &jerr );
     jpeg_create_decompress( &cinfo );
     jpeg_stdio_src( &cinfo, infile );
     jpeg_read_header( &cinfo, TRUE );
@@ -19,7 +21,7 @@ void initTexture(char *filename, int *w, int *h)
 
     raw_image = (unsigned char*)malloc( cinfo.output_width*cinfo.output_height*cinfo.num_components );
     row_pointer[0] = (unsigned char *)malloc( cinfo.output_width*cinfo.num_components );
-     while( cinfo.output_scanline < cinfo.image_height )
+    while( cinfo.output_scanline < cinfo.image_height )
     {
         jpeg_read_scanlines( &cinfo, row_pointer, 1 );
         for( i=0; i<cinfo.image_width*cinfo.num_components;i++)
@@ -28,7 +30,7 @@ void initTexture(char *filename, int *w, int *h)
 
     height = cinfo.image_height;
     width = cinfo.image_width;
-    
+
     glGenTextures(1,&idJpegTexture);
     glBindTexture(GL_TEXTURE_2D, idJpegTexture);
     glTexParameteri(GL_TEXTURE_2D,GL_TEXTURE_MAG_FILTER,GL_NEAREST);
