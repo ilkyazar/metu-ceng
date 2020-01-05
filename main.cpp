@@ -7,7 +7,7 @@ GLuint idJpegTexture;
 int widthTexture, heightTexture;
 
 //vertices of triangles
-glm::vec3* vertices;
+std::vector<glm::vec3> vertices;
 
 
 static void errorCallback(int error, const char* description){
@@ -30,24 +30,33 @@ void customizedRenderFunction(){
     glVertex3f(0.5, -0.5, 0); // third vertex
     glEnd();
 }
-/*
+
 void createTriangles(){
     glm::vec3 vertex;
     //int vertex_count = 3 * 2 * widthTexture * heightTexture;
-    std::vector<glm::vec3> vertices;
-    //TODO: create vertices of 2 triangles for each pixel
     
     for(int i=0; i <  widthTexture; i++){
         for(int j=0; j < heightTexture; j++){
+            //1st triangle
             vertex = glm::vec3(i,0,j);
             vertices.push_back(vertex);
             vertex = glm::vec3(i+1,0,j+1);
-            
+            vertices.push_back(vertex);
+            vertex = glm::vec3(i,0,j+1);
+            vertices.push_back(vertex);
+
+            //2nd triangle
+            vertex = glm::vec3(i,0,j);
+            vertices.push_back(vertex);
+            vertex = glm::vec3(i+1,0,j);
+            vertices.push_back(vertex);
+            vertex = glm::vec3(i+1,0,j+1);
+            vertices.push_back(vertex);
 
         }
     }
 }
-*/
+
 int main(int argc, char * argv[]){
     std::cout << "height map image: " << argv[1] << std::endl;
     std::cout << "texture map image: " << argv[2] << std::endl;
