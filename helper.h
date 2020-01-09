@@ -12,7 +12,8 @@
 
 //using namespace std;
 
-extern GLuint idJpegTexture;
+extern GLuint textureId;
+extern GLuint samplerId;
 
 extern GLuint programId;
 extern GLuint vertexShaderId;

@@ -6,7 +6,13 @@
 
 static GLFWwindow* window = NULL;
 
-GLuint idJpegTexture;
+GLuint textureId;
+GLuint heightTextureId;
+
+GLuint samplerId;
+GLuint heightSamplerId;
+
+
 int widthTexture, heightTexture;
 
 GLuint programId;
