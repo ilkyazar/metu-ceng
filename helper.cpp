@@ -52,3 +52,17 @@ void initTexture(char *filename, int *w, int *h)
     fclose( infile );
 
 }
+
+void initShaders() {
+
+  programId = glCreateProgram();
+
+  //vertexShaderId   = initVertexShader("shader.vert");
+  //fragmentShaderId = initFragmentShader("shader.frag");
+
+  //glAttachShader(programId, vertexShaderId);
+  //glAttachShader(programId, fragmentShaderId);
+
+  glLinkProgram(programId);
+
+}

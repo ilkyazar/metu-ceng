@@ -1,13 +1,25 @@
 #include "helper.h"
 #include "glm/glm.hpp"
+#include "glm/gtc/type_ptr.hpp"
+#include "glm/gtc/matrix_transform.hpp"
+
 
 static GLFWwindow* window = NULL;
 
 GLuint idJpegTexture;
 int widthTexture, heightTexture;
 
+GLuint programId;
+GLuint vertexShaderId;
+GLuint fragmentShaderId;
+
 //vertices of triangles
 std::vector<glm::vec3> vertices;
+
+//camera stuff
+glm::vec3 camera_position;
+glm::vec3 camera_up = glm::vec3(0.0, 1.0, 0.0);
+glm::vec3 camera_gaze = glm::vec3(0.0, 0.0, 1.0);
 
 
 static void errorCallback(int error, const char* description){
@@ -57,6 +69,25 @@ void createTriangles(){
     }
 }
 
+void cameraTransformation(){
+    // There will be perspective projection with an angle of 45 degrees. The aspect ratio will be 1,
+    // near and far plane will be 0.1 and 1000 respectively.
+    glm::mat4 projection =  glm::perspective(45.0f, 1.0f, 0.1f, 1000.0f);
+    glm::mat4 view = glm::lookAt(camera_position, camera_position + camera_gaze * 0.1f, camera_up);
+    glm::mat4 model = glm::mat4(1.0f);
+
+    // Uniform variables must be set by the main program
+
+    // Query their location
+    GLint modelingMatrixLoc = (GLint)glGetUniformLocation(programId, "modelingMatrix");
+    GLint viewingMatrixLoc = (GLint)glGetUniformLocation(programId, "viewingMatrix");
+    GLint projectionMatrixLoc = (GLint)glGetUniformLocation(programId, "projectionMatrix");
+    // Set the variable 
+    glUniformMatrix4fv(modelingMatrixLoc, 1, GL_FALSE, glm::value_ptr(model));
+    glUniformMatrix4fv(viewingMatrixLoc, 1, GL_FALSE, glm::value_ptr(view));
+    glUniformMatrix4fv(projectionMatrixLoc, 1, GL_FALSE, glm::value_ptr(projection));
+}
+
 int main(int argc, char * argv[]){
     std::cout << "height map image: " << argv[1] << std::endl;
     std::cout << "texture map image: " << argv[2] << std::endl;
@@ -80,8 +111,16 @@ int main(int argc, char * argv[]){
 
     glfwMakeContextCurrent(window);
     glfwSetKeyCallback(window, keyCallback);
+
+    //init shaders
+    //Make the program current
+    //glUseProgram(programId);
     initTexture(argv[2], &widthTexture, &heightTexture);
-    std::cout << "texture initialized" << std::endl;
+    
+    //set camera_position using width height
+    //cameraTransformation()
+
+
 
     if (glewInit() != GLEW_OK) {
         glfwTerminate();

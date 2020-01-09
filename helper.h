@@ -14,6 +14,11 @@
 
 extern GLuint idJpegTexture;
 
+extern GLuint programId;
+extern GLuint vertexShaderId;
+extern GLuint fragmentShaderId;
+
 void initTexture(char *filename, int *w, int *h);
+void initShaders();
 
 #endif
