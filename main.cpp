@@ -15,6 +15,8 @@ GLuint heightSamplerId;
 
 int widthTexture, heightTexture;
 
+GLfloat heightFactor = 10.0f;
+
 GLuint programId;
 GLuint vertexShaderId;
 GLuint fragmentShaderId;
@@ -75,6 +77,18 @@ void createTriangles(){
     }
 }
 
+void setTextures(){
+
+    glUniform1i(glGetUniformLocation(programId, "texture1"), 0);
+    glUniform1i(glGetUniformLocation(programId, "texture2"), 1);
+
+    glUniform1i(glGetUniformLocation(programId, "widthTexture"), widthTexture);
+    glUniform1i(glGetUniformLocation(programId , "heightTexture"), heightTexture);
+    glUniform1f(glGetUniformLocation(programId, "heightFactor"), heightFactor);
+
+
+}
+
 void cameraTransformation(){
     // There will be perspective projection with an angle of 45 degrees. The aspect ratio will be 1,
     // near and far plane will be 0.1 and 1000 respectively.
@@ -100,6 +114,8 @@ int main(int argc, char * argv[]){
 
     glfwSetErrorCallback(errorCallback);
 
+    glewExperimental = GL_TRUE; 
+
     if(!glfwInit()){
         exit(-1);
     }
@@ -115,18 +131,20 @@ int main(int argc, char * argv[]){
         exit(-1);
     }
 
+    glewExperimental = GL_TRUE; 
+
     glfwMakeContextCurrent(window);
     glfwSetKeyCallback(window, keyCallback);
 
     //init shaders
     //Make the program current
     //glUseProgram(programId);
-    initTexture(argv[2], &widthTexture, &heightTexture);
+    initTexture(argv[2], &widthTexture, &heightTexture, false);
     
     //set camera_position using width height
     //cameraTransformation()
 
-
+    
 
     if (glewInit() != GLEW_OK) {
         glfwTerminate();

@@ -1,6 +1,6 @@
 #include "helper.h"
 
-void initTexture(char *filename, int *w, int *h) {
+void initTexture(char *filename, int *w, int *h, bool isHeight) {
     int width, height;
 
     unsigned char *raw_image = NULL;
@@ -30,43 +30,55 @@ void initTexture(char *filename, int *w, int *h) {
     height = cinfo.image_height;
     width = cinfo.image_width;
 
-    // First parameter is for the count of sampler objects
-    
-    glGenTextures(1, &textureId);
-
-    // Bind sampler to the texture unit 0
-
-    // glBindSampler(0, samplerId);
-
-    // Activate the desired unit and bind the texture to the target of that unit
-
     glewExperimental = GL_TRUE; 
-    glewInit();
-
-    glActiveTexture(GL_TEXTURE0);
-    glBindTexture(GL_TEXTURE_2D, textureId);
-
-    // select modulate to mix texture with color for shading
-    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_DECAL);
-    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_DECAL);
-    // when texture area is small, bilinear filter the closest mipmap
-    glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR_MIPMAP_LINEAR);
-    // when texture area is large, bilinear filter the first mipmap
-    glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
-    // texture should tile
-    glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT);
-    glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT);
     
-    glPixelStorei(GL_UNPACK_ALIGNMENT, 1);
+    if ( GLEW_OK != glewInit()) {
+        exit(-1);
+    }
 
-    // Upload the img to the texture
+    if(!isHeight){
+        //READ TEXTURE MAP
+        // First parameter is for the count of sampler objects
+        glGenTextures(1, &textureId);
+        
+        // Activate the desired unit and bind the texture to the target of that unit
+        glActiveTexture(GL_TEXTURE0);
+        glBindTexture(GL_TEXTURE_2D, textureId);
 
-    glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB, width, height, 0, GL_RGB, GL_UNSIGNED_BYTE, raw_image);
+        // select modulate to mix texture with color for shading
+        glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_DECAL);
+        glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_DECAL);
+        // when texture area is small, bilinear filter the closest mipmap
+        glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR_MIPMAP_LINEAR);
+        // when texture area is large, bilinear filter the first mipmap
+        glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+        // texture should tile
+        glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT);
+        glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT);
+        
+        glPixelStorei(GL_UNPACK_ALIGNMENT, 1);
 
+        // Upload the img to the texture
+        glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB, width, height, 0, GL_RGB, GL_UNSIGNED_BYTE, raw_image);
+        glGenerateMipmap(GL_TEXTURE_2D);
+    }
+
+    else{
+        //READ HEIGHT MAP
+        glGenTextures(1, &heightTextureId);
+        glActiveTexture(GL_TEXTURE1);
+        glBindTexture(GL_TEXTURE_2D, heightTextureId);
+
+        glPixelStorei(GL_UNPACK_ALIGNMENT, 1);
+        // Upload the img to the texture
+        glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB, width, height, 0, GL_RGB, GL_UNSIGNED_BYTE, raw_image);
+        glGenerateMipmap(GL_TEXTURE_2D);
+    }
+
+    
     *w = width;
     *h = height;
 
-    glGenerateMipmap(GL_TEXTURE_2D);
     jpeg_finish_decompress( &cinfo );
     jpeg_destroy_decompress( &cinfo );
     free( row_pointer[0] );

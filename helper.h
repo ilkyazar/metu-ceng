@@ -13,13 +13,13 @@
 //using namespace std;
 
 extern GLuint textureId;
-extern GLuint samplerId;
+extern GLuint heightTextureId;
 
 extern GLuint programId;
 extern GLuint vertexShaderId;
 extern GLuint fragmentShaderId;
 
-void initTexture(char *filename, int *w, int *h);
+void initTexture(char *filename, int *w, int *h, bool isHeight);
 void initShaders();
 
 #endif
