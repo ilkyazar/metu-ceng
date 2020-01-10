@@ -25,15 +25,15 @@ out vec3 toLightVec;
 
 float computeHeight(vec3 pos) {
     //Change sign in case it doesnt work
-    vec3 texCoord = vec2(pos.x / float(widthTexture), pos.z / float(heightTexture));
+    vec2 texCoord = vec2(pos.x / float(widthTexture), pos.z / float(heightTexture));
     vec4 texColor = texture(texture2, texCoord);
-    float height = heightFactor * textureColor.x;
+    float height = heightFactor * texColor.x;
     return height;
 }
 
 void main() {
     float currentVertexHeight = computeHeight(position);
-    vec3 textureCoord = vec2(position.x / float(widthTexture), position.z / float(heightTexture));
+    vec2 textureCoord = vec2(position.x / float(widthTexture), position.z / float(heightTexture));
 
     //Vector from current position to camera
     toCameraVec = vec3(cameraPos.x - position.x, cameraPos.y - currentVertexHeight, cameraPos.z - position.z );
@@ -79,6 +79,6 @@ void main() {
     }
 
 
-    gl_Position = projectionMatrix * viewingMatrix * modelingMatrix * vec4(position.x, currentVertexHeight, position.z);
+    gl_Position = projectionMatrix * viewingMatrix * modelingMatrix * vec4(position.x, currentVertexHeight, position.z, 1.0);
 
 }

@@ -6,16 +6,11 @@
 
 static GLFWwindow* window = NULL;
 
+int widthTexture, heightTexture;
+GLfloat heightFactor = 10.0f;
+
 GLuint textureId;
 GLuint heightTextureId;
-
-GLuint samplerId;
-GLuint heightSamplerId;
-
-
-int widthTexture, heightTexture;
-
-GLfloat heightFactor = 10.0f;
 
 GLuint programId;
 GLuint vertexShaderId;
@@ -55,8 +50,10 @@ void customizedRenderFunction(){
 }
 
 void createTriangles(){
-    glm::vec3 vertex;
+    int vertex_count = 3 * 2 * widthTexture * heightTexture;
+    vertices = new glm::vec3[vertex_count];
     int index = 0;
+    glm::vec3 vertex;
 
     for(int i=0; i < widthTexture; i++){
         for(int j=0; j < heightTexture; j++){
@@ -156,14 +153,20 @@ int main(int argc, char * argv[]){
         exit(-1);
     }
 
-    glewExperimental = GL_TRUE; 
-
     glfwMakeContextCurrent(window);
     glfwSetKeyCallback(window, keyCallback);
 
+    GLenum err = glewInit();
+    if (err != GLEW_OK) {
+        glfwTerminate();
+        exit(-1);
+    }
+    
     initShaders();
     //Make the program current
     glUseProgram(programId);
+    
+    
     initTexture(argv[2], &widthTexture, &heightTexture, false);
     setTextures();
 
@@ -175,7 +178,6 @@ int main(int argc, char * argv[]){
     createTriangles();
 
     //glEnable(GL_DEPTH_TEST);
-
     
     if (glewInit() != GLEW_OK) {
         glfwTerminate();
