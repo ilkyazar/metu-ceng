@@ -21,7 +21,7 @@ out vec4 vertexColor;
 
 void main(){
 
-    vec4 textureColor = texture(texture2, textureCoord);
+    vec4 textureColor = texture(texture1, textureCoord);
     //vec3 textureColor3 = vec3(textureColor.x, textureColor.y, textureColor.z);
 
     vec4 ambientCoeff = vec4(0.25 ,0.25 ,0.25 ,1.0);
@@ -47,5 +47,6 @@ void main(){
     vec4 totalColor = ambientColor + specularColor + diffuseColor;
     vertexColor = clamp(textureColor * totalColor, 0.0, 1.0);
     //vertexColor = vec4(vertexColor3.x, vertexColor3.y, vertexColor3.z, 1.0);
+    vertexColor = vec4(1.0,1.0,1.0,1.0);
 
 }

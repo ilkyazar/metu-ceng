@@ -162,12 +162,15 @@ int main(int argc, char * argv[]){
         exit(-1);
     }
     
+    //Bunu açınca üçgen gidiyor
     initShaders();
+
     //Make the program current
     glUseProgram(programId);
     
     
     initTexture(argv[2], &widthTexture, &heightTexture, false);
+    initTexture(argv[1], &widthTexture, &heightTexture, true);
     setTextures();
 
     //The camera will be positioned initially at (w/2, w/10, -w/4)
@@ -177,7 +180,7 @@ int main(int argc, char * argv[]){
     glViewport(0,0, widthDisplay, heightDisplay);
     createTriangles();
 
-    //glEnable(GL_DEPTH_TEST);
+    glEnable(GL_DEPTH_TEST);
     
     if (glewInit() != GLEW_OK) {
         glfwTerminate();
@@ -188,7 +191,7 @@ int main(int argc, char * argv[]){
         glfwWaitEvents();
         //customizedRenderFunction();
 
-        clearColorDepthStencil();
+        //clearColorDepthStencil();
         cameraTransformation();
         render();
 
