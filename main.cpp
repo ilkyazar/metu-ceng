@@ -102,10 +102,12 @@ void cameraTransformation(){
     GLint modelingMatrixLoc = (GLint)glGetUniformLocation(programId, "modelingMatrix");
     GLint viewingMatrixLoc = (GLint)glGetUniformLocation(programId, "viewingMatrix");
     GLint projectionMatrixLoc = (GLint)glGetUniformLocation(programId, "projectionMatrix");
-    // Set the variable 
+    GLint cameraPositionLoc = (GLint)glGetUniformLocation(programId, "cameraPos");
+    // Set the variables 
     glUniformMatrix4fv(modelingMatrixLoc, 1, GL_FALSE, glm::value_ptr(model));
     glUniformMatrix4fv(viewingMatrixLoc, 1, GL_FALSE, glm::value_ptr(view));
     glUniformMatrix4fv(projectionMatrixLoc, 1, GL_FALSE, glm::value_ptr(projection));
+    glUniform3fv(cameraPositionLoc, 1, GL_FALSE, glm::value_ptr(camera_position));
 }
 
 int main(int argc, char * argv[]){
@@ -141,7 +143,10 @@ int main(int argc, char * argv[]){
     //glUseProgram(programId);
     initTexture(argv[2], &widthTexture, &heightTexture, false);
     
-    //set camera_position using width height
+    //set camera_position using widthTexture
+    //The camera will be positioned initially at (w/2, w/10, -w/4)
+    camera_position = glm::vec3(widthTexture/2, widthTexture/10, -widthTexture/4);
+    
     //cameraTransformation()
 
     
