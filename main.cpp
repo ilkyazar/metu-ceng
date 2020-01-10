@@ -22,13 +22,16 @@ GLuint vertexShaderId;
 GLuint fragmentShaderId;
 
 //vertices of triangles
-std::vector<glm::vec3> vertices;
+glm::vec3* vertices;
 
 //camera stuff
 glm::vec3 camera_position;
 glm::vec3 camera_up = glm::vec3(0.0, 1.0, 0.0);
 glm::vec3 camera_gaze = glm::vec3(0.0, 0.0, 1.0);
 
+
+int widthDisplay = 1000;
+int heightDisplay = 1000;
 
 static void errorCallback(int error, const char* description){
     fprintf(stderr, "Error: %s\n", description);
@@ -53,26 +56,27 @@ void customizedRenderFunction(){
 
 void createTriangles(){
     glm::vec3 vertex;
-    //int vertex_count = 3 * 2 * widthTexture * heightTexture;
-    
-    for(int i=0; i <  widthTexture; i++){
+    int index = 0;
+
+    for(int i=0; i < widthTexture; i++){
         for(int j=0; j < heightTexture; j++){
             //1st triangle
             vertex = glm::vec3(i,0,j);
-            vertices.push_back(vertex);
+            vertices[index] = vertex;
             vertex = glm::vec3(i+1,0,j+1);
-            vertices.push_back(vertex);
+            vertices[index + 1] = vertex;
             vertex = glm::vec3(i,0,j+1);
-            vertices.push_back(vertex);
+            vertices[index + 2] = vertex;
 
             //2nd triangle
             vertex = glm::vec3(i,0,j);
-            vertices.push_back(vertex);
+            vertices[index + 3] = vertex;
             vertex = glm::vec3(i+1,0,j);
-            vertices.push_back(vertex);
+            vertices[index + 4] = vertex;
             vertex = glm::vec3(i+1,0,j+1);
-            vertices.push_back(vertex);
+            vertices[index + 5] = vertex;
 
+            index += 6;
         }
     }
 }
@@ -86,8 +90,27 @@ void setTextures(){
     glUniform1i(glGetUniformLocation(programId , "heightTexture"), heightTexture);
     glUniform1f(glGetUniformLocation(programId, "heightFactor"), heightFactor);
 
+}
+
+void render(){
+    int vertex_count = 3 * 2 * widthTexture * heightTexture;
+
+    glEnableClientState(GL_VERTEX_ARRAY);
+    glVertexPointer(3, GL_FLOAT, 0, vertices);
+    glDrawArrays(GL_TRIANGLES, 0, vertex_count);
+    glDisableClientState(GL_VERTEX_ARRAY);
 
 }
+
+void clearColorDepthStencil(){
+
+    glClearStencil(0);
+    glClearDepth(1.0f);
+    glClearColor(0, 0, 0, 1);
+    glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT | GL_STENCIL_BUFFER_BIT);
+
+}
+
 
 void cameraTransformation(){
     // There will be perspective projection with an angle of 45 degrees. The aspect ratio will be 1,
@@ -107,7 +130,7 @@ void cameraTransformation(){
     glUniformMatrix4fv(modelingMatrixLoc, 1, GL_FALSE, glm::value_ptr(model));
     glUniformMatrix4fv(viewingMatrixLoc, 1, GL_FALSE, glm::value_ptr(view));
     glUniformMatrix4fv(projectionMatrixLoc, 1, GL_FALSE, glm::value_ptr(projection));
-    glUniform3fv(cameraPositionLoc, 1, GL_FALSE, glm::value_ptr(camera_position));
+    glUniform3fv(cameraPositionLoc, 1, glm::value_ptr(camera_position));
 }
 
 int main(int argc, char * argv[]){
@@ -138,19 +161,22 @@ int main(int argc, char * argv[]){
     glfwMakeContextCurrent(window);
     glfwSetKeyCallback(window, keyCallback);
 
-    //init shaders
+    initShaders();
     //Make the program current
-    //glUseProgram(programId);
+    glUseProgram(programId);
     initTexture(argv[2], &widthTexture, &heightTexture, false);
-    
-    //set camera_position using widthTexture
+    setTextures();
+
     //The camera will be positioned initially at (w/2, w/10, -w/4)
     camera_position = glm::vec3(widthTexture/2, widthTexture/10, -widthTexture/4);
-    
-    //cameraTransformation()
+    cameraTransformation();
+
+    glViewport(0,0, widthDisplay, heightDisplay);
+    createTriangles();
+
+    //glEnable(GL_DEPTH_TEST);
 
     
-
     if (glewInit() != GLEW_OK) {
         glfwTerminate();
         exit(-1);
@@ -158,7 +184,12 @@ int main(int argc, char * argv[]){
 
     while( !glfwWindowShouldClose(window) ){
         glfwWaitEvents();
-        customizedRenderFunction();
+        //customizedRenderFunction();
+
+        clearColorDepthStencil();
+        cameraTransformation();
+        render();
+
         glfwSwapBuffers(window);
     }
 

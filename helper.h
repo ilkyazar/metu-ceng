@@ -21,5 +21,8 @@ extern GLuint fragmentShaderId;
 
 void initTexture(char *filename, int *w, int *h, bool isHeight);
 void initShaders();
+GLuint initVertexShader(const std::string& filename);
+GLuint initFragmentShader(const std::string& filename);
+bool readDataFromFile(const std::string& fileName, std::string &data);
 
 #endif
