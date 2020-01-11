@@ -1,6 +1,6 @@
 #version 410
 
-// Uniform variables that must be set by OpenGL program;
+// Uniform variables that are set by main OpenGL program;
 uniform mat4 modelingMatrix;
 uniform mat4 viewingMatrix;
 uniform mat4 projectionMatrix;
@@ -12,6 +12,7 @@ uniform int widthTexture;
 uniform int heightTexture;
 uniform float heightFactor;
 
+// inputs from the vertex shader
 in vec2 textureCoord;
 in vec3 vertexNormal;
 in vec3 toCameraVec;
@@ -40,9 +41,10 @@ void main(){
     vec4 ambientColor = ambientLightColor * ambientCoeff;
 
     /*
-    The computed surface color will be combined with the texture color do determine the final
+    The computed surface color will be combined with the texture color to determine the final
     color of the surface. “clamp“ method can be used to combine these two colors.
     */
+    
     vec4 totalColor = ambientColor + specularColor + diffuseColor;
     vertexColor = vec4(clamp(textureColor.xyz * vec3(totalColor), 0.0, 1.0), 1.0);
     //vertexColor = vec4(1.0,1.0,1.0,1.0);
