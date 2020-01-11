@@ -83,6 +83,12 @@ static void keyCallback(GLFWwindow* window, int key, int scancode, int action, i
         camera_gaze = glm::vec3(0.0, 0.0, 1.0);
     }
 
+    else if (key == GLFW_KEY_Q) {
+    }
+
+    else if (key == GLFW_KEY_E) {
+    }
+
 }
 
 // Sample triangle rendering, not used
