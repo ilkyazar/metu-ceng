@@ -1,11 +1,15 @@
 #include "helper.h"
 
+// This function will read the texture and initialize it according to the boolean value
+// Ex: If it is the first argument i.e the height map, it will read the height map
+
 void initTexture(char *filename, int *w, int *h, bool isHeight) {
     int width, height;
 
     unsigned char *raw_image = NULL;
     struct jpeg_decompress_struct cinfo;
     struct jpeg_error_mgr jerr;
+
     JSAMPROW row_pointer[1];
 
     FILE *infile = fopen( filename, "rb" );
@@ -18,13 +22,15 @@ void initTexture(char *filename, int *w, int *h, bool isHeight) {
     jpeg_read_header( &cinfo, TRUE );
     jpeg_start_decompress( &cinfo );
 
-    raw_image = (unsigned char*) malloc( cinfo.output_width*cinfo.output_height*cinfo.num_components );
-    row_pointer[0] = (unsigned char *) malloc( cinfo.output_width*cinfo.num_components );
-    while( cinfo.output_scanline < cinfo.image_height )
-    {
-        jpeg_read_scanlines( &cinfo, row_pointer, 1 );
-        for( i=0; i<cinfo.image_width*cinfo.num_components;i++)
+    raw_image = (unsigned char*) malloc(cinfo.output_width*cinfo.output_height*cinfo.num_components);
+    row_pointer[0] = (unsigned char*) malloc(cinfo.output_width*cinfo.num_components);
+
+    while (cinfo.output_scanline < cinfo.image_height) {
+        jpeg_read_scanlines(&cinfo, row_pointer, 1);
+
+        for (i = 0; i < cinfo.image_width * cinfo.num_components; i++) {
             raw_image[location++] = row_pointer[0][i];
+        }
     }
 
     height = cinfo.image_height;
@@ -32,12 +38,14 @@ void initTexture(char *filename, int *w, int *h, bool isHeight) {
 
     glewExperimental = GL_TRUE; 
     
-    if ( GLEW_OK != glewInit()) {
+    if (GLEW_OK != glewInit()) {
         exit(-1);
     }
 
     if(!isHeight){
-        //READ TEXTURE MAP
+        // READ TEXTURE MAP
+
+        // Generate texture names
         // First parameter is for the count of sampler objects
         glGenTextures(1, &textureId);
         
@@ -45,32 +53,39 @@ void initTexture(char *filename, int *w, int *h, bool isHeight) {
         glActiveTexture(GL_TEXTURE0);
         glBindTexture(GL_TEXTURE_2D, textureId);
 
-        // select modulate to mix texture with color for shading
+        // Select modulate to mix texture with color for shading
         glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_DECAL);
         glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_DECAL);
-        // when texture area is small, bilinear filter the closest mipmap
+
+        // When texture area is small, bilinear filter the closest mipmap
         glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR_MIPMAP_LINEAR);
-        // when texture area is large, bilinear filter the first mipmap
+
+        // When texture area is large, bilinear filter the first mipmap
         glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
-        // texture should tile
+
+        // Texture should tile
         glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT);
         glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT);
         
+        // Set pixel storage modes
+        // GL_UNPACK_ALIGNMENT specifies the alignment requirements for the start of each pixel row in memory
+        // 1 is the value that GL_UNPACK_ALIGNMENT is set to
         glPixelStorei(GL_UNPACK_ALIGNMENT, 1);
 
-        // Upload the img to the texture
+        // Upload the image to the texture
         glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB, width, height, 0, GL_RGB, GL_UNSIGNED_BYTE, raw_image);
         glGenerateMipmap(GL_TEXTURE_2D);
     }
 
-    else{
-        //READ HEIGHT MAP
+    else {
+        // READ HEIGHT MAP
         glGenTextures(1, &heightTextureId);
         glActiveTexture(GL_TEXTURE1);
         glBindTexture(GL_TEXTURE_2D, heightTextureId);
 
         glPixelStorei(GL_UNPACK_ALIGNMENT, 1);
-        // Upload the img to the texture
+
+        // Upload the image to the texture
         glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB, width, height, 0, GL_RGB, GL_UNSIGNED_BYTE, raw_image);
         glGenerateMipmap(GL_TEXTURE_2D);
     }
@@ -79,29 +94,15 @@ void initTexture(char *filename, int *w, int *h, bool isHeight) {
     *w = width;
     *h = height;
 
-    jpeg_finish_decompress( &cinfo );
-    jpeg_destroy_decompress( &cinfo );
-    free( row_pointer[0] );
-    free( raw_image );
-    fclose( infile );
+    jpeg_finish_decompress(&cinfo);
+    jpeg_destroy_decompress(&cinfo);
+    free(row_pointer[0]);
+    free(raw_image);
+    fclose(infile);
 
 }
 
-void initShaders() {
-
-  programId = glCreateProgram();
-
-  vertexShaderId   = initVertexShader("shader.vert");
-  fragmentShaderId = initFragmentShader("shader.frag");
-
-  glAttachShader(programId, vertexShaderId);
-  glAttachShader(programId, fragmentShaderId);
-
-  glLinkProgram(programId);
-
-}
-
-GLuint initVertexShader(const std::string& filename){
+GLuint initShader(const std::string& filename, bool isVertexShader){
     std::string shaderSource;
 
     if (!readDataFromFile(filename, shaderSource)){
@@ -112,37 +113,28 @@ GLuint initVertexShader(const std::string& filename){
     GLint length = shaderSource.length();
     const GLchar* shader = (const GLchar*) shaderSource.c_str();
 
-    GLuint vs = glCreateShader(GL_VERTEX_SHADER);
-    glShaderSource(vs, 1, &shader, &length);
-    glCompileShader(vs);
-
-    char output[1024] = {0};
-    glGetShaderInfoLog(vs, 1024, &length, output);
-    printf("VS compile log: %s\n", output);
-
-	  return vs;
-}
-
-GLuint initFragmentShader(const std::string& filename){
-    std::string shaderSource;
-
-    if (!readDataFromFile(filename, shaderSource)) {
-        std::cout << "Cannot find file name: " + filename << std::endl;
-        exit(-1);
+    GLuint sh;
+    if (isVertexShader) {
+        sh = glCreateShader(GL_VERTEX_SHADER);
+    }
+    else {
+        sh = glCreateShader(GL_FRAGMENT_SHADER);
     }
 
-    GLint length = shaderSource.length();
-    const GLchar* shader = (const GLchar*) shaderSource.c_str();
-
-    GLuint fs = glCreateShader(GL_FRAGMENT_SHADER);
-    glShaderSource(fs, 1, &shader, &length);
-    glCompileShader(fs);
+    glShaderSource(sh, 1, &shader, &length);
+    glCompileShader(sh);
 
     char output[1024] = {0};
-    glGetShaderInfoLog(fs, 1024, &length, output);
-    printf("FS compile log: %s\n", output);
+    glGetShaderInfoLog(sh, 1024, &length, output);
 
-	  return fs;
+    if (isVertexShader) {
+        printf("Vertex shader compile log: %s\n", output);
+    }
+    else {
+        printf("Fragment shader compile log: %s\n", output);
+    }
+
+    return sh;
 }
 
 bool readDataFromFile(const std::string& fileName, std::string &data) {
