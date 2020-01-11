@@ -2,6 +2,7 @@
 #include "glm/glm.hpp"
 #include "glm/gtc/type_ptr.hpp"
 #include "glm/gtc/matrix_transform.hpp"
+#include "glm/gtc/matrix_inverse.hpp"
 
 
 static GLFWwindow* window = NULL;
@@ -9,9 +10,10 @@ static GLFWwindow* window = NULL;
 int widthTexture, heightTexture;
 GLfloat heightFactor = 10.0f;
 
+//for reading textures
 GLuint textureId;
 GLuint heightTextureId;
-
+//for shaders
 GLuint programId;
 GLuint vertexShaderId;
 GLuint fragmentShaderId;
@@ -115,6 +117,7 @@ void cameraTransformation(){
     glm::mat4 projection =  glm::perspective(45.0f, 1.0f, 0.1f, 1000.0f);
     glm::mat4 view = glm::lookAt(camera_position, camera_position + camera_gaze * 0.1f, camera_up);
     glm::mat4 model = glm::mat4(1.0f);
+    glm::mat4 M_norm = glm::inverseTranspose(view);
 
     // Uniform variables must be set by the main program
 
@@ -123,11 +126,13 @@ void cameraTransformation(){
     GLint viewingMatrixLoc = (GLint)glGetUniformLocation(programId, "viewingMatrix");
     GLint projectionMatrixLoc = (GLint)glGetUniformLocation(programId, "projectionMatrix");
     GLint cameraPositionLoc = (GLint)glGetUniformLocation(programId, "cameraPos");
+    GLint normalLoc = (GLint)glGetUniformLocation(programId, "M_norm");
     // Set the variables 
     glUniformMatrix4fv(modelingMatrixLoc, 1, GL_FALSE, glm::value_ptr(model));
     glUniformMatrix4fv(viewingMatrixLoc, 1, GL_FALSE, glm::value_ptr(view));
     glUniformMatrix4fv(projectionMatrixLoc, 1, GL_FALSE, glm::value_ptr(projection));
     glUniform3fv(cameraPositionLoc, 1, glm::value_ptr(camera_position));
+    glUniformMatrix4fv(normalLoc, 1, GL_FALSE, glm::value_ptr(M_norm));
 }
 
 int main(int argc, char * argv[]){
@@ -162,12 +167,10 @@ int main(int argc, char * argv[]){
         exit(-1);
     }
     
-    //Bunu açınca üçgen gidiyor
     initShaders();
 
     //Make the program current
     glUseProgram(programId);
-    
     
     initTexture(argv[2], &widthTexture, &heightTexture, false);
     initTexture(argv[1], &widthTexture, &heightTexture, true);
@@ -179,6 +182,14 @@ int main(int argc, char * argv[]){
 
     glViewport(0,0, widthDisplay, heightDisplay);
     createTriangles();
+
+    /*
+    int vertex_count = 3 * 2 * widthTexture * heightTexture;
+    for(int i=0; i< vertex_count; i++){
+        glm::vec3 vertex = vertices[i];
+        std::cout << vertex.x << " " << vertex.y << " " << vertex.z << std::endl;
+    }
+    */
 
     glEnable(GL_DEPTH_TEST);
     
