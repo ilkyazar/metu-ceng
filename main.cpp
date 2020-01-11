@@ -3,6 +3,7 @@
 #include "glm/gtc/type_ptr.hpp"
 #include "glm/gtc/matrix_transform.hpp"
 #include "glm/gtc/matrix_inverse.hpp"
+#include "glm/gtx/rotate_vector.hpp"
 
 
 static GLFWwindow* window = NULL;
@@ -53,6 +54,41 @@ static void keyCallback(GLFWwindow* window, int key, int scancode, int action, i
     else if (key == GLFW_KEY_F) {
         heightFactor -= 0.5;
     }
+
+    else if (key == GLFW_KEY_A) {
+        // rotates the gaze around the up vector
+        camera_gaze = glm::rotate(camera_gaze, 0.05f, camera_up);
+    }
+
+    else if (key == GLFW_KEY_D) {
+        // rotates the gaze around the up vector
+        camera_gaze = glm::rotate(camera_gaze, -0.05f, camera_up);
+    }
+
+    else if (key == GLFW_KEY_W) {
+        // rotates gaze around the left vector
+        camera_gaze = glm::rotate(camera_gaze, 0.05f, cross(camera_up, camera_gaze));
+    }
+
+    else if (key == GLFW_KEY_S) {
+        // rotates gaze around the left vector
+        camera_gaze = glm::rotate(camera_gaze, -0.05f, cross(camera_up, camera_gaze));
+    }
+
+    else if (key == GLFW_KEY_I) {
+        // the plane will be placed to the initial position with initial configurations of the camera and speed of 0
+        // The camera will be positioned initially at (w/2, w/10, -w/4)
+        camera_position = glm::vec3(widthTexture/2, widthTexture/10, -widthTexture/4);
+        camera_up = glm::vec3(0.0, 1.0, 0.0);
+        camera_gaze = glm::vec3(0.0, 0.0, 1.0);
+    }
+
+    else if (key == GLFW_KEY_Q) {
+    }
+
+    else if (key == GLFW_KEY_E) {
+    }
+
 }
 
 // Sample triangle rendering, not used
@@ -75,25 +111,16 @@ void createTriangles() {
 
     // Each pixel will be represented by two triangles
     for(int i = 0; i < widthTexture; i++){
-        for(int j = 0; j < heightTexture; j++){
-
+        for(int j = 0; j < heightTexture; j++, index+=6){
             // 1st triangle
-            vertex = glm::vec3(i, 0, j);
-            vertices[index] = vertex;
-            vertex = glm::vec3(i+1, 0, j+1);
-            vertices[index + 1] = vertex;
-            vertex = glm::vec3(i, 0, j+1);
-            vertices[index + 2] = vertex;
+            vertices[index] = glm::vec3(i, 0, j);
+            vertices[index+1] = glm::vec3(i+1, 0, j+1);
+            vertices[index+2] = glm::vec3(i, 0, j+1);
 
             // 2nd triangle
-            vertex = glm::vec3(i, 0, j);
-            vertices[index + 3] = vertex;
-            vertex = glm::vec3(i+1, 0, j);
-            vertices[index + 4] = vertex;
-            vertex = glm::vec3(i+1, 0, j+1);
-            vertices[index + 5] = vertex;
-
-            index += 6;
+            vertices[index+3] = glm::vec3(i, 0, j);
+            vertices[index+4] = glm::vec3(i+1, 0, j);
+            vertices[index+5] = glm::vec3(i+1, 0, j+1);
         }
     }
 }
