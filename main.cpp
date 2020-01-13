@@ -25,8 +25,12 @@ glm::vec3* vertices;
 
 // For camera
 glm::vec3 camera_position;
+GLfloat camera_speed = 0.0f;
 glm::vec3 camera_up = glm::vec3(0.0, 1.0, 0.0);
 glm::vec3 camera_gaze = glm::vec3(0.0, 0.0, 1.0);
+
+// light source
+glm::vec3 light_position;
 
 glm::mat4 projection;
 glm::mat4 view;
@@ -58,6 +62,7 @@ static void keyCallback(GLFWwindow* window, int key, int scancode, int action, i
     else if (key == GLFW_KEY_A) {
         // rotates the gaze around the up vector
         camera_gaze = glm::rotate(camera_gaze, 0.05f, camera_up);
+
     }
 
     else if (key == GLFW_KEY_D) {
@@ -67,12 +72,17 @@ static void keyCallback(GLFWwindow* window, int key, int scancode, int action, i
 
     else if (key == GLFW_KEY_W) {
         // rotates gaze around the left vector
-        camera_gaze = glm::rotate(camera_gaze, 0.05f, cross(camera_up, camera_gaze));
+        glm::vec3 camera_left = glm::vec3(1.0, 0.0, 0.0);
+        camera_gaze = glm::rotate(camera_gaze, 0.05f, camera_left);
+        //camera_up = glm::rotate(camera_up, 0.05f, camera_left);
+        
     }
 
     else if (key == GLFW_KEY_S) {
         // rotates gaze around the left vector
-        camera_gaze = glm::rotate(camera_gaze, -0.05f, cross(camera_up, camera_gaze));
+        glm::vec3 camera_left = glm::cross(camera_up, camera_gaze);
+        camera_gaze = glm::rotate(camera_gaze, -0.05f, camera_left);
+        camera_up = glm::rotate(camera_up, -0.05f,camera_left);
     }
 
     else if (key == GLFW_KEY_I) {
@@ -81,12 +91,52 @@ static void keyCallback(GLFWwindow* window, int key, int scancode, int action, i
         camera_position = glm::vec3(widthTexture/2, widthTexture/10, -widthTexture/4);
         camera_up = glm::vec3(0.0, 1.0, 0.0);
         camera_gaze = glm::vec3(0.0, 0.0, 1.0);
+        camera_speed = 0.0f;
     }
 
+    //move the light source
+    else if(key == GLFW_KEY_T) {
+        light_position.y += 5;
+    }
+
+    else if(key == GLFW_KEY_G) {
+        light_position.y -= 5;
+    }
+
+    else if(key == GLFW_KEY_RIGHT) {
+        light_position.x -= 5;
+    }
+
+    else if(key == GLFW_KEY_LEFT) {
+        light_position.x += 5;
+    }
+
+    else if(key == GLFW_KEY_UP) {
+        light_position.z += 5;
+    }
+
+    else if(key == GLFW_KEY_DOWN) {
+        light_position.z -= 5;
+    }
+
+    /*
+    Q and E keys will move the texture and height map along the plane left and right respectively
+    by subtracting and adding 1
+    */
     else if (key == GLFW_KEY_Q) {
     }
 
     else if (key == GLFW_KEY_E) {
+    }
+
+    else if (key == GLFW_KEY_Y) {
+        camera_speed += 0.01;
+    }
+    else if (key == GLFW_KEY_H) {
+        camera_speed -= 0.01;
+    }
+    else if (key == GLFW_KEY_X) {
+        camera_speed = 0.0f;
     }
 
 }
@@ -143,6 +193,7 @@ void setUniformVariables() {
     GLint viewingMatrixLoc = (GLint)glGetUniformLocation(programId, "viewingMatrix");
     GLint projectionMatrixLoc = (GLint)glGetUniformLocation(programId, "projectionMatrix");
     GLint cameraPositionLoc = (GLint)glGetUniformLocation(programId, "cameraPos");
+    GLint lightPositionLoc = (GLint)glGetUniformLocation(programId, "lightPos");
     GLint normalLoc = (GLint)glGetUniformLocation(programId, "normalMatrix");
     GLint heightFacLoc = (GLint)glGetUniformLocation(programId, "heightFactor");
 
@@ -151,6 +202,7 @@ void setUniformVariables() {
     glUniformMatrix4fv(viewingMatrixLoc, 1, GL_FALSE, glm::value_ptr(view));
     glUniformMatrix4fv(projectionMatrixLoc, 1, GL_FALSE, glm::value_ptr(projection));
     glUniform3fv(cameraPositionLoc, 1, glm::value_ptr(camera_position));
+    glUniform3fv(lightPositionLoc, 1, glm::value_ptr(light_position));
     glUniformMatrix4fv(normalLoc, 1, GL_FALSE, glm::value_ptr(normalMatrix));
     glUniform1f(heightFacLoc, heightFactor);
 }
@@ -158,6 +210,7 @@ void setUniformVariables() {
 void cameraTransformation(){
     // There will be perspective projection with an angle of 45 degrees. The aspect ratio will be 1,
     // near and far plane will be 0.1 and 1000 respectively.
+    camera_position = camera_position + (camera_gaze * camera_speed);
     projection =  glm::perspective(45.0f, 1.0f, 0.1f, 1000.0f);
     view = glm::lookAt(camera_position, camera_position + camera_gaze * 0.1f, camera_up);
     model = glm::mat4(1.0f);
@@ -241,7 +294,8 @@ int main(int argc, char * argv[]){
 
     // The camera will be positioned initially at (w/2, w/10, -w/4)
     camera_position = glm::vec3(widthTexture/2, widthTexture/10, -widthTexture/4);
-
+    //There will be one light source in the scene at the initial position of (w/2, 100, h/2).
+    light_position = glm::vec3(widthTexture/2, 100,heightTexture/2 );
     cameraTransformation();
 
     // Uniform variables must be set by the main program
@@ -255,7 +309,7 @@ int main(int argc, char * argv[]){
     
     while(!glfwWindowShouldClose(window)) {
         // Waits until events are queued and processes them
-        glfwWaitEvents();
+        //glfwWaitEvents();
 
         // All buffers should be cleared before rendering each frame
         clearBuffers();
@@ -266,6 +320,8 @@ int main(int argc, char * argv[]){
         setUniformVariables();
 
         drawVertexArray();
+        glfwPollEvents();
+
     }
 
     glfwDestroyWindow(window);

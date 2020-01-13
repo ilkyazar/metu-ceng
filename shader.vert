@@ -8,6 +8,7 @@ uniform mat4 viewingMatrix;
 uniform mat4 projectionMatrix;
 uniform vec4 cameraPos;
 uniform mat4 normalMatrix;
+uniform vec3 lightPos;
 
 uniform sampler2D texture1; //texture map
 uniform sampler2D texture2; //height map
@@ -75,7 +76,7 @@ void main() {
     toCameraVec = normalize(toCameraVec);
 
     //There will be one light source in the scene at the initial position of (w/2, 100, h/2)
-    toLightVec = vec3(widthTexture / 2 - position.x, 100 - pos.y, heightTexture / 2 - position.z);
+    toLightVec = vec3(lightPos.x - position.x, lightPos.y - pos.y, lightPos.z - position.z);
     toLightVec = normalize(toLightVec);
     
     gl_Position = projectionMatrix * viewingMatrix * modelingMatrix * vec4(pos, 1.0);
