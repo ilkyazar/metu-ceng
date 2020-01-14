@@ -41,14 +41,36 @@ glm::mat4 normalMatrix;
 int widthDisplay = 1000;
 int heightDisplay = 1000;
 
+bool isFullScreen = false;
+GLFWmonitor* monitor;
+const GLFWvidmode* videoMode;
+
 static void errorCallback(int error, const char* description){
     fprintf(stderr, "Error: %s\n", description);
+}
+
+static void windowsizeCallback(GLFWwindow* window, int widthDisplay, int heightDisplay) {
+    glViewport(0, 0, widthDisplay, heightDisplay);
 }
 
 // Keyboard events will be called here
 static void keyCallback(GLFWwindow* window, int key, int scancode, int action, int mods){
     if (key == GLFW_KEY_ESCAPE && action == GLFW_PRESS) {
         glfwSetWindowShouldClose(window, GLFW_TRUE);   
+    }
+    else if( key == GLFW_KEY_P && action == GLFW_PRESS ){
+        if(isFullScreen){
+            heightDisplay = 1000;
+            widthDisplay = 1000;
+            isFullScreen = false;
+            glfwSetWindowMonitor(window, nullptr, 0, 0, widthDisplay, heightDisplay, 0);
+        }
+        else{
+            heightDisplay = videoMode->height;
+            widthDisplay = videoMode->width;
+            isFullScreen = true;
+            glfwSetWindowMonitor(window, monitor,0,0, widthDisplay, heightDisplay, videoMode->refreshRate);
+        }
     }
 
     else if (key == GLFW_KEY_R) {
@@ -248,6 +270,7 @@ void setWindow() {
     }
     glfwMakeContextCurrent(window);
     glfwSetKeyCallback(window, keyCallback);
+    glfwSetWindowSizeCallback(window, windowsizeCallback);
 }
 
 
@@ -266,6 +289,12 @@ void drawVertexArray() {
     glDisableClientState(GL_VERTEX_ARRAY);
 
     glfwSwapBuffers(window);
+}
+
+void setScreen(){
+    monitor = glfwGetPrimaryMonitor();
+    videoMode = glfwGetVideoMode(monitor);
+    glfwGetWindowSize(window, &widthDisplay, &heightDisplay);
 }
 
 int main(int argc, char * argv[]){
@@ -301,19 +330,17 @@ int main(int argc, char * argv[]){
     // Uniform variables must be set by the main program
     setUniformVariables();
 
-    glViewport(0, 0, widthDisplay, heightDisplay);
-
     createTriangles();
 
     glEnable(GL_DEPTH_TEST);
+
+    setScreen();
     
     while(!glfwWindowShouldClose(window)) {
-        // Waits until events are queued and processes them
-        //glfwWaitEvents();
-
         // All buffers should be cleared before rendering each frame
         clearBuffers();
-
+        
+        glViewport(0, 0, widthDisplay, heightDisplay);
         cameraTransformation();
 
         // Uniform variables must be set by the main program
