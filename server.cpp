@@ -111,11 +111,17 @@ int main(int argc, char** argv) {
   std::cin >> starting_bid >> minimum_increment >> number_of_bidders;
 
   int n = 0;
+  
+
   while (n < number_of_bidders) {
     readBidderLines(); //key: executable value: args
     n++;
   }
 
+  int fds[number_of_bidders][2];
+
+  char* args[1];
+  args[0] = "2000";
 
   for (int i = 0; i < number_of_bidders; i++) {
     std::multimap<std::string, std::vector<std::string>>::iterator it;
@@ -124,61 +130,90 @@ int main(int argc, char** argv) {
     std::multimap<std::string, int>::iterator c;
     c = bidder_arg_counts.begin();
 
-    int fd[2];
-    PIPE(fd);
-    //std::cout << "Pipe-" << i << " created." << std::endl;
-
-    char message[80];
+    PIPE(fds[i]);
 
     int p = fork();
-    if (p > 0) {
-      close(fd[1]);
-		  dup2(fd[0], 0);
-		  
-
-      /*
-      if (fgets(message, 80, stdin) != NULL) {
-			  printf("CHILD: %s", message);
-      }
-      */
-
-      server(fd);
-      close(fd[0]);
-
+    
+    if (p == 0) {
+      dup2(fds[i][0], 1);
+      dup2(fds[i][0], 0);
+      close(fds[i][1]);
+      execv("./bin/Bidder", args);
     }
     else {
-      close(fd[0]);
-		  dup2(fd[1], 0);
-		  
-      /*
-      char* args[c->second];
-
-      for (int arg_nu = 0; arg_nu < c->second; arg_nu++) {
-        char* arg_arr;
-        strcpy(arg_arr, it->second[i].c_str());
-        args[arg_nu] = arg_arr;
-        
-      }
-      */
-
-      char* args[1];
-      args[0] = "2000";
-
-      execvp("./bin/Bidder", args);
-
-      close(fd[1]);
-
-      //printf("Hello\n");
-		  //printf("I'am child %d\n", getpid());
-		  //fflush(stdout);
-      close(1);
+      //close(fds[i][0]);
     }
+
     it++;
   }
 
-  int w;
-  for(int i = 0; i < number_of_bidders; i++)
-    wait(&w);
+  fd_set readset;
+  int open[number_of_bidders];
+  int open_count = number_of_bidders;
+
+  for (int i = 0; i < number_of_bidders; i++) {
+    open[i] = 1;
+  }
+
+  int m = 0;
+  for (int i = 0; i < number_of_bidders; i++) {
+    if (fds[i][0] > m) {
+      m = fds[i][0];
+    }
+  }
+
+  m = m + 1;
+
+  struct timeval tv;
+  tv.tv_sec = 3;
+  tv.tv_usec = 0;
+
+  while (open_count > 0) {
+    FD_ZERO(&readset);
+    for (int i = 0; i < number_of_bidders; i++) {
+      if (open[i] == 1) {
+        std::cout << "set.." << std::endl;
+        FD_SET(fds[i][0], &readset);
+      }
+    }
+
+    select(m, &readset, NULL, NULL, &tv);
+    int r;
+    ii* data;
+
+    for (int i = 0; i < number_of_bidders; i++) {
+      if (FD_ISSET(fds[i][0], &readset)) {
+        r = read(fds[i][0], data, sizeof(data));
+        if (r == -1) {
+          std::cout << "An error occured while reading from the file descriptor." << std::endl;
+          open[i] = 0;
+          open_count--;
+        }
+        else if (r == 0) { // EOF
+          std::cout << "EOF" << std::endl;
+          open[i] = 0;
+          open_count--;
+        }
+        else {
+          std::cout << data->type << std::endl;
+          print_input(data, 0);
+        }
+      }
+      else
+        std::cout << "No data." << std::endl;
+        open_count--;
+    }
+
+  }
+
+  
+
+
+/*
+int w;
+for(int i = 0; i < number_of_bidders; i++)
+  wait(&w);
+*/
     
-  return 0;
+return 0;
 }
