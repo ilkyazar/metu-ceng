@@ -7,31 +7,15 @@
 #include <unistd.h>
 #include <vector>
 #include "./lib/logging.h"
+#include <cstring>
 #define PIPE(fd) socketpair(AF_UNIX, SOCK_STREAM, PF_UNIX, fd)
 
 int starting_bid;
 int minimum_increment;
 int number_of_bidders;
 
-std::multimap<std::string, int> info_of_bidders; // Executable and delay
 std::multimap<std::string, std::vector<std::string>> bidder_lines; // Executable and other arguments
-
-void readBidderInfo() {
-  std::string bidder_executable;
-  int number_of_arguments;
-  int delay;
-
-  std::cin >> bidder_executable >> number_of_arguments >> delay;
-
-  int arg_count = 0;
-  while (arg_count < number_of_arguments - 1) {
-    int arg;
-    std::cin >> arg;
-    arg_count++;
-  }
-
-  info_of_bidders.insert(std::pair <std::string, int> (bidder_executable, delay)); 
-}
+std::multimap<std::string, int> bidder_arg_counts; // Executable and argument count
 
 void readBidderLines() {
   std::string bidder_executable;
@@ -39,17 +23,27 @@ void readBidderLines() {
 
   std::cin >> bidder_executable >> number_of_arguments;
 
+  std::cout << "Bidder Executable is: " << bidder_executable;
+  std::cout << " | Number of Arguments: " << number_of_arguments;
+
   std::vector<std::string> args;
 
   int arg_count = 0;
   while (arg_count < number_of_arguments) {
-    int arg;
+    std::string arg;
     std::cin >> arg;
-    args[arg_count] = arg;
+
+    args.push_back(arg);
+
+    std::cout << " | Argument " << arg_count << ": " << arg;
+
     arg_count++;
   }
+  std::cout << std::endl;
 
-  bidder_lines.insert(std::pair <std::string, std::vector<std::string>> (bidder_executable, args)); 
+  bidder_lines.insert(std::pair <std::string, std::vector<std::string>> (bidder_executable, args));
+  bidder_arg_counts.insert(std::pair <std::string, int> (bidder_executable, number_of_arguments)); 
+
 }
 
 void server(int fd[]) {
@@ -74,7 +68,8 @@ void server(int fd[]) {
     // block until any of the bidders have data to read
     int retval = select(m, &readset, NULL, NULL, &tv);  // no wset, eset, timeout
 
-    std::cout << retval << std::endl;
+    std::cout << "retval = " << retval << std::endl;
+    
     /*
     if (retval == -1) {
       perror("select()");
@@ -90,16 +85,17 @@ void server(int fd[]) {
       r = read(fd[0], data, 50);
       if (r == -1) {
         std::cout << "An error occured while reading from the file descriptor." << std::endl;
-        std::cout << data->type << std::endl;
         open = 0;
       }
 			else if (r == 0) { // EOF
+        std::cout << "EOF" << std::endl;
 				open = 0;
       }
 			else {
-        //std::cout << data->type << std::endl;
+        std::cout << data->type << std::endl;
         print_input(data, 0);
       }
+      
       
     }
 
@@ -116,50 +112,73 @@ int main(int argc, char** argv) {
 
   int n = 0;
   while (n < number_of_bidders) {
-    readBidderInfo();
-    //readBidderLines(); //key: executable value: args
+    readBidderLines(); //key: executable value: args
     n++;
   }
 
 
-  int i = 0;
-  while (i < number_of_bidders) {
-    auto it = info_of_bidders.cbegin();
-    //auto it = bidder_lines.cbegin();
+  for (int i = 0; i < number_of_bidders; i++) {
+    std::multimap<std::string, std::vector<std::string>>::iterator it;
+    it = bidder_lines.begin();
+
+    std::multimap<std::string, int>::iterator c;
+    c = bidder_arg_counts.begin();
 
     int fd[2];
     PIPE(fd);
+    //std::cout << "Pipe-" << i << " created." << std::endl;
 
-    int p;
-    int w;
+    char message[80];
 
-
-    if (p = fork()) { // PID of the child process is returned in the parent
-		  close(fd[1]);
-      dup2(fd[0], 0);
-      dup2(fd[0], 2);
-      close(fd[0]);
-      server(fd);
-      //wait(&w);
-    }
-    else { // 0  is returned in the child
-      close(fd[0]);
-      dup2(fd[1], 1);
-      dup2(fd[1], 0);
+    int p = fork();
+    if (p > 0) {
       close(fd[1]);
-      char arr[] = {"2000"};
+		  dup2(fd[0], 0);
+		  
+
+      /*
+      if (fgets(message, 80, stdin) != NULL) {
+			  printf("CHILD: %s", message);
+      }
+      */
+
+      server(fd);
+      close(fd[0]);
+
+    }
+    else {
+      close(fd[0]);
+		  dup2(fd[1], 0);
+		  
+      /*
+      char* args[c->second];
+
+      for (int arg_nu = 0; arg_nu < c->second; arg_nu++) {
+        char* arg_arr;
+        strcpy(arg_arr, it->second[i].c_str());
+        args[arg_nu] = arg_arr;
+        
+      }
+      */
+
       char* args[1];
       args[0] = "2000";
-      //execl(("./bin/" + it->first + "2000").c_str(), arr, (char *) 0);
-      //execl(("./bin/" + it->first).c_str(), "2000", NULL);
 
-      //execvp(("./bin/" + it->first).c_str(), NULL); // ---> delay should be given message
-      execvp(("./bin/" + it->first).c_str(), args);
+      execvp("./bin/Bidder", args);
+
+      close(fd[1]);
+
+      //printf("Hello\n");
+		  //printf("I'am child %d\n", getpid());
+		  //fflush(stdout);
+      close(1);
     }
-  
-    i++;
     it++;
   }
 
+  int w;
+  for(int i = 0; i < number_of_bidders; i++)
+    wait(&w);
+    
   return 0;
 }
