@@ -14,11 +14,12 @@ int starting_bid;
 int minimum_increment;
 int number_of_bidders;
 
-//std::multimap<const char*, char**> bidder_lines; // Executable and other arguments
-std::multimap<const char*, std::vector<std::string>> bidder_lines; // Executable and other arguments
+//std::multimap<const char*, std::vector<std::string>> bidder_lines; // Executable and other arguments
+char* bidder_executables;
+char** bidder_arguments;
 std::multimap<const char*, int> bidder_arg_counts; // Executable and argument count
 
-void readBidderLines() {
+void readBidderLines(int n) {
   const char* bidder_executable;
   int number_of_arguments;
 
@@ -40,14 +41,13 @@ void readBidderLines() {
 
   int arg_count = 0;
   while (arg_count < number_of_arguments) {
-    //const char* arg;
+    const char* arg;
     std::string arg_str;
     std::cin >> arg_str;
 
-    //arg = arg_str.c_str();
+    arg = arg_str.c_str();
 
-    //args[arg_count] = arg;
-    args.push_back(arg_str);
+    args[arg_count] = arg;
 
     std::cout << " | Argument " << arg_count << ": " << arg_str;
 
@@ -55,7 +55,6 @@ void readBidderLines() {
   }
   std::cout << std::endl;
 
-  bidder_lines.insert(std::pair <const char*, std::vector<std::string>> (bidder_executable, args));
   bidder_arg_counts.insert(std::pair <const char*, int> (bidder_executable, number_of_arguments)); 
 
 }
@@ -126,11 +125,12 @@ int main() {
 
   int n = 0;
   
-
+  /*
   while (n < number_of_bidders) {
-    readBidderLines(); //key: executable value: args
+    readBidderLines(n); //key: executable value: args
     n++;
   }
+  */
 
   int fds[number_of_bidders][2];
   pid_t pids[number_of_bidders];
@@ -139,12 +139,15 @@ int main() {
 
   char* const argv[2] = {argument, NULL};
 
-  for (int i = 0; i < number_of_bidders; i++) {
-    std::multimap<const char*, std::vector<std::string>>::iterator it;
-    it = bidder_lines.begin();
+  char* args[1];
+  args[0] = "2000";
 
-    std::multimap<const char*, int>::iterator c;
-    c = bidder_arg_counts.begin();
+  for (int i = 0; i < number_of_bidders; i++) {
+    //std::multimap<const char*, std::vector<std::string>>::iterator it;
+    //it = bidder_lines.begin();
+
+    //std::multimap<const char*, int>::iterator c;
+    //c = bidder_arg_counts.begin();
 
     PIPE(fds[i]);
 
@@ -156,13 +159,14 @@ int main() {
       close(fds[i][1]);
       //fflush(stdout);
       //dup2(fds[i][1], 0);
-      execv("./Bidder", argv);
+      //execv("./bin/Bidder", argv);
+      execv("./bin/Bidder", args);
     }
     
     close(fds[i][0]);
     
 
-    it++;
+    //it++;
   }
 
   fd_set readset;
