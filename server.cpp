@@ -6,18 +6,19 @@
 #include <sys/time.h>
 #include <unistd.h>
 #include <vector>
-#include "./lib/logging.h"
+//#include "./lib/logging.h"
+#include "logging.h"
 #include <cstring>
+#include <stdlib.h>
+#include <string>
 #define PIPE(fd) socketpair(AF_UNIX, SOCK_STREAM, PF_UNIX, fd)
 
 int starting_bid;
 int minimum_increment;
 int number_of_bidders;
 
-//std::multimap<const char*, std::vector<std::string>> bidder_lines; // Executable and other arguments
-char* bidder_executables;
-char** bidder_arguments;
-std::multimap<const char*, int> bidder_arg_counts; // Executable and argument count
+std::multimap<const char*, std::vector<std::string>> bidder_lines; // Executable and other arguments
+std::multimap<std::string, int> bidder_arg_counts; // Executable and argument count
 
 void readBidderLines(int n) {
   const char* bidder_executable;
@@ -29,34 +30,29 @@ void readBidderLines(int n) {
 
   bidder_executable = bidder_exec_str.c_str();
 
-  std::cout << "Bidder Executable is: ";
+  /*std::cout << "Bidder Executable is: ";
   for (int i=0; bidder_executable[i]; i++) {
     std::cout << bidder_executable[i];
   }
   std::cout << " | Number of Arguments: " << number_of_arguments;
-
-  //char* args[number_of_arguments];
+  */
   std::vector<std::string> args;
-
 
   int arg_count = 0;
   while (arg_count < number_of_arguments) {
-    const char* arg;
-    std::string arg_str;
-    std::cin >> arg_str;
+    std::string arg;
+    std::cin >> arg;
 
-    arg = arg_str.c_str();
+    args.push_back(arg);
 
-    args[arg_count] = arg;
-
-    std::cout << " | Argument " << arg_count << ": " << arg_str;
+    //std::cout << " | Argument " << arg_count << ": " << arg;
 
     arg_count++;
   }
-  std::cout << std::endl;
+  //std::cout << std::endl;
 
-  bidder_arg_counts.insert(std::pair <const char*, int> (bidder_executable, number_of_arguments)); 
-
+  bidder_lines.insert(std::pair <const char*, std::vector<std::string>> (bidder_executable, args));
+  bidder_arg_counts.insert(std::pair <std::string, int> (bidder_exec_str, number_of_arguments)); 
 }
 
 void server(int fd[]) {
@@ -125,29 +121,30 @@ int main() {
 
   int n = 0;
   
-  /*
+  
   while (n < number_of_bidders) {
     readBidderLines(n); //key: executable value: args
     n++;
   }
-  */
+  
 
   int fds[number_of_bidders][2];
   pid_t pids[number_of_bidders];
 
-  char* argument = "2000";
-
-  char* const argv[2] = {argument, NULL};
-
-  char* args[1];
-  args[0] = "2000";
+  char* arg1 = (char *) malloc(100);
+  char* arg2 = (char *) malloc(100);
+  
 
   for (int i = 0; i < number_of_bidders; i++) {
-    //std::multimap<const char*, std::vector<std::string>>::iterator it;
-    //it = bidder_lines.begin();
+    std::multimap<const char*, std::vector<std::string>>::iterator it;
+    it = bidder_lines.begin();
 
-    //std::multimap<const char*, int>::iterator c;
-    //c = bidder_arg_counts.begin();
+    std::multimap<std::string, int>::iterator c;
+    c = bidder_arg_counts.begin();
+
+    strcpy(arg1, it->first);
+    strcpy(arg2, it->second[0].c_str());
+    char* const args[4] = {arg1, arg2, NULL};
 
     PIPE(fds[i]);
 
@@ -157,16 +154,21 @@ int main() {
       dup2(fds[i][0], 1);
       dup2(fds[i][0], 0);
       close(fds[i][1]);
-      //fflush(stdout);
+      //close(fds[i][0]);
       //dup2(fds[i][1], 0);
       //execv("./bin/Bidder", argv);
-      execv("./bin/Bidder", args);
+      execvp(c->first.c_str(), args);
+      /*
+      if (execvp("./Bidder", args) < 0) {
+        std::cout << "exec err" << std::endl;
+      }
+      */
     }
     
     close(fds[i][0]);
     
 
-    //it++;
+    it++;
   }
 
   fd_set readset;
@@ -194,7 +196,7 @@ int main() {
     FD_ZERO(&readset);
     for (int i = 0; i < number_of_bidders; i++) {
       if (open[i] == 1) {
-        std::cout << "set.." << std::endl;
+        //std::cout << "set.." << std::endl;
         FD_SET(fds[i][1], &readset);
       }
     }
@@ -202,27 +204,31 @@ int main() {
     select(m, &readset, NULL, NULL, &tv);
     int r;
     ii* data;
+    cm client_msg;
 
     for (int i = 0; i < number_of_bidders; i++) {
       if (FD_ISSET(fds[i][1], &readset)) {
-        r = read(fds[i][1], data, sizeof(data));
+        r = read(fds[i][1], (void *) &client_msg, sizeof(client_msg));
         if (r == -1) {
-          std::cout << "An error occured while reading from the file descriptor." << std::endl;
+          //std::cout << "An error occured while reading from the file descriptor." << std::endl;
           open[i] = 0;
           open_count--;
         }
         else if (r == 0) { // EOF
-          std::cout << "EOF" << std::endl;
+          //std::cout << "EOF" << std::endl;
           open[i] = 0;
           open_count--;
         }
         else {
-          std::cout << data->type << std::endl;
-          print_input(data, 0);
+          //std::cout << data->type << std::endl;
+          data->info = client_msg.params;
+          data->pid = pids[i];
+          data->type = client_msg.message_id;
+          print_input(data, i+1);
         }
       }
       else
-        std::cout << "No data." << std::endl;
+        //std::cout << "No data." << std::endl;
         open_count--;
     }
 
