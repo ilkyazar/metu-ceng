@@ -55,65 +55,6 @@ void readBidderLines(int n) {
   bidder_arg_counts.insert(std::pair <std::string, int> (bidder_exec_str, number_of_arguments)); 
 }
 
-void server(int fd[]) {
-
-  int open = 1; // keep a flag for if pipe is still open
-  fd_set readset;
-  int m = fd[0] + 1; // maximum of file descriptors
-  int r;
-
-  ii* data;
-
-  while (open) {
-    // initialize a blocking set for select()
-    FD_ZERO(&readset);
-    FD_SET(fd[0], &readset);
-
-    // Wait up to five seconds
-    struct timeval tv;
-    tv.tv_sec = 5;
-    tv.tv_usec = 0;
-    
-    // block until any of the bidders have data to read
-    int retval = select(m, &readset, NULL, NULL, &tv);  // no wset, eset, timeout
-
-    std::cout << "retval = " << retval << std::endl;
-    
-    /*
-    if (retval == -1) {
-      perror("select()");
-      std::cout << "Select returned -1." << std::endl;
-    }
-    */
-    
-    // now readset contains the fd's with available data
-    // check if the pipe is in readset
-
-    if (FD_ISSET(fd[0], &readset)) { 
-      
-      r = read(fd[0], data, 50);
-      if (r == -1) {
-        std::cout << "An error occured while reading from the file descriptor." << std::endl;
-        open = 0;
-      }
-			else if (r == 0) { // EOF
-        std::cout << "EOF" << std::endl;
-				open = 0;
-      }
-			else {
-        std::cout << data->type << std::endl;
-        print_input(data, 0);
-      }
-      
-      
-    }
-
-    else
-      std::cout << "No data within 5 seconds." << std::endl;
-
-  }
-
-}
 
 int main() {
 
@@ -154,15 +95,7 @@ int main() {
       dup2(fds[i][0], 1);
       dup2(fds[i][0], 0);
       close(fds[i][1]);
-      //close(fds[i][0]);
-      //dup2(fds[i][1], 0);
-      //execv("./bin/Bidder", argv);
       execvp(c->first.c_str(), args);
-      /*
-      if (execvp("./Bidder", args) < 0) {
-        std::cout << "exec err" << std::endl;
-      }
-      */
     }
     
     close(fds[i][0]);
@@ -233,9 +166,6 @@ int main() {
     }
 
   }
-
-  
-
 
 /*
 int w;
