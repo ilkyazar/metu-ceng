@@ -17,26 +17,22 @@ int starting_bid;
 int minimum_increment;
 int number_of_bidders;
 
-std::multimap<const char*, std::vector<std::string>> bidder_lines; // Executable and other arguments
-std::multimap<std::string, int> bidder_arg_counts; // Executable and argument count
+std::vector<std::string> bidder_executables;
+std::vector<std::vector<std::string>> bidder_arguments;
+std::vector<int> bidder_arg_counts;
 
-void readBidderLines(int n) {
-  const char* bidder_executable;
+void readBidderLines() {
   int number_of_arguments;
+  std::string bidder_exec;
+  std::vector<std::string> args;
 
-  std::string bidder_exec_str;
+  std::cin >> bidder_exec >> number_of_arguments;
 
-  std::cin >> bidder_exec_str >> number_of_arguments;
-
-  bidder_executable = bidder_exec_str.c_str();
-
-  /*std::cout << "Bidder Executable is: ";
-  for (int i=0; bidder_executable[i]; i++) {
-    std::cout << bidder_executable[i];
-  }
+  /*
+  std::cout << "Bidder Executable is: " << bidder_exec;
   std::cout << " | Number of Arguments: " << number_of_arguments;
   */
-  std::vector<std::string> args;
+  
 
   int arg_count = 0;
   while (arg_count < number_of_arguments) {
@@ -51,8 +47,9 @@ void readBidderLines(int n) {
   }
   //std::cout << std::endl;
 
-  bidder_lines.insert(std::pair <const char*, std::vector<std::string>> (bidder_executable, args));
-  bidder_arg_counts.insert(std::pair <std::string, int> (bidder_exec_str, number_of_arguments)); 
+  bidder_executables.push_back(bidder_exec);
+  bidder_arg_counts.push_back(number_of_arguments);
+  bidder_arguments.push_back(args);
 }
 
 
@@ -64,7 +61,7 @@ int main() {
   
   
   while (n < number_of_bidders) {
-    readBidderLines(n); //key: executable value: args
+    readBidderLines(); //key: executable value: args
     n++;
   }
   
@@ -72,20 +69,19 @@ int main() {
   int fds[number_of_bidders][2];
   pid_t pids[number_of_bidders];
 
-  char* arg1 = (char *) malloc(100);
-  char* arg2 = (char *) malloc(100);
-  
+  char* executable_file = (char *) malloc(100);
 
   for (int i = 0; i < number_of_bidders; i++) {
-    std::multimap<const char*, std::vector<std::string>>::iterator it;
-    it = bidder_lines.begin();
 
-    std::multimap<std::string, int>::iterator c;
-    c = bidder_arg_counts.begin();
+    strcpy(executable_file, bidder_executables[i].c_str());
+    char* args[bidder_arg_counts[i] + 2] = {executable_file, NULL};
 
-    strcpy(arg1, it->first);
-    strcpy(arg2, it->second[0].c_str());
-    char* const args[4] = {arg1, arg2, NULL};
+    for (int arg_nu = 0; arg_nu < bidder_arg_counts[i]; arg_nu++) {
+      char* arg = (char *) malloc(100);
+      strcpy(arg, bidder_arguments[i][arg_nu].c_str());
+      char* arg_mutable = const_cast<char*>(arg);
+      args[arg_nu + 1] = arg_mutable;
+    }
 
     PIPE(fds[i]);
 
@@ -95,13 +91,11 @@ int main() {
       dup2(fds[i][0], 1);
       dup2(fds[i][0], 0);
       close(fds[i][1]);
-      execvp(c->first.c_str(), args);
+      execvp(bidder_executables[i].c_str(), args);
     }
     
     close(fds[i][0]);
     
-
-    it++;
   }
 
   fd_set readset;
@@ -121,20 +115,17 @@ int main() {
 
   m = m + 1;
 
-  struct timeval tv;
-  tv.tv_sec = 3;
-  tv.tv_usec = 0;
 
   while (open_count > 0) {
     FD_ZERO(&readset);
     for (int i = 0; i < number_of_bidders; i++) {
       if (open[i] == 1) {
-        //std::cout << "set.." << std::endl;
         FD_SET(fds[i][1], &readset);
       }
     }
 
-    select(m, &readset, NULL, NULL, &tv);
+    select(m, &readset, NULL, NULL, NULL);
+
     int r;
     ii* data;
     cm client_msg;
@@ -167,11 +158,12 @@ int main() {
 
   }
 
+
 /*
 int w;
 for(int i = 0; i < number_of_bidders; i++)
   wait(&w);
 */
-    
+  
 return 0;
 }
