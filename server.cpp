@@ -21,6 +21,8 @@ std::vector<std::string> bidder_executables;
 std::vector<std::vector<std::string>> bidder_arguments;
 std::vector<int> bidder_arg_counts;
 
+int current_highest_bid = starting_bid;
+
 void readBidderLines() {
   int number_of_arguments;
   std::string bidder_exec;
@@ -127,10 +129,14 @@ int main() {
     select(m, &readset, NULL, NULL, NULL);
 
     int r;
-    ii* data;
+    ii* input_data;
+    oi* output_data;
     cm client_msg;
 
     for (int i = 0; i < number_of_bidders; i++) {
+      int client_id = i + 1;
+      int process_id = pids[i];
+
       if (FD_ISSET(fds[i][1], &readset)) {
         r = read(fds[i][1], (void *) &client_msg, sizeof(client_msg));
         if (r == -1) {
@@ -145,15 +151,70 @@ int main() {
         }
         else {
           //std::cout << data->type << std::endl;
-          data->info = client_msg.params;
-          data->pid = pids[i];
-          data->type = client_msg.message_id;
-          print_input(data, i+1);
+          input_data->info = client_msg.params;
+          input_data->pid = process_id;
+          input_data->type = client_msg.message_id;
+          print_input(input_data, client_id);
+
+          sm server_response;
+          if (input_data->type == CLIENT_CONNECT) {
+            server_response.message_id = SERVER_CONNECTION_ESTABLISHED;
+
+            cei conn_established;
+            conn_established.client_id = client_id;
+            conn_established.starting_bid = starting_bid;
+            conn_established.current_bid = current_highest_bid;
+            conn_established.minimum_increment = minimum_increment;
+
+            server_response.params.start_info = conn_established;
+
+            write(fds[i][1], &server_response, sizeof(server_response));
+
+            output_data->type = CLIENT_CONNECT;
+            output_data->pid = process_id;
+            output_data->info = server_response.params;
+            print_output(output_data, client_id);
+          }
+
+          else if (input_data->type == CLIENT_BID) {
+            server_response.message_id = SERVER_BID_RESULT;
+
+            bi bid_info;
+            
+            int bid = client_msg.params.bid;
+
+            if (bid < starting_bid) {
+              bid_info.result = BID_LOWER_THAN_STARTING_BID;
+            }
+            else if (bid < current_highest_bid) {
+              bid_info.result = BID_LOWER_THAN_CURRENT;
+            }
+            else if (bid - current_highest_bid < minimum_increment) {
+              bid_info.result = BID_INCREMENT_LOWER_THAN_MINIMUM;
+            }
+            else {
+              if (bid > current_highest_bid) {
+                current_highest_bid = bid;
+              }
+              bid_info.result = BID_ACCEPTED;
+            }
+            bid_info.current_bid = current_highest_bid;
+
+            server_response.params.result_info = bid_info;
+
+            write(fds[i][1], &server_response, sizeof(server_response));
+
+            output_data->type = CLIENT_BID;
+            output_data->pid = process_id;
+            output_data->info = server_response.params;
+            print_output(output_data, client_id);
+          }
         }
       }
       else
         //std::cout << "No data." << std::endl;
-        open_count--;
+        //open_count--;
+        ;
     }
 
   }
