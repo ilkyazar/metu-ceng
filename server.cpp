@@ -22,6 +22,7 @@ std::vector<std::vector<std::string>> bidder_arguments;
 std::vector<int> bidder_arg_counts;
 
 int current_highest_bid = starting_bid;
+int highest_bidder_id = 0;
 
 void readBidderLines() {
   int number_of_arguments;
@@ -195,6 +196,7 @@ int main() {
             else {
               if (bid > current_highest_bid) {
                 current_highest_bid = bid;
+                highest_bidder_id = client_id;
               }
               bid_info.result = BID_ACCEPTED;
             }
@@ -209,8 +211,14 @@ int main() {
             output_data->info = server_response.params;
             print_output(output_data, client_id);
           }
+
+          else {
+            // CLIENT_FINISHED
+            open_count--;
+          }
         }
       }
+      
       else
         //std::cout << "No data." << std::endl;
         //open_count--;
@@ -219,6 +227,33 @@ int main() {
 
   }
 
+  sm final_server_msg;
+  final_server_msg.message_id = SERVER_AUCTION_FINISHED;
+
+  wi winner_info;
+  winner_info.winner_id = highest_bidder_id;
+  winner_info.winning_bid = current_highest_bid;
+
+  final_server_msg.params.winner_info = winner_info;
+
+  for (int i = 0; i < number_of_bidders; i++) {
+    write(fds[i][1], &final_server_msg, sizeof(final_server_msg));
+  }
+
+  print_server_finished(highest_bidder_id, current_highest_bid);
+
+  oi* final_data;
+
+  for (int i = 0; i < number_of_bidders; i++) {
+    final_data->type = CLIENT_FINISHED;
+    final_data->pid = pids[i];
+
+
+    final_data->info = final_server_msg.params;
+    print_output(final_data, i + 1);
+  }
+
+  
 
 /*
 int w;
