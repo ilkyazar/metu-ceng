@@ -273,8 +273,11 @@ int main() {
 
       print_client_finished(i + 1, wait_status, status_match);
     }
+
+    close(fds[i][1]);
   }
 
+  
     
   return 0;
 }
