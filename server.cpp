@@ -21,6 +21,8 @@ std::vector<std::string> bidder_executables;
 std::vector<std::vector<std::string>> bidder_arguments;
 std::vector<int> bidder_arg_counts;
 
+std::vector<int> prev_status_of_bidders;
+
 int current_highest_bid = starting_bid;
 int highest_bidder_id = 0;
 
@@ -214,6 +216,8 @@ int main() {
 
           else {
             // CLIENT_FINISHED
+            int status = input_data->info.status;
+            prev_status_of_bidders.push_back(status);
             open_count--;
           }
         }
@@ -254,12 +258,23 @@ int main() {
   }
 
   
+  int w;
+  for(int i = 0; i < number_of_bidders; i++) {
+    int wait_status;
+    pid_t bidder_pid = waitpid(pids[i], &wait_status, 0); 
+    int client_id = i + 1;
 
-/*
-int w;
-for(int i = 0; i < number_of_bidders; i++)
-  wait(&w);
-*/
-  
-return 0;
+    if (WIFEXITED(wait_status)) {
+      wait_status = WEXITSTATUS(wait_status);
+
+      int status_match;
+
+      (wait_status == prev_status_of_bidders[i]) ? (status_match = 1) : (status_match = 0); 
+
+      print_client_finished(i + 1, wait_status, status_match);
+    }
+  }
+
+    
+  return 0;
 }
