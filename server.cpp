@@ -57,23 +57,7 @@ void readBidderLines() {
   bidder_arguments.push_back(args);
 }
 
-
-int main() {
-
-  std::cin >> starting_bid >> minimum_increment >> number_of_bidders;
-
-  int n = 0;
-  
-  
-  while (n < number_of_bidders) {
-    readBidderLines(); //key: executable value: args
-    n++;
-  }
-  
-
-  int fds[number_of_bidders][2];
-  pid_t pids[number_of_bidders];
-
+void initializeBidders(int fds[][2], pid_t pids[]) {
   char* executable_file = (char *) malloc(100);
 
   for (int i = 0; i < number_of_bidders; i++) {
@@ -103,24 +87,10 @@ int main() {
     
   }
 
+}
+
+void serverLoop(int fds[][2], pid_t pids[], int m, int open_count, int open[]) {
   fd_set readset;
-  int open[number_of_bidders];
-  int open_count = number_of_bidders;
-
-  for (int i = 0; i < number_of_bidders; i++) {
-    open[i] = 1;
-  }
-
-  int m = 0;
-  for (int i = 0; i < number_of_bidders; i++) {
-    if (fds[i][1] > m) {
-      m = fds[i][1];
-    }
-  }
-
-  m = m + 1;
-
-
   while (open_count > 0) {
     FD_ZERO(&readset);
     for (int i = 0; i < number_of_bidders; i++) {
@@ -132,16 +102,18 @@ int main() {
     select(m, &readset, NULL, NULL, NULL);
 
     int r;
-    ii* input_data;
-    oi* output_data;
+    ii* input_data = (ii *) malloc(sizeof(struct input_info));
+    oi* output_data = (oi *) malloc(sizeof(struct output_info));
     cm client_msg;
-
+    
     for (int i = 0; i < number_of_bidders; i++) {
       int client_id = i + 1;
       int process_id = pids[i];
 
+    
       if (FD_ISSET(fds[i][1], &readset)) {
         r = read(fds[i][1], (void *) &client_msg, sizeof(client_msg));
+        
         if (r == -1) {
           //std::cout << "An error occured while reading from the file descriptor." << std::endl;
           open[i] = 0;
@@ -152,11 +124,11 @@ int main() {
           open[i] = 0;
           open_count--;
         }
-        else {
-          //std::cout << data->type << std::endl;
-          input_data->info = client_msg.params;
+        else {          
           input_data->pid = process_id;
+          input_data->info = client_msg.params;          
           input_data->type = client_msg.message_id;
+          
           print_input(input_data, client_id);
 
           sm server_response;
@@ -230,35 +202,11 @@ int main() {
     }
 
   }
+}
 
-  sm final_server_msg;
-  final_server_msg.message_id = SERVER_AUCTION_FINISHED;
-
-  wi winner_info;
-  winner_info.winner_id = highest_bidder_id;
-  winner_info.winning_bid = current_highest_bid;
-
-  final_server_msg.params.winner_info = winner_info;
-
-  for (int i = 0; i < number_of_bidders; i++) {
-    write(fds[i][1], &final_server_msg, sizeof(final_server_msg));
-  }
-
-  print_server_finished(highest_bidder_id, current_highest_bid);
-
-  oi* final_data;
-
-  for (int i = 0; i < number_of_bidders; i++) {
-    final_data->type = CLIENT_FINISHED;
-    final_data->pid = pids[i];
-
-
-    final_data->info = final_server_msg.params;
-    print_output(final_data, i + 1);
-  }
-
-  
+void reapBidders(int fds[][2], pid_t pids[]) {
   int w;
+  
   for(int i = 0; i < number_of_bidders; i++) {
     int wait_status;
     pid_t bidder_pid = waitpid(pids[i], &wait_status, 0); 
@@ -276,8 +224,77 @@ int main() {
 
     close(fds[i][1]);
   }
+  
+}
+
+int main() {
+
+  std::cin >> starting_bid >> minimum_increment >> number_of_bidders;
+
+  int n = 0;
+
+  while (n < number_of_bidders) {
+    readBidderLines();
+    n++;
+  }
+  
+
+  int fds[number_of_bidders][2];
+  pid_t pids[number_of_bidders];
+
+
+  initializeBidders(fds, pids);
+
+
+  int open[number_of_bidders];
+  int open_count = number_of_bidders;
+
+  for (int i = 0; i < number_of_bidders; i++) {
+    open[i] = 1;
+  }
+
+  int m = 0;
+  for (int i = 0; i < number_of_bidders; i++) {
+    if (fds[i][1] > m) {
+      m = fds[i][1];
+    }
+  }
+
+  m = m + 1;
+
+
+  serverLoop(fds, pids, m, open_count, open);
+
+
+  sm final_server_msg;
+  final_server_msg.message_id = SERVER_AUCTION_FINISHED;
+
+  wi winner_info;
+  winner_info.winner_id = highest_bidder_id;
+  winner_info.winning_bid = current_highest_bid;
+
+  final_server_msg.params.winner_info = winner_info;
+
+  for (int i = 0; i < number_of_bidders; i++) {
+    write(fds[i][1], &final_server_msg, sizeof(final_server_msg));
+  }
+
+  print_server_finished(highest_bidder_id, current_highest_bid);
+
+  oi* final_data = (oi *) malloc(sizeof(struct output_info));
+
+  for (int i = 0; i < number_of_bidders; i++) {
+    final_data->type = CLIENT_FINISHED;
+    final_data->pid = pids[i];
+
+
+    final_data->info = final_server_msg.params;
+    print_output(final_data, i + 1);
+  }
 
   
-    
+  reapBidders(fds, pids);
+
+      
   return 0;
 }
