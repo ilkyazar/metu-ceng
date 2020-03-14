@@ -89,8 +89,22 @@ void initializeBidders(int fds[][2], pid_t pids[]) {
 
 }
 
+int getMinDelay() {
+  int min_delay = std::stoi(bidder_arguments[0][0]);
+  for (int i = 0; i < number_of_bidders; i++) {
+    int delay = std::stoi(bidder_arguments[i][0]);
+    if (delay < min_delay) {
+      min_delay = delay;
+    }
+  }
+  return min_delay;
+}
+
 void serverLoop(int fds[][2], pid_t pids[], int m, int open_count, int open[]) {
   fd_set readset;
+  // minimum of the bidder delay can be used when there is no data on any socket
+  int min_delay = getMinDelay();
+
   while (open_count > 0) {
     FD_ZERO(&readset);
     for (int i = 0; i < number_of_bidders; i++) {
@@ -99,7 +113,11 @@ void serverLoop(int fds[][2], pid_t pids[], int m, int open_count, int open[]) {
       }
     }
 
-    select(m, &readset, NULL, NULL, NULL);
+    struct timeval tv;
+    tv.tv_sec = min_delay;
+    tv.tv_usec = 0;
+
+    select(m, &readset, NULL, NULL, &tv);
 
     int r;
     ii* input_data = (ii *) malloc(sizeof(struct input_info));
