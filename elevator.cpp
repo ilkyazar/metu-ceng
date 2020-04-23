@@ -13,6 +13,7 @@ int weight_capacity, person_capacity;
 int TRAVEL_TIME, IDLE_TIME, IN_OUT_TIME;
 
 vector<Person*> people;
+ElevatorMonitor elevMonitor;
 
 void readInpFile(string filename) {
     ifstream file(filename.c_str());
@@ -67,12 +68,38 @@ void readInpFile(string filename) {
     }
 }
 
-void* generatePeople(void *) {
-    cout << "People thread is created.\n" << endl;
+bool isTherePersonWaiting() {
+    for (int i = 0; i < people.size(); i++) {
+        if (people[i]->getStatus() == WAITING) {
+            return true;
+        }
+    }
+    return false;
+}
+
+void* generatePeople(void * ) {
+    int i = 0;
+
+    while (1) {
+        cout << "\nStatus of id=" << people[i]->getId() << " is " << people[i]->getStatus() << endl;
+        if (people[i]->getStatus() == WAITING) {
+            elevMonitor.insertPerson(people[i]);
+            people[i]->setInside();
+            cout << "\nStatus of id=" << people[i]->getId() << " is " << people[i]->getStatus() << endl;
+            break;
+        }
+        i++;
+    }
+
+    for (int i = 0; i < people.size(); i++) {
+        cout << "ID: " << people[i]->getId() << " STATUS: " << people[i]->getStatus() << endl;
+    }
+
+    elevMonitor.printPeopleIn();
+    
 }
 
 void* elevatorController(void *) {
-    cout << "Elevator controller thread is created.\n" << endl;
     /*
     while (Not all people have been served) do
         if (elevator is stationary at floor x) then

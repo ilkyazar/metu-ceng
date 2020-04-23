@@ -17,14 +17,20 @@ class ElevatorMonitor:public Monitor {
 
     public: 
         ElevatorMonitor():personEntered(this) {
+            int currentWeight = 0;
+            int peopleCount = 0;                        
         }
 
-        ~ElevatorMonitor();
+        ~ElevatorMonitor() {};
 
         void insertPerson(Person* newPerson) {
             __synchronized__ ;
 
             this->peopleInside.push_back(newPerson);
+
+            std::cout << "New person is inserted with id = " << newPerson->getId() << " and destination floor = " << newPerson->getDestFloor() << ".\n" << std::endl;
+            
+            // TODO: sort according to the destination
 
             this->peopleCount++;
             this->currentWeight += newPerson->getWeight();
@@ -50,6 +56,22 @@ class ElevatorMonitor:public Monitor {
 
             this->peopleCount--;
             this->currentWeight -= weightDecrement;
+        }
+
+        bool isPersonIn(int id) {
+            for (int i = 0; i < peopleInside.size(); i++) {
+                if (peopleInside[i]->getId() == id) {
+                    return true;
+                }
+            }
+            return false;
+        }
+
+        void printPeopleIn() {
+            for (int i = 0; i < peopleInside.size(); i++) {
+                Person* p = peopleInside[i];
+                std::cout << "ID: " << p->getId() << " WEIGHT: " << p->getWeight() << " INIT FLOOR: " << p->getInitialFloor() << " DEST FLOOR: " << p->getDestFloor() << " PRIORITY : " << p->getPriority() << std::endl;
+            }
         }
 
 };

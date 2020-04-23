@@ -1,12 +1,18 @@
 #ifndef __PERSON_H
 #define __PERSON_H
 
+#define WAITING 0
+#define INSIDE 1
+#define FINISHED 2
+
 class Person {
     private: 
         int id;
         int weight;
         int initial_floor, dest_floor;
         int priority;
+        int status;
+
     public: 
         Person(int id, int weight, int initial_floor, int dest_floor, int priority) {
             this->id = id;
@@ -14,8 +20,9 @@ class Person {
 			this->initial_floor = initial_floor;
 			this->dest_floor = dest_floor;
 			this->priority = priority;
+            this->status = WAITING;
 
-            std::cout << "New Person created with " << id << " " << weight << " " << initial_floor << " " << dest_floor << " " << priority  << "\n" << std::endl;
+            // std::cout << "New Person created with " << id << " " << weight << " " << initial_floor << " " << dest_floor << " " << priority  << "\n" << std::endl;
         }
 
         ~Person();
@@ -38,6 +45,18 @@ class Person {
 
         int getPriority() {
             return this->priority;
+        }
+
+        int getStatus() {
+            return this->status;
+        }
+
+        int setInside() {
+            this->status = INSIDE;
+        }
+
+        int setFinished() {
+            this->status = FINISHED;
         }
 
 };
