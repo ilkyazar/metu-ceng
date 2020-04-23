@@ -15,7 +15,7 @@ class Person {
 			this->dest_floor = dest_floor;
 			this->priority = priority;
 
-            std::cout << "New Person created with " << id << " " << weight << " " << initial_floor << " " << dest_floor << " " << priority << std::endl;
+            std::cout << "New Person created with " << id << " " << weight << " " << initial_floor << " " << dest_floor << " " << priority  << "\n" << std::endl;
         }
 
         ~Person();

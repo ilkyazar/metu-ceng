@@ -67,6 +67,40 @@ void readInpFile(string filename) {
     }
 }
 
+void* generatePeople(void *) {
+    cout << "People thread is created.\n" << endl;
+}
+
+void* elevatorController(void *) {
+    cout << "Elevator controller thread is created.\n" << endl;
+    /*
+    while (Not all people have been served) do
+        if (elevator is stationary at floor x) then
+            while (No one is calling the elevator) do
+                Wait for requests to come ;
+            end
+            Person at floor y wants to go to floor z;
+            if (x < y) then
+                Move upwards after some delay ;
+            end
+                if (x > y) then
+                    Move downwards after some delay ;
+                else
+                    Move towards the floor z;
+                end
+            end
+            if (Another person wants to enter in currentFloor) then
+                if (Person does not violate entrance constraints) then
+                    Person enters the elevator ;
+                end
+            end
+            if (Elevator reaches to a destination of a person inside the elevator) then
+                Person leaves the elevator ;
+        end
+    end
+    */
+}
+
 int main(int argc, char** argv) {
     string filename = "";
 
@@ -81,9 +115,29 @@ int main(int argc, char** argv) {
 
 
     /*
-        for(int i = 0; i < people.size(); i++){
-                cout << people[i]->getInitialFloor() << endl;
-        }
+    for(int i = 0; i < people.size(); i++){
+            cout << people[i]->getInitialFloor() << endl;
+    }
     */
 
+    pthread_t *personThreads;
+    personThreads = new pthread_t[num_people];
+
+    for (int i = 0; i < num_people; i++) {
+        pthread_create(&personThreads[i], NULL, generatePeople, NULL);
+    }
+
+    pthread_t elevatorControllerThread;
+    pthread_create(&elevatorControllerThread, NULL, elevatorController, NULL);
+
+
+    for (int i = 0; i < num_people; i++) {
+        pthread_join(personThreads[i], NULL);
+    }
+
+    pthread_join(elevatorControllerThread, NULL);
+
+    delete [] personThreads;
+
+    return 0;
 }
