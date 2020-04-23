@@ -77,8 +77,10 @@ bool isTherePersonWaiting() {
     return false;
 }
 
-void* generatePeople(void * ) {
-    int i = 0;
+void* generatePeople(void * personPtr) {
+    Person *p = (Person *) personPtr;
+
+    int i = p->getId();
 
     while (1) {
         cout << "\nStatus of id=" << people[i]->getId() << " is " << people[i]->getStatus() << endl;
@@ -151,7 +153,7 @@ int main(int argc, char** argv) {
     personThreads = new pthread_t[num_people];
 
     for (int i = 0; i < num_people; i++) {
-        pthread_create(&personThreads[i], NULL, generatePeople, NULL);
+        pthread_create(&personThreads[i], NULL, generatePeople, (void*)people[i]);
     }
 
     pthread_t elevatorControllerThread;
