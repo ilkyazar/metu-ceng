@@ -12,6 +12,7 @@ class Person {
         int initial_floor, dest_floor;
         int priority;
         int status;
+        bool hasReq;
 
     public: 
         Person(int id, int weight, int initial_floor, int dest_floor, int priority) {
@@ -21,6 +22,7 @@ class Person {
 			this->dest_floor = dest_floor;
 			this->priority = priority;
             this->status = WAITING;
+            this->hasReq = false;
 
             // std::cout << "New Person created with " << id << " " << weight << " " << initial_floor << " " << dest_floor << " " << priority  << "\n" << std::endl;
         }
@@ -55,12 +57,24 @@ class Person {
             return this->status;
         }
 
-        int setInside() {
+        void setInside() {
             this->status = INSIDE;
         }
 
-        int setFinished() {
+        void setWaiting() {
+            this->status = WAITING;
+        }
+
+        void setFinished() {
             this->status = FINISHED;
+        }
+
+        void setRequested() {
+            this->hasReq = true;
+        }
+
+        bool hasRequested() {
+            return this->hasReq;
         }
 
         bool isMovingUp() {

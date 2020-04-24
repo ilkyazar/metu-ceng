@@ -107,32 +107,58 @@ void* generatePeople(void * personPtr) {
 
     int i = p->getId();
 
-    while (!elevMonitor.isPersonIn(i)) {
-        if (people[i]->getStatus() == WAITING) {
-            
-            elevMonitor.setState(MOVING_UP);
-                        
-            elevMonitor.personMakeReq(people[i], weight_capacity, person_capacity);
+    while (1) {
 
-            //printPeopleVec();
-            break;
+        while (people[i]->getStatus() == WAITING && people[i]->hasRequested() == false) {
+                                            
+            elevMonitor.personMakeReq(people[i], weight_capacity, person_capacity);
+                        
         }
-        i++;
+
+        if (people[i]->getStatus() == FINISHED)
+            break;
     }
 
-    
+    // printPeopleVec();
     // elevMonitor.printPeopleIn();
     
+}
+
+Person* getPeopleAtFloor() {
+    for (int i = 0; i < people.size(); i++) {
+        if (people[i]->getInitialFloor() == elevMonitor.getCurrentFloor()) {
+            return people[i];
+        }
+    }
+    return NULL;
 }
 
 void* elevatorController(void *) {
     
     while (!allPeopleFinished()) {
+
         while (elevMonitor.getState() == IDLE) {
 
             waitInterval(IDLE_TIME);
 
-            
+        }
+
+        if (elevMonitor.isThereRequest()) {
+            int currFl = elevMonitor.getCurrentFloor();
+            int destFl = elevMonitor.getDestination();
+
+            if (currFl < destFl) {
+                elevMonitor.moveUp();
+            }
+            else if (currFl > destFl) {
+                elevMonitor.moveDown();
+            }
+            else {
+                // TODO: Check priority, multiple can enter
+                Person* p = getPeopleAtFloor();
+                elevMonitor.setReachedDest(p);
+               
+            }   
         }
         
     }

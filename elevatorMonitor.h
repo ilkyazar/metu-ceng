@@ -2,6 +2,8 @@
 #define __ELEVATOR_MON_H
 
 #include <vector>
+#include <algorithm>
+#include <string>
 #include "monitor.h"
 #include "person.h"
 
@@ -15,6 +17,7 @@ class ElevatorMonitor:public Monitor {
         std::vector<Person*> peopleInside;
         std::vector<int> destQueue;
 
+        int currentFloor;
         int currentWeight;
         int peopleCount;
 
@@ -22,11 +25,15 @@ class ElevatorMonitor:public Monitor {
         
         Condition personEntered;
 
+        int reqCount;
+
     public: 
         ElevatorMonitor():personEntered(this) {
             this->currentWeight = 0;
             this->peopleCount = 0;
-            this->state = IDLE;                        
+            this->state = IDLE;   
+            this->currentFloor = 0;   
+            this->reqCount = 0; 
         }
 
         ~ElevatorMonitor() {};
@@ -48,6 +55,22 @@ class ElevatorMonitor:public Monitor {
                 return "Moving-down";            
         }
 
+        int getCurrentFloor() {
+            return this->currentFloor;
+        }
+
+        void moveUp() {
+            this->state = MOVING_UP;
+            this->currentFloor++;  
+            printElevInfo();          
+        }
+
+        void moveDown() {
+            this->state = MOVING_DOWN;
+            this->currentFloor--;
+            printElevInfo();
+        }
+
         int getCurrentWeight() {
             return this->currentWeight;
         }
@@ -56,12 +79,51 @@ class ElevatorMonitor:public Monitor {
             return this->peopleCount;
         }
 
-        void insertPerson(Person* newPerson) {
+        void sortDestQueue() {
+            for (const auto &i: this->destQueue)
+                std::sort(this->destQueue.begin(), this->destQueue.end());
+        }
 
+        std::string getDestQueueStr() {
+            std::string q = "";
+
+            for (int i = 0; i < this->destQueue.size(); i++) {
+                std::string i_str = std::to_string(this->destQueue[i]);
+                q += i_str;
+
+                if (i != this->destQueue.size() - 1)
+                    q += ",";
+            }
+
+            return q;
+        }
+
+        bool isThereRequest() {
+            return this->destQueue.size() > 0;
+        }
+
+        int getDestination() {
+            return this->destQueue[0];
+        }
+
+        void setReachedDest(Person* p) {
+            this->destQueue.erase(this->destQueue.begin());
+
+            if (p) {
+                this->insertPerson(p);
+                p->setInside();
+            }
+            
+        }
+
+        void insertPerson(Person* newPerson) {
+            
             this->peopleInside.push_back(newPerson);
 
-            // TODO: sort according to the destination
-
+            int personDest = newPerson->getDestFloor();
+            this->destQueue.push_back(personDest);
+            sortDestQueue();
+            
             this->peopleCount++;
             this->currentWeight += newPerson->getWeight();
 
@@ -95,7 +157,13 @@ class ElevatorMonitor:public Monitor {
         }
 
         bool directionCond(Person* p) {
-            return true;
+        
+            if (p->isMovingUp() && this->state == MOVING_UP)
+                return true;
+            else if (!p->isMovingUp() && this->state == MOVING_DOWN)
+                return true;
+            else
+                return false;  
         }
 
         bool locationCond(Person* p) {
@@ -111,19 +179,29 @@ class ElevatorMonitor:public Monitor {
 
             __synchronized__ ;
 
-            if (directionCond(p) && locationCond(p)) {
+            this->reqCount++;
+            if (reqCount == 1)
+                this->setState(MOVING_UP);
 
+            if (directionCond(p) && locationCond(p)) {
                 p->printMadeReq();
+                p->setRequested();
+                
                 
                 if (capacityCond(p, wc, pc)) {
 
-                    p->setInside();
+                    int personDest = p->getInitialFloor();
+                    this->destQueue.push_back(personDest);
+                    sortDestQueue();
 
-                    this->insertPerson(p);
-                    
+                
                     // pthread_exit(NULL);
 
                     return;
+                }
+
+                else {
+                    p->setWaiting();
                 }
 
             }
@@ -151,7 +229,10 @@ class ElevatorMonitor:public Monitor {
             // TODO: add current floor -> destination floors
 
             std::cout << "Elevator (" << this->getStateStr() << ", " << this->getCurrentWeight() << ", " 
-                      << this->getPeopleCount() << ", " << " -> "
+                      << this->getPeopleCount() << ", "
+                      << this->currentFloor
+                      << " -> "
+                      << this->getDestQueueStr()
                       << ")" << std::endl;
         }
 
