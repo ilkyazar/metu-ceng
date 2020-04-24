@@ -5,6 +5,10 @@
 #include "monitor.h"
 #include "person.h"
 
+#define IDLE 0
+#define MOVING_UP 1
+#define MOVING_DOWN 2
+
 // regulates the access to the critical regions
 class ElevatorMonitor:public Monitor {
     private: 
@@ -12,28 +16,49 @@ class ElevatorMonitor:public Monitor {
 
         int currentWeight;
         int peopleCount;
+
+        int state;
         
         Condition personEntered;
 
     public: 
         ElevatorMonitor():personEntered(this) {
-            int currentWeight = 0;
-            int peopleCount = 0;                        
+            this->currentWeight = 0;
+            this->peopleCount = 0;
+            this->state = IDLE;                        
         }
 
         ~ElevatorMonitor() {};
+
+        std::string getStateStr() {
+            if (this->state == IDLE)
+                return "Idle";
+            else if (this->state == MOVING_UP)
+                return "Moving-up";
+            else
+                return "Moving-down";            
+        }
+
+        int getCurrentWeight() {
+            return this->currentWeight;
+        }
+
+        int getPeopleCount() {
+            return this->peopleCount;
+        }
 
         void insertPerson(Person* newPerson) {
             __synchronized__ ;
 
             this->peopleInside.push_back(newPerson);
 
-            std::cout << "New person is inserted with id = " << newPerson->getId() << " and destination floor = " << newPerson->getDestFloor() << ".\n" << std::endl;
-            
             // TODO: sort according to the destination
 
             this->peopleCount++;
             this->currentWeight += newPerson->getWeight();
+
+            newPerson->printEntered();
+            this->printElevInfo();
 
             // signal a new person is available
             personEntered.notify();
@@ -56,6 +81,9 @@ class ElevatorMonitor:public Monitor {
 
             this->peopleCount--;
             this->currentWeight -= weightDecrement;
+
+            personRemoved->printLeft();
+            this->printElevInfo();
         }
 
         bool isPersonIn(int id) {
@@ -72,6 +100,14 @@ class ElevatorMonitor:public Monitor {
                 Person* p = peopleInside[i];
                 std::cout << "ID: " << p->getId() << " WEIGHT: " << p->getWeight() << " INIT FLOOR: " << p->getInitialFloor() << " DEST FLOOR: " << p->getDestFloor() << " PRIORITY : " << p->getPriority() << std::endl;
             }
+        }
+
+        void printElevInfo() {
+            // TODO: add current floor -> destination floors
+
+            std::cout << "Elevator (" << this->getStateStr() << ", " << this->getCurrentWeight() << ", " 
+                      << this->getPeopleCount() << ", " << " -> "
+                      << ")" << std::endl;
         }
 
 };

@@ -47,6 +47,10 @@ class Person {
             return this->priority;
         }
 
+        std::string getPriorityStr() {
+            return this->priority == 2 ? "hp" : "lp";
+        }
+
         int getStatus() {
             return this->status;
         }
@@ -57,6 +61,24 @@ class Person {
 
         int setFinished() {
             this->status = FINISHED;
+        }
+
+        void printMadeReq() {
+            std::cout << "Person (" << this->getId() << ", " << this->getPriorityStr() << ", " 
+                      << this->getInitialFloor() << " -> " << this->getDestFloor() << ", "
+                      << this->getWeight() << ") made a request" << std::endl;
+        }
+
+        void printEntered() {
+            std::cout << "Person (" << this->getId() << ", " << this->getPriorityStr() << ", " 
+                      << this->getInitialFloor() << " -> " << this->getDestFloor() << ", "
+                      << this->getWeight() << ") entered the elevator" << std::endl;
+        }
+
+        void printLeft() {
+            std::cout << "Person (" << this->getId() << ", " << this->getPriorityStr() << ", " 
+                      << this->getInitialFloor() << " -> " << this->getDestFloor() << ", "
+                      << this->getWeight() << ") has left the elevator" << std::endl;
         }
 
 };

@@ -15,6 +15,17 @@ int TRAVEL_TIME, IDLE_TIME, IN_OUT_TIME;
 vector<Person*> people;
 ElevatorMonitor elevMonitor;
 
+
+void printInpInfo() {
+    cout << "number of floors = " << num_floors << endl;
+    cout << "number of people = " << num_people << endl;
+    cout << "weight capacity = " << weight_capacity << endl;
+    cout << "person capacity = " << person_capacity << endl;
+    cout << "travel time = " << TRAVEL_TIME << endl;
+    cout << "idle time = " << IDLE_TIME << endl;
+    cout << "in out time = " << IN_OUT_TIME << endl;
+}
+
 void readInpFile(string filename) {
     ifstream file(filename.c_str());
 
@@ -37,13 +48,7 @@ void readInpFile(string filename) {
         IDLE_TIME = stoi(idle_time_str);
         IN_OUT_TIME = stoi(in_out_time_str);
 
-        cout << "number of floors = " << num_floors << endl;
-        cout << "number of people = " << num_people << endl;
-        cout << "weight capacity = " << weight_capacity << endl;
-        cout << "person capacity = " << person_capacity << endl;
-        cout << "travel time = " << TRAVEL_TIME << endl;
-        cout << "idle time = " << IDLE_TIME << endl;
-        cout << "in out time = " << IN_OUT_TIME << endl;
+        // printInpInfo();
 
         int i = 0;
         while (i < num_people) {
@@ -53,18 +58,18 @@ void readInpFile(string filename) {
             getline(file, initial_floor, ' ');
             getline(file, dest_floor, ' ');
             getline(file, priority, '\n');
-            /*
-            cout << "weight = " << weight << endl;
-            cout << "initial_floor = " << initial_floor << endl;
-            cout << "dest_floor = " << dest_floor << endl;
-            cout << "priority = " << priority << endl;
-            */
             Person* newPerson = new Person(i, stoi(weight), stoi(initial_floor), stoi(dest_floor), stoi(priority));
             people.push_back(newPerson);
             i++;
         }
 
         file.close();
+    }
+}
+
+void printPeopleVec() {
+    for (int i = 0; i < people.size(); i++) {
+        cout << "ID: " << people[i]->getId() << " STATUS: " << people[i]->getStatus() << endl;
     }
 }
 
@@ -83,21 +88,17 @@ void* generatePeople(void * personPtr) {
     int i = p->getId();
 
     while (1) {
-        cout << "\nStatus of id=" << people[i]->getId() << " is " << people[i]->getStatus() << endl;
         if (people[i]->getStatus() == WAITING) {
+            // people[i]->printMadeReq();
             elevMonitor.insertPerson(people[i]);
             people[i]->setInside();
-            cout << "\nStatus of id=" << people[i]->getId() << " is " << people[i]->getStatus() << endl;
             break;
         }
         i++;
     }
 
-    for (int i = 0; i < people.size(); i++) {
-        cout << "ID: " << people[i]->getId() << " STATUS: " << people[i]->getStatus() << endl;
-    }
-
-    elevMonitor.printPeopleIn();
+    // printPeopleVec();
+    // elevMonitor.printPeopleIn();
     
 }
 
@@ -141,13 +142,6 @@ int main(int argc, char** argv) {
         cout << "Usage: ./Elevator inp.txt\n";
         return 0;
     }
-
-
-    /*
-    for(int i = 0; i < people.size(); i++){
-            cout << people[i]->getInitialFloor() << endl;
-    }
-    */
 
     pthread_t *personThreads;
     personThreads = new pthread_t[num_people];
