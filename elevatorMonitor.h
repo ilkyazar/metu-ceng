@@ -13,6 +13,7 @@
 class ElevatorMonitor:public Monitor {
     private: 
         std::vector<Person*> peopleInside;
+        std::vector<int> destQueue;
 
         int currentWeight;
         int peopleCount;
@@ -29,6 +30,14 @@ class ElevatorMonitor:public Monitor {
         }
 
         ~ElevatorMonitor() {};
+
+        int getState() {
+            return this->state;
+        }
+
+        void setState(int s) {
+            this->state = s;
+        }
 
         std::string getStateStr() {
             if (this->state == IDLE)
@@ -48,7 +57,6 @@ class ElevatorMonitor:public Monitor {
         }
 
         void insertPerson(Person* newPerson) {
-            __synchronized__ ;
 
             this->peopleInside.push_back(newPerson);
 
@@ -84,6 +92,43 @@ class ElevatorMonitor:public Monitor {
 
             personRemoved->printLeft();
             this->printElevInfo();
+        }
+
+        bool directionCond(Person* p) {
+            return true;
+        }
+
+        bool locationCond(Person* p) {
+            return true;
+        }
+
+        bool capacityCond(Person* p, int wc, int pc) {
+            return wc >= p->getWeight() + this->getCurrentWeight()
+                                && pc >= 1 + this->getPeopleCount();
+        }
+
+        void personMakeReq(Person* p, int wc, int pc) {
+
+            __synchronized__ ;
+
+            if (directionCond(p) && locationCond(p)) {
+
+                p->printMadeReq();
+                
+                if (capacityCond(p, wc, pc)) {
+
+                    p->setInside();
+
+                    this->insertPerson(p);
+                    
+                    // pthread_exit(NULL);
+
+                    return;
+                }
+
+            }
+            
+
         }
 
         bool isPersonIn(int id) {

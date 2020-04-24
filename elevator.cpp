@@ -1,8 +1,11 @@
 #include <iostream>
 #include <fstream>
 #include <vector>
+#include <unistd.h>
+
 #include "elevatorMonitor.h"
 #include "person.h"
+#include "monitor.h"
 
 using namespace std;
 
@@ -14,7 +17,6 @@ int TRAVEL_TIME, IDLE_TIME, IN_OUT_TIME;
 
 vector<Person*> people;
 ElevatorMonitor elevMonitor;
-
 
 void printInpInfo() {
     cout << "number of floors = " << num_floors << endl;
@@ -82,27 +84,58 @@ bool isTherePersonWaiting() {
     return false;
 }
 
+bool allPeopleFinished() {
+    for (int i = 0; i < people.size(); i++) {
+        if (people[i]->getStatus() != FINISHED) {
+            return false;
+        }
+    }
+    return true;
+}
+
+void waitInterval(int t) {
+    /* E.g: 
+    *  IDLE_TIME --> sleep for a fixed time + release the lock
+    *                so that person threads can acquire
+    *                & make requests
+    */
+    usleep(t);
+}
+
 void* generatePeople(void * personPtr) {
     Person *p = (Person *) personPtr;
 
     int i = p->getId();
 
-    while (1) {
+    while (!elevMonitor.isPersonIn(i)) {
         if (people[i]->getStatus() == WAITING) {
-            // people[i]->printMadeReq();
-            elevMonitor.insertPerson(people[i]);
-            people[i]->setInside();
+            
+            elevMonitor.setState(MOVING_UP);
+                        
+            elevMonitor.personMakeReq(people[i], weight_capacity, person_capacity);
+
+            //printPeopleVec();
             break;
         }
         i++;
     }
 
-    // printPeopleVec();
+    
     // elevMonitor.printPeopleIn();
     
 }
 
 void* elevatorController(void *) {
+    
+    while (!allPeopleFinished()) {
+        while (elevMonitor.getState() == IDLE) {
+
+            waitInterval(IDLE_TIME);
+
+            
+        }
+        
+    }
     /*
     while (Not all people have been served) do
         if (elevator is stationary at floor x) then
@@ -143,6 +176,11 @@ int main(int argc, char** argv) {
         return 0;
     }
 
+    
+
+    pthread_t elevatorControllerThread;
+    pthread_create(&elevatorControllerThread, NULL, elevatorController, NULL);
+
     pthread_t *personThreads;
     personThreads = new pthread_t[num_people];
 
@@ -150,15 +188,12 @@ int main(int argc, char** argv) {
         pthread_create(&personThreads[i], NULL, generatePeople, (void*)people[i]);
     }
 
-    pthread_t elevatorControllerThread;
-    pthread_create(&elevatorControllerThread, NULL, elevatorController, NULL);
-
+    pthread_join(elevatorControllerThread, NULL);
 
     for (int i = 0; i < num_people; i++) {
         pthread_join(personThreads[i], NULL);
     }
 
-    pthread_join(elevatorControllerThread, NULL);
 
     delete [] personThreads;
 

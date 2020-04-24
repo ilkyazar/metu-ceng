@@ -48,7 +48,7 @@ class Person {
         }
 
         std::string getPriorityStr() {
-            return this->priority == 2 ? "hp" : "lp";
+            return this->priority == 2 ? "lp" : "hp";
         }
 
         int getStatus() {
@@ -61,6 +61,10 @@ class Person {
 
         int setFinished() {
             this->status = FINISHED;
+        }
+
+        bool isMovingUp() {
+            return this->dest_floor >= this->initial_floor;
         }
 
         void printMadeReq() {
