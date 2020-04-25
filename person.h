@@ -81,6 +81,12 @@ class Person {
             return this->dest_floor >= this->initial_floor;
         }
 
+        friend bool operator >(Person p1, Person p2) {
+            // priorty == 1 ---> hp, 2---> lp
+            if (p1.priority < p2.priority) return true;
+            return false;
+        }
+
         void printMadeReq() {
             std::cout << "Person (" << this->getId() << ", " << this->getPriorityStr() << ", " 
                       << this->getInitialFloor() << " -> " << this->getDestFloor() << ", "

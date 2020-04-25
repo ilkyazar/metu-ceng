@@ -2,6 +2,7 @@
 #include <fstream>
 #include <vector>
 #include <unistd.h>
+#include <algorithm>
 
 #include "elevatorMonitor.h"
 #include "person.h"
@@ -125,10 +126,19 @@ void* generatePeople(void * personPtr) {
 }
 
 Person* getPeopleAtFloor() {
+    vector<Person*> peopleAtTheFloor;
+
     for (int i = 0; i < people.size(); i++) {
         if (people[i]->getInitialFloor() == elevMonitor.getCurrentFloor()) {
-            return people[i];
+            peopleAtTheFloor.push_back(people[i]);
         }
+    }
+
+    if (peopleAtTheFloor.size() > 0) {
+        for (const auto &i: peopleAtTheFloor)
+            std::sort(peopleAtTheFloor.begin(), peopleAtTheFloor.end());
+
+        return peopleAtTheFloor[0];
     }
     return NULL;
 }
@@ -154,9 +164,15 @@ void* elevatorController(void *) {
                 elevMonitor.moveDown();
             }
             else {
-                // TODO: Check priority, multiple can enter
+                // Checking priority in this function, multiple can try to enter, hp will
                 Person* p = getPeopleAtFloor();
-                elevMonitor.setReachedDest(p);
+
+                // If p is NULL, this means the elevator reached the destination
+                // and this destination is not to get a person
+                // but to leave a person at the floor
+
+                if (p)
+                    elevMonitor.setReachedDest(p);
                
             }   
         }
