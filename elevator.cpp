@@ -132,7 +132,8 @@ Person* getPeopleAtFloor() {
     vector<Person*> peopleAtTheFloor;
 
     for (int i = 0; i < people.size(); i++) {
-        if (people[i]->getInitialFloor() == elevMonitor.getCurrentFloor()) {
+        if (people[i]->getInitialFloor() == elevMonitor.getCurrentFloor()
+            && people[i]->getStatus() != FINISHED) {
             peopleAtTheFloor.push_back(people[i]);
         }
     }
@@ -167,15 +168,18 @@ void* elevatorController(void *) {
             waitInterval(IDLE_TIME);
 
         }
+        //cout << "OUT FROM IDLE" << endl;
 
         if (elevMonitor.isThereRequest()) {
             int currFl = elevMonitor.getCurrentFloor();
             int destFl = elevMonitor.getDestination();
 
             if (currFl < destFl) {
+                waitInterval(TRAVEL_TIME);
                 elevMonitor.moveUp();
             }
             else if (currFl > destFl) {
+                waitInterval(TRAVEL_TIME);
                 elevMonitor.moveDown();
             }
             else {
@@ -185,7 +189,7 @@ void* elevatorController(void *) {
                 // If p is NULL, this means the elevator reached the destination
                 // and this destination is not to get a person
                 // but to leave a person at the floor
-
+                waitInterval(IN_OUT_TIME);
                 if (p)
                     elevMonitor.setReachedDestToGet(p);
                 else {
@@ -201,6 +205,9 @@ void* elevatorController(void *) {
                
             }   
         }
+
+        if (allPeopleFinished())
+            break;
         
     }
     /*

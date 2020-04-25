@@ -26,6 +26,7 @@ class ElevatorMonitor:public Monitor {
         Condition personEntered;
 
         int reqCount;
+        int hasReset;
 
     public: 
         ElevatorMonitor():personEntered(this) {
@@ -33,7 +34,8 @@ class ElevatorMonitor:public Monitor {
             this->peopleCount = 0;
             this->state = IDLE;   
             this->currentFloor = 0;   
-            this->reqCount = 0; 
+            this->reqCount = 0;
+            this->hasReset = 0; 
         }
 
         ~ElevatorMonitor() {};
@@ -117,6 +119,7 @@ class ElevatorMonitor:public Monitor {
         }
 
         void setReachedDestToGet(Person* p) {
+            // std::cout << "REACHED DEST" << std::endl;
             for (int i = 0; i < this->destQueue.size(); i++) {
                 if (this->destQueue[i] == p->getInitialFloor()) {
                     this->destQueue.erase(this->destQueue.begin() + i);
@@ -129,6 +132,7 @@ class ElevatorMonitor:public Monitor {
         }
 
         void setReachedDestToLeave(Person* p) {
+            // std::cout << "REACHED DEST" << std::endl;
             for (int i = 0; i < this->destQueue.size(); i++) {
                 if (this->destQueue[i] == p->getDestFloor()) {
                     this->destQueue.erase(this->destQueue.begin() + i);
@@ -138,18 +142,22 @@ class ElevatorMonitor:public Monitor {
             this->removePerson(p);
             p->setFinished();
 
+            //std::cout << "set finished for " << p->getId() << std::endl;
+
             
         }
 
         std::vector<Person*> checkIdle(std::vector<Person*> people) {
             if (this->destQueue.size() == 0) {
                 this->setState(IDLE);
+                this->hasReset = 1;
 
-                std::cout << "set as idle" << std::endl;
+                // std::cout << "set as idle" << std::endl;
 
                 for (int i = 0; i < people.size(); i++) {
                     people[i]->resetRequested();
-                    std::cout << "reset requested for " << people[i]->getId() << std::endl;
+                    
+                    // std::cout << "reset requested for " << people[i]->getId() << std::endl;
                 }
             }
 
@@ -218,8 +226,10 @@ class ElevatorMonitor:public Monitor {
             __synchronized__ ;
 
             this->reqCount++;
-            if (reqCount == 1)
+            if (reqCount == 1 || hasReset == 1) {
                 this->setState(MOVING_UP);
+                hasReset = 0;
+            }
 
             if (directionCond(p) && locationCond(p)) {
                 p->printMadeReq();
