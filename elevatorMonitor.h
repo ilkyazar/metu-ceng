@@ -62,13 +62,21 @@ class ElevatorMonitor:public Monitor {
         void moveUp() {
             this->state = MOVING_UP;
             this->currentFloor++;  
+            //checkQueue();
             printElevInfo();          
         }
 
         void moveDown() {
             this->state = MOVING_DOWN;
             this->currentFloor--;
+            //checkQueue();
             printElevInfo();
+        }
+
+        void checkQueue() {
+            if (this->currentFloor == this->destQueue[0]) {
+                this->destQueue.erase(this->destQueue.begin());
+            }
         }
 
         int getCurrentWeight() {
@@ -108,14 +116,44 @@ class ElevatorMonitor:public Monitor {
             return this->destQueue[0];
         }
 
-        void setReachedDest(Person* p) {
-            this->destQueue.erase(this->destQueue.begin());
+        void setReachedDestToGet(Person* p) {
+            for (int i = 0; i < this->destQueue.size(); i++) {
+                if (this->destQueue[i] == p->getInitialFloor()) {
+                    this->destQueue.erase(this->destQueue.begin() + i);
+                }
+            }
 
-            if (p) {
-                this->insertPerson(p);
-                p->setInside();
+            this->insertPerson(p);
+            p->setInside();
+            
+        }
+
+        void setReachedDestToLeave(Person* p) {
+            for (int i = 0; i < this->destQueue.size(); i++) {
+                if (this->destQueue[i] == p->getDestFloor()) {
+                    this->destQueue.erase(this->destQueue.begin() + i);
+                }
             }
             
+            this->removePerson(p);
+            p->setFinished();
+
+            
+        }
+
+        std::vector<Person*> checkIdle(std::vector<Person*> people) {
+            if (this->destQueue.size() == 0) {
+                this->setState(IDLE);
+
+                std::cout << "set as idle" << std::endl;
+
+                for (int i = 0; i < people.size(); i++) {
+                    people[i]->resetRequested();
+                    std::cout << "reset requested for " << people[i]->getId() << std::endl;
+                }
+            }
+
+            return people;
         }
 
         void insertPerson(Person* newPerson) {
@@ -136,7 +174,7 @@ class ElevatorMonitor:public Monitor {
             personEntered.notify();
         }
 
-        void removePerson() {
+        void removePerson(Person* personRemoved) {
             __synchronized__ ;
 
             while (peopleCount == 0) {
@@ -144,11 +182,9 @@ class ElevatorMonitor:public Monitor {
                 personEntered.wait();
             
             }
-
-            Person* personRemoved = this->peopleInside[0];
             int weightDecrement = personRemoved->getWeight();
 
-            // remove from start
+            // remove from start ?????? change
             this->peopleInside.erase(this->peopleInside.begin());
 
             this->peopleCount--;

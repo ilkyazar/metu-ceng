@@ -108,16 +108,19 @@ void* generatePeople(void * personPtr) {
 
     int i = p->getId();
 
-    while (1) {
+    while (people[i]->getStatus() != FINISHED) {
 
-        while (people[i]->getStatus() == WAITING && people[i]->hasRequested() == false) {
-                                            
+        while (people[i]->getStatus() == WAITING && people[i]->hasRequested() == false) {   
             elevMonitor.personMakeReq(people[i], weight_capacity, person_capacity);
                         
         }
-
-        if (people[i]->getStatus() == FINISHED)
+        /*
+        if (people[i]->getStatus() == FINISHED) {
+            cout << "Breaking for " << people[i]->getId() << endl;
             break;
+        }
+        */
+            
     }
 
     // printPeopleVec();
@@ -141,6 +144,18 @@ Person* getPeopleAtFloor() {
         return peopleAtTheFloor[0];
     }
     return NULL;
+}
+
+vector<Person*> getPeopleToLeave() {
+    vector<Person*> peopleWillLeave;
+
+    for (int i = 0; i < people.size(); i++) {
+        if (people[i]->getDestFloor() == elevMonitor.getCurrentFloor()
+            && elevMonitor.isPersonIn(people[i]->getId())) {
+            peopleWillLeave.push_back(people[i]);
+        }
+    }
+    return peopleWillLeave;
 }
 
 void* elevatorController(void *) {
@@ -172,7 +187,17 @@ void* elevatorController(void *) {
                 // but to leave a person at the floor
 
                 if (p)
-                    elevMonitor.setReachedDest(p);
+                    elevMonitor.setReachedDestToGet(p);
+                else {
+                    vector<Person*> ps = getPeopleToLeave();
+                    for (int i = 0; i < ps.size(); i++) {
+                        elevMonitor.setReachedDestToLeave(ps[i]);
+                    }
+                    people = elevMonitor.checkIdle(people);
+                    //printPeopleVec();
+                    //cout << "in else" << endl;
+                }
+                    
                
             }   
         }

@@ -73,6 +73,10 @@ class Person {
             this->hasReq = true;
         }
 
+        void resetRequested() {
+            this->hasReq = false;
+        }
+
         bool hasRequested() {
             return this->hasReq;
         }
