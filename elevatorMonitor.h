@@ -82,6 +82,8 @@ class ElevatorMonitor:public Monitor {
         void sortDestQueue() {
             for (const auto &i: this->destQueue)
                 std::sort(this->destQueue.begin(), this->destQueue.end());
+
+            this->destQueue.erase(unique(this->destQueue.begin(), this->destQueue.end()), this->destQueue.end());
         }
 
         std::string getDestQueueStr() {
@@ -185,6 +187,8 @@ class ElevatorMonitor:public Monitor {
 
             if (directionCond(p) && locationCond(p)) {
                 p->printMadeReq();
+                if (this->destQueue.size() > 0)
+                    printElevInfo();
                 p->setRequested();
                 
                 
