@@ -109,7 +109,8 @@ void* generatePeople(void * personPtr) {
     int i = p->getId();
 
     while (people[i]->getStatus() != FINISHED) {
-        while (people[i]->getStatus() == WAITING && people[i]->hasRequested() == false) {  
+        while (people[i]->getStatus() == WAITING && people[i]->hasRequested() == false
+               && !elevMonitor.isPersonIn(people[i]->getId())) {  
             elevMonitor.personMakeReq(people[i], weight_capacity, person_capacity, num_floors);
         }
         /*
@@ -163,22 +164,24 @@ void* elevatorController(void *) {
     
     while (!allPeopleFinished()) {
 
-        while (elevMonitor.getState() == IDLE) {
+        
 
-            waitInterval(IDLE_TIME);
+        elevMonitor.idle(IDLE_TIME);
 
-        }
-        //cout << "OUT FROM IDLE" << endl;
+        //cout << "CHECK FOR DEST" << endl;
 
-        if (elevMonitor.isThereRequest()) {
+        if (elevMonitor.isThereDestination()) {
+            //cout << "THERE IS!!" << endl;
             int currFl = elevMonitor.getCurrentFloor();
             int destFl = elevMonitor.getDestination();
 
             if (currFl < destFl) {
+                //cout << "going to wait for travel time " << endl;
                 waitInterval(TRAVEL_TIME);
                 elevMonitor.moveUp(num_floors);
             }
             else if (currFl > destFl) {
+                //cout << "going to wait for travel time " << endl;
                 waitInterval(TRAVEL_TIME);
                 elevMonitor.moveDown();
             }
@@ -194,23 +197,32 @@ void* elevatorController(void *) {
 
                 waitInterval(IN_OUT_TIME);
                 if (p) {
+                    //cout << "set reached dest to get person " << endl;
                     elevMonitor.setReachedDestToGet(p, weight_capacity, person_capacity);
                     
                 }
                 else {
                     vector<Person*> ps = getPeopleToLeave();
+                    //cout << "got people to leave" << endl;
                     if (ps.size() > 0) {
                         for (int i = 0; i < ps.size(); i++) {
                             elevMonitor.setReachedDestToLeave(ps[i]);
+                            
                         }
+                        //cout << "check Idle" << endl;
                         people = elevMonitor.checkIdle(people);
                     }
                     
                 }
-                    
+
+                
                
             }   
+        
+            elevMonitor.printElevInfo();   
         }
+
+        //cout << elevMonitor.getState() << endl;
 
         if (allPeopleFinished())
             break;
