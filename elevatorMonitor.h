@@ -61,11 +61,17 @@ class ElevatorMonitor:public Monitor {
             return this->currentFloor;
         }
 
-        void moveUp() {
+        void moveUp(int numFloors) {
             this->state = MOVING_UP;
             this->currentFloor++;  
             //checkQueue();
-            printElevInfo();          
+            printElevInfo(); 
+            /*
+            if (this->currentFloor == numFloors) {
+                this->state = MOVING_DOWN;
+                std::cout << "set state as DOWN .." << std::endl;
+            }       
+            */
         }
 
         void moveDown() {
@@ -73,6 +79,11 @@ class ElevatorMonitor:public Monitor {
             this->currentFloor--;
             //checkQueue();
             printElevInfo();
+            /*
+            if (this->currentFloor == 0) {
+                this->state = MOVING_UP;
+            }
+            */
         }
 
         void checkQueue() {
@@ -118,21 +129,27 @@ class ElevatorMonitor:public Monitor {
             return this->destQueue[0];
         }
 
-        void setReachedDestToGet(Person* p) {
-            // std::cout << "REACHED DEST" << std::endl;
+        void setReachedDestToGet(Person* p, int wc, int pc) {
+            std::cout << "REACHED DEST" << std::endl;
+
             for (int i = 0; i < this->destQueue.size(); i++) {
                 if (this->destQueue[i] == p->getInitialFloor()) {
                     this->destQueue.erase(this->destQueue.begin() + i);
                 }
             }
 
-            this->insertPerson(p);
-            p->setInside();
+            if (capacityCond(p, wc, pc)) {
+                this->insertPerson(p);
+                p->setInside();
+            }
+            else {
+                //p->resetRequested();
+            }
             
         }
 
         void setReachedDestToLeave(Person* p) {
-            // std::cout << "REACHED DEST" << std::endl;
+             std::cout << "REACHED DEST" << std::endl;
             for (int i = 0; i < this->destQueue.size(); i++) {
                 if (this->destQueue[i] == p->getDestFloor()) {
                     this->destQueue.erase(this->destQueue.begin() + i);
@@ -152,12 +169,12 @@ class ElevatorMonitor:public Monitor {
                 this->setState(IDLE);
                 this->hasReset = 1;
 
-                // std::cout << "set as idle" << std::endl;
+                 std::cout << "set as idle" << std::endl;
 
                 for (int i = 0; i < people.size(); i++) {
                     people[i]->resetRequested();
                     
-                    // std::cout << "reset requested for " << people[i]->getId() << std::endl;
+                     std::cout << "reset requested for " << people[i]->getId() << std::endl;
                 }
             }
 
@@ -184,12 +201,13 @@ class ElevatorMonitor:public Monitor {
 
         void removePerson(Person* personRemoved) {
             __synchronized__ ;
-
+            
             while (peopleCount == 0) {
 
                 personEntered.wait();
             
             }
+            
             int weightDecrement = personRemoved->getWeight();
 
             // remove from start ?????? change
@@ -203,16 +221,27 @@ class ElevatorMonitor:public Monitor {
         }
 
         bool directionCond(Person* p) {
-        
             if (p->isMovingUp() && this->state == MOVING_UP)
                 return true;
             else if (!p->isMovingUp() && this->state == MOVING_DOWN)
                 return true;
-            else
-                return false;  
+            else {
+                std::cout << "elevator and person are not going to the same direction" << std::endl;
+                return false; 
+            } 
         }
 
-        bool locationCond(Person* p) {
+        bool locationCond(Person* p, int numFlo) {
+            if (this->state == MOVING_UP && p->getInitialFloor() < this->currentFloor) {
+                //std::cout << "elevator is moving up but person is below" << std::endl;
+                return false;
+            
+            }
+            if (this->state == MOVING_DOWN && p->getInitialFloor() > this->currentFloor) {
+                //std::cout << "elevator is moving down but person is above" << std::endl;
+                return false;
+            }
+                
             return true;
         }
 
@@ -221,23 +250,26 @@ class ElevatorMonitor:public Monitor {
                                 && pc >= 1 + this->getPeopleCount();
         }
 
-        void personMakeReq(Person* p, int wc, int pc) {
+        void personMakeReq(Person* p, int wc, int pc, int numFlo) {
 
             __synchronized__ ;
+            
+            
+            if ((this->state == IDLE) 
+                || this->state != IDLE && directionCond(p) && locationCond(p, numFlo)) {
 
-            this->reqCount++;
-            if (reqCount == 1 || hasReset == 1) {
-                this->setState(MOVING_UP);
-                hasReset = 0;
-            }
-
-            if (directionCond(p) && locationCond(p)) {
                 p->printMadeReq();
+                p->setRequested();
+
+                if (this->currentFloor == 0) {
+                    this->setState(MOVING_UP);
+                }
+
                 if (this->destQueue.size() > 0)
                     printElevInfo();
-                p->setRequested();
                 
-                
+                this->setState(MOVING_UP);
+
                 if (capacityCond(p, wc, pc)) {
 
                     int personDest = p->getInitialFloor();
@@ -252,10 +284,11 @@ class ElevatorMonitor:public Monitor {
 
                 else {
                     p->setWaiting();
+
+                    return;
                 }
 
             }
-            
 
         }
 

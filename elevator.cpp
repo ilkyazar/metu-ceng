@@ -109,10 +109,8 @@ void* generatePeople(void * personPtr) {
     int i = p->getId();
 
     while (people[i]->getStatus() != FINISHED) {
-
-        while (people[i]->getStatus() == WAITING && people[i]->hasRequested() == false) {   
-            elevMonitor.personMakeReq(people[i], weight_capacity, person_capacity);
-                        
+        while (people[i]->getStatus() == WAITING && people[i]->hasRequested() == false) {  
+            elevMonitor.personMakeReq(people[i], weight_capacity, person_capacity, num_floors);
         }
         /*
         if (people[i]->getStatus() == FINISHED) {
@@ -133,8 +131,10 @@ Person* getPeopleAtFloor() {
 
     for (int i = 0; i < people.size(); i++) {
         if (people[i]->getInitialFloor() == elevMonitor.getCurrentFloor()
-            && people[i]->getStatus() != FINISHED) {
-            peopleAtTheFloor.push_back(people[i]);
+            && people[i]->getStatus() != FINISHED
+            && people[i]->getStatus() != INSIDE) {
+
+                peopleAtTheFloor.push_back(people[i]);
         }
     }
 
@@ -176,7 +176,7 @@ void* elevatorController(void *) {
 
             if (currFl < destFl) {
                 waitInterval(TRAVEL_TIME);
-                elevMonitor.moveUp();
+                elevMonitor.moveUp(num_floors);
             }
             else if (currFl > destFl) {
                 waitInterval(TRAVEL_TIME);
@@ -189,17 +189,23 @@ void* elevatorController(void *) {
                 // If p is NULL, this means the elevator reached the destination
                 // and this destination is not to get a person
                 // but to leave a person at the floor
+
+                //  TODO: ya inenler ve binenler aynı kattaysa????
+
                 waitInterval(IN_OUT_TIME);
-                if (p)
-                    elevMonitor.setReachedDestToGet(p);
+                if (p) {
+                    elevMonitor.setReachedDestToGet(p, weight_capacity, person_capacity);
+                    
+                }
                 else {
                     vector<Person*> ps = getPeopleToLeave();
-                    for (int i = 0; i < ps.size(); i++) {
-                        elevMonitor.setReachedDestToLeave(ps[i]);
+                    if (ps.size() > 0) {
+                        for (int i = 0; i < ps.size(); i++) {
+                            elevMonitor.setReachedDestToLeave(ps[i]);
+                        }
+                        people = elevMonitor.checkIdle(people);
                     }
-                    people = elevMonitor.checkIdle(people);
-                    //printPeopleVec();
-                    //cout << "in else" << endl;
+                    
                 }
                     
                
