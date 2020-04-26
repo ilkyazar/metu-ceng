@@ -1,6 +1,7 @@
 #ifndef __MONITOR_H
 #define __MONITOR_H
 #include<pthread.h>
+#include <sys/time.h>
 
 //! A base class to help deriving monitor like classes 
 class Monitor {
@@ -18,6 +19,8 @@ public:
                 pthread_cond_init(&cond, NULL) ; 
         }
         void wait() {  pthread_cond_wait(&cond, &owner->mut);}
+        void timedwait(struct timespec* t) {
+            pthread_cond_timedwait(&cond, &owner->mut, t); }
         void notify() { pthread_cond_signal(&cond);}
         void notifyAll() { pthread_cond_broadcast(&cond);}
     };

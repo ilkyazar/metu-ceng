@@ -161,28 +161,28 @@ vector<Person*> getPeopleToLeave() {
 }
 
 void* elevatorController(void *) {
-    
+    //__synchronized__;
+
     while (!allPeopleFinished()) {
 
-        
-
-        elevMonitor.idle(IDLE_TIME);
-
-        //cout << "CHECK FOR DEST" << endl;
+        while (elevMonitor.getState() == IDLE) {
+            waitInterval(IDLE_TIME);
+            //elevMonitor.intervalWait(IDLE_TIME);
+        }
 
         if (elevMonitor.isThereDestination()) {
-            //cout << "THERE IS!!" << endl;
             int currFl = elevMonitor.getCurrentFloor();
             int destFl = elevMonitor.getDestination();
 
             if (currFl < destFl) {
-                //cout << "going to wait for travel time " << endl;
                 waitInterval(TRAVEL_TIME);
+                //elevMonitor.intervalWait(TRAVEL_TIME);
                 elevMonitor.moveUp(num_floors);
             }
             else if (currFl > destFl) {
                 //cout << "going to wait for travel time " << endl;
                 waitInterval(TRAVEL_TIME);
+                //elevMonitor.intervalWait(TRAVEL_TIME);
                 elevMonitor.moveDown();
             }
             else {
@@ -193,9 +193,8 @@ void* elevatorController(void *) {
                 // and this destination is not to get a person
                 // but to leave a person at the floor
 
-                //  TODO: ya inenler ve binenler aynı kattaysa????
-
                 waitInterval(IN_OUT_TIME);
+                //elevMonitor.intervalWait(IN_OUT_TIME);
                 if (p) {
                     //cout << "set reached dest to get person " << endl;
                     elevMonitor.setReachedDestToGet(p, weight_capacity, person_capacity);
@@ -227,33 +226,7 @@ void* elevatorController(void *) {
         if (allPeopleFinished())
             break;
         
-    }
-    /*
-    while (Not all people have been served) do
-        if (elevator is stationary at floor x) then
-            while (No one is calling the elevator) do
-                Wait for requests to come ;
-            end
-            Person at floor y wants to go to floor z;
-            if (x < y) then
-                Move upwards after some delay ;
-            end
-                if (x > y) then
-                    Move downwards after some delay ;
-                else
-                    Move towards the floor z;
-                end
-            end
-            if (Another person wants to enter in currentFloor) then
-                if (Person does not violate entrance constraints) then
-                    Person enters the elevator ;
-                end
-            end
-            if (Elevator reaches to a destination of a person inside the elevator) then
-                Person leaves the elevator ;
-        end
-    end
-    */
+    }    
 }
 
 int main(int argc, char** argv) {
@@ -267,8 +240,6 @@ int main(int argc, char** argv) {
         cout << "Usage: ./Elevator inp.txt\n";
         return 0;
     }
-
-    
 
     pthread_t elevatorControllerThread;
     pthread_create(&elevatorControllerThread, NULL, elevatorController, NULL);

@@ -23,13 +23,13 @@ class ElevatorMonitor:public Monitor {
 
         int state;
         
-        Condition personEntered;
+        Condition madeRequest;
 
         int reqCount;
         int hasReset;
 
     public: 
-        ElevatorMonitor():personEntered(this) {
+        ElevatorMonitor():madeRequest(this) {
             this->currentWeight = 0;
             this->peopleCount = 0;
             this->state = IDLE;   
@@ -186,18 +186,10 @@ class ElevatorMonitor:public Monitor {
             newPerson->printEntered();
             //this->printElevInfo();
 
-            // signal a new person is available
-            personEntered.notify();
         }
 
         void removePerson(Person* personRemoved) {
             __synchronized__ ;
-            
-            while (peopleCount == 0) {
-
-                personEntered.wait();
-            
-            }
             
             int weightDecrement = personRemoved->getWeight();
 
@@ -242,23 +234,95 @@ class ElevatorMonitor:public Monitor {
                                 && pc >= 1 + this->getPeopleCount();
         }
 
-        void idle(int IDLE_TIME) {
-            //__synchronized__;
-
-            while (this->getState() == IDLE) {
-
-                usleep(IDLE_TIME);
-
-            }
+        void intervalWait(int t) {
+            timeval tVal;
+            gettimeofday(&tVal, NULL);
+            timespec tSpec;
+            tSpec.tv_sec  = tVal.tv_sec;
+            tSpec.tv_nsec = tVal.tv_usec * 1000;
+            tSpec.tv_nsec += t * 1000;
+            madeRequest.timedwait(&tSpec);
         }
+        /*
+        void* elevatorController(void *) {
+            __synchronized__;
+
+            while (!allPeopleFinished()) {
+
+                while (elevMonitor.getState() == IDLE) {
+                    waitInterval(IDLE_TIME);
+                    //elevMonitor.intervalWait(IDLE_TIME);
+                }
+
+                if (elevMonitor.isThereDestination()) {
+                    int currFl = elevMonitor.getCurrentFloor();
+                    int destFl = elevMonitor.getDestination();
+
+                    if (currFl < destFl) {
+                        waitInterval(TRAVEL_TIME);
+                        //elevMonitor.intervalWait(TRAVEL_TIME);
+                        elevMonitor.moveUp(num_floors);
+                    }
+                    else if (currFl > destFl) {
+                        //cout << "going to wait for travel time " << endl;
+                        waitInterval(TRAVEL_TIME);
+                        //elevMonitor.intervalWait(TRAVEL_TIME);
+                        elevMonitor.moveDown();
+                    }
+                    else {
+                        // Checking priority in this function, multiple can try to enter, hp will
+                        Person* p = getPeopleAtFloor();
+
+                        // If p is NULL, this means the elevator reached the destination
+                        // and this destination is not to get a person
+                        // but to leave a person at the floor
+
+                        waitInterval(IN_OUT_TIME);
+                        //elevMonitor.intervalWait(IN_OUT_TIME);
+                        if (p) {
+                            //cout << "set reached dest to get person " << endl;
+                            elevMonitor.setReachedDestToGet(p, weight_capacity, person_capacity);
+                            
+                        }
+                        else {
+                            vector<Person*> ps = getPeopleToLeave();
+                            //cout << "got people to leave" << endl;
+                            if (ps.size() > 0) {
+                                for (int i = 0; i < ps.size(); i++) {
+                                    elevMonitor.setReachedDestToLeave(ps[i]);
+                                    
+                                }
+                                //cout << "check Idle" << endl;
+                                people = elevMonitor.checkIdle(people);
+                            }
+                            
+                        }
+
+                        
+                    
+                    }   
+                
+                    elevMonitor.printElevInfo();   
+                }
+
+                //cout << elevMonitor.getState() << endl;
+
+                if (allPeopleFinished())
+                    break;
+            
+            }    
+        }
+        */
 
         void personMakeReq(Person* p, int wc, int pc, int numFlo) {
 
             __synchronized__ ;
-            
-            
+                        
             if ((this->state == IDLE) 
                 || this->state != IDLE && directionCond(p) && locationCond(p, numFlo)) {
+
+
+                madeRequest.notify();
 
                 p->printMadeReq();
                 p->setRequested();
@@ -281,8 +345,6 @@ class ElevatorMonitor:public Monitor {
                     }
                 }
                 
-                //this->setState(MOVING_UP);
-
                 if (capacityCond(p, wc, pc)) {
 
                     int personDest = p->getInitialFloor();
