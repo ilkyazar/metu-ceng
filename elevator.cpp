@@ -81,11 +81,11 @@ void* generatePeople(void * personPtr) {
 
     //int i = p->getId();
 
-    elevMonitor->personMakeRequest(p);
+    elevMonitor->personTryToMakeRequest(p);
 }
 
 void* elevatorController(void *) {
-    elevMonitor->elevatorController();
+    elevMonitor->elevatorController(people);
 }
 
 
@@ -103,8 +103,6 @@ int main(int argc, char** argv) {
 
     elevMonitor = new ElevatorMonitor(weight_capacity, person_capacity, 
                                         TRAVEL_TIME, IDLE_TIME, IN_OUT_TIME);
-
-    cout << elevMonitor->getState() << endl;
 
     pthread_t elevatorControllerThread;
     pthread_create(&elevatorControllerThread, NULL, elevatorController, NULL);
