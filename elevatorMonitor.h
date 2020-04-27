@@ -30,10 +30,10 @@ class ElevatorMonitor:public Monitor {
 
         int travel_time, idle_time, in_out_time;
         
-        Condition canMakeRequests;
+        Condition canMakeRequests, canEnter, canLeave;
 
     public: 
-        ElevatorMonitor(int wc, int pc, int tt, int it, int iot):canMakeRequests(this) {
+        ElevatorMonitor(int wc, int pc, int tt, int it, int iot):canMakeRequests(this), canEnter(this), canLeave(this) {
             this->currentFloor = 0; 
             this->currentWeight = 0;
             this->peopleCount = 0;
@@ -72,27 +72,26 @@ class ElevatorMonitor:public Monitor {
         }
 
         void moveUp() {
-            this->state = MOVING_UP;
+            this->setState(MOVING_UP);
             this->currentFloor++; 
             checkDestination();
         }
 
         void moveDown() {
-            this->state = MOVING_DOWN;
+            this->setState(MOVING_DOWN);
             this->currentFloor--; 
             checkDestination();
         }
 
         void checkDestination() {
             if (!isThereDestination()) {
-                this->state = IDLE;
+                this->setState(IDLE);
                 canMakeRequests.notifyAll();
                 this->printElevInfo();
             }
             else {
                 this->printElevInfo();
-                this->state = STATIONARY;
-                cout << "STATE IS UPDATED AS STATIONARY" << endl;
+                this->setState(STATIONARY);
             }
         }
 
@@ -143,7 +142,6 @@ class ElevatorMonitor:public Monitor {
             __synchronized__;
             
             this->peopleInside.push_back(newPerson);
-            newPerson->setInside();
 
             int personDest = newPerson->getDestFloor();
             addDestination(personDest);
@@ -151,6 +149,7 @@ class ElevatorMonitor:public Monitor {
             this->peopleCount++;
             this->currentWeight += newPerson->getWeight();
 
+            checkDestination();
             newPerson->printEntered();
             this->printElevInfo();
 
@@ -167,6 +166,7 @@ class ElevatorMonitor:public Monitor {
             this->peopleCount--;
             this->currentWeight -= weightDecrement;
 
+            checkDestination();
             personRemoved->printLeft();
             this->printElevInfo();
         }
@@ -204,10 +204,13 @@ class ElevatorMonitor:public Monitor {
                     if (p->getStatus() != ACCEPTED) {
 
                         p->printMadeReq();
+                        cout << p->getId() << " IS NOT FINISHED :(" << endl;
 
                         if (p->isMovingUp()) this->setState(MOVING_UP);
                         else this->setState(MOVING_DOWN);
                         
+                        
+
                         if (!capacityCond(p)) {
                             p->setRejected();
                             cout << p->getId() << " IS REJECTED. " << endl;
@@ -216,7 +219,8 @@ class ElevatorMonitor:public Monitor {
                             p->setAccepted();
                             
                             int getPersonFrom = p->getInitialFloor();
-                            addDestination(getPersonFrom);                            
+                            addDestination(getPersonFrom);    
+                            printElevInfo();
                         }
                     }
                     
@@ -229,6 +233,8 @@ class ElevatorMonitor:public Monitor {
             for (int i = 0; i < this->peopleInside.size(); i++) {
                 if (this->currentFloor == this->peopleInside[i]->getDestFloor()) {
                     removePerson(this->peopleInside[i]);
+                    this->peopleInside[i]->setFinished();
+                    cout << peopleInside[i]->getId() << " IS FINISHED!"  << endl;
                 }
             }
         }
@@ -236,12 +242,16 @@ class ElevatorMonitor:public Monitor {
         void makePeopleEnter(vector<Person*> people) {
             for (int i = 0; i < people.size(); i++) {
                 if (this->currentFloor == people[i]->getInitialFloor()
-                    && capacityCond(people[i])) {
-                    insertPerson(people[i]);
+                    && people[i]->getStatus() == ACCEPTED) {
+
+                        if (capacityCond(people[i])) {
+                            insertPerson(people[i]);
+                            people[i]->setInside();
+                        }
+                        else
+                            people[i]->setRejected();                        
                 }
-                else if (!capacityCond(people[i])) {
-                    people[i]->setRejected();
-                }
+
             }
         }
 
@@ -256,6 +266,13 @@ class ElevatorMonitor:public Monitor {
                 }
                 int elevDestFloor = this->destQueue[0];
 
+                if (this->getState() == STATIONARY && this->currentFloor == elevDestFloor) {
+                    usleep(this->in_out_time);
+                    this->destQueue.erase(this->destQueue.begin());
+                    makePeopleLeave();
+                    makePeopleEnter(people);
+                }
+
                 if (this->currentFloor > elevDestFloor) {
                     usleep(this->travel_time);
                     this->moveDown();
@@ -265,11 +282,7 @@ class ElevatorMonitor:public Monitor {
                     this->moveUp();
                 }
 
-                if (this->getState() == STATIONARY && this->currentFloor == elevDestFloor) {
-                    usleep(this->in_out_time);
-                    makePeopleLeave();
-                    makePeopleEnter(people);
-                }                    
+                                    
             }
         }
 
