@@ -3,9 +3,8 @@
 
 #define REJECTED -1
 #define WAITING 0
-#define INSIDE 1
-#define ACCEPTED 2
-#define FINISHED 3
+#define ACCEPTED 1
+#define FINISHED 2
 
 class Person {
     private: 
@@ -53,10 +52,6 @@ class Person {
 
         int getStatus() {
             return this->status;
-        }
-
-        void setInside() {
-            this->status = INSIDE;
         }
 
         void setWaiting() {

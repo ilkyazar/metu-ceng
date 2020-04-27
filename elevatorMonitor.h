@@ -9,7 +9,6 @@
 
 using namespace std;
 
-#define STATIONARY -1
 #define IDLE 0
 #define MOVING_UP 1
 #define MOVING_DOWN 2
@@ -27,13 +26,11 @@ class ElevatorMonitor:public Monitor {
         int state;
 
         int weight_capacity, person_capacity;
-
-        int travel_time, idle_time, in_out_time;
         
-        Condition canMakeRequests, canEnter, canLeave;
+        Condition canMakeRequests; 
 
     public: 
-        ElevatorMonitor(int wc, int pc, int tt, int it, int iot):canMakeRequests(this), canEnter(this), canLeave(this) {
+        ElevatorMonitor(int wc, int pc):canMakeRequests(this) {
             this->currentFloor = 0; 
             this->currentWeight = 0;
             this->peopleCount = 0;
@@ -41,9 +38,6 @@ class ElevatorMonitor:public Monitor {
 
             this->weight_capacity = wc;
             this->person_capacity = pc;
-            this->travel_time = tt;
-            this->idle_time = it;
-            this->in_out_time = iot;         
         }
 
         ~ElevatorMonitor() {};
@@ -61,8 +55,6 @@ class ElevatorMonitor:public Monitor {
                 return "Moving-up";
             else if (this->state == MOVING_DOWN)
                 return "Moving-down";
-            else if (this->state == STATIONARY)
-                return "STATIONARY";
             else
                 return "Idle";           
         }
@@ -75,23 +67,23 @@ class ElevatorMonitor:public Monitor {
             this->setState(MOVING_UP);
             this->currentFloor++; 
             checkDestination();
+            this->printElevInfo();
         }
 
         void moveDown() {
             this->setState(MOVING_DOWN);
             this->currentFloor--; 
             checkDestination();
+            this->printElevInfo();
         }
 
+        // If destination queue is empty, set state as Idle
+        // Notify people who try to make requests
         void checkDestination() {
             if (!isThereDestination()) {
                 this->setState(IDLE);
+                this->printElevInfo();
                 canMakeRequests.notifyAll();
-                this->printElevInfo();
-            }
-            else {
-                this->printElevInfo();
-                this->setState(STATIONARY);
             }
         }
 
@@ -133,13 +125,15 @@ class ElevatorMonitor:public Monitor {
         }
 
         void addDestination(int d) {
-            this->destQueue.push_back(d);
-            sortDestQueue();
+            if (d != currentFloor) {
+                this->destQueue.push_back(d);
+                sortDestQueue();
+            }
         }
 
         void insertPerson(Person* newPerson) {
 
-            __synchronized__;
+            //__synchronized__;
             
             this->peopleInside.push_back(newPerson);
 
@@ -157,7 +151,7 @@ class ElevatorMonitor:public Monitor {
 
         void removePerson(Person* personRemoved) {
 
-            __synchronized__;
+            //__synchronized__;
             
             int weightDecrement = personRemoved->getWeight();
 
@@ -171,7 +165,18 @@ class ElevatorMonitor:public Monitor {
             this->printElevInfo();
         }
 
+
+        /* 
+            If the elevator is Idle, a person will make request.
+            
+            If the elevator is Moving up/down, a person will make a request if 
+            direction and location conditions are satisfied.
+
+            If it is rejected before, it won't be able to make requests unless the elevator is Idle again.        
+        */
         void personTryToMakeRequest(Person* p) {
+
+            __synchronized__;
 
             while (!isPersonEligible(p) || p->getStatus() == REJECTED) {
 
@@ -179,26 +184,25 @@ class ElevatorMonitor:public Monitor {
                 // set state as idle and notify all
 
                 canMakeRequests.wait();    
-                p->setWaiting();           
             }
 
         }
 
-        void personMakeReq(Person* p) {
+        void personMakeReq(Person* p, int reqCount) {
 
             __synchronized__;
 
-            if (p->getStatus() != ACCEPTED) {
+            p->printMadeReq();
 
-                p->printMadeReq();
+            if (p->isMovingUp()) this->setState(MOVING_UP);
+            else this->setState(MOVING_DOWN);
 
-                if (p->isMovingUp()) this->setState(MOVING_UP);
-                else this->setState(MOVING_DOWN);
+            if (reqCount == 1) this->setState(MOVING_UP);
               
-            }
 
         } 
 
+        // Add request to destination queue
         void acceptReq(Person* p) {      
 
             __synchronized__;
@@ -208,33 +212,30 @@ class ElevatorMonitor:public Monitor {
             printElevInfo();
         }
 
-        void deleteFromDestQueue() {
+        void moveToCurrFloor() {
             this->destQueue.erase(this->destQueue.begin());
         }
 
         vector<Person*> makePeopleLeave() {
 
+            __synchronized__;
+
             vector<Person*> peopleLeft;
             
-            printPeopleIn();
-
-            cout << this->peopleInside.size() << endl;
-
             for (int i = 0; i < this->peopleInside.size(); i++) {
                 
-                cout << i << " : " << this->currentFloor << " " << this->peopleInside[i]->getDestFloor() << endl;
 
                 if (this->currentFloor == this->peopleInside[i]->getDestFloor()) {
                     removePerson(this->peopleInside[i]);
-                    cout << "REMOVED" << endl;
                     peopleLeft.push_back(peopleInside[i]);
                 }
-                cout << "here?" << endl;
             }
             return peopleLeft;
         }
 
         vector<Person*> makePeopleEnter(vector<Person*> people) {
+
+            __synchronized__;
 
             vector<Person*> peopleRejected;
 
@@ -244,7 +245,6 @@ class ElevatorMonitor:public Monitor {
 
                         if (capacityCond(people[i])) {
                             insertPerson(people[i]);
-                            //people[i]->setInside();
                         }
                         else
                             peopleRejected.push_back(people[i]);
@@ -256,8 +256,18 @@ class ElevatorMonitor:public Monitor {
         }
 
         bool isPersonEligible(Person* p) {
+            
             return (this->getState() == IDLE
                     || (directionCond(p) && locationCond(p)));
+        }
+
+        bool isPersonInside(Person *p) {
+            for (int i = 0; i < peopleInside.size(); i++) {
+                if (peopleInside[i]->getId() == p->getId()) {
+                    return true;
+                }
+            }
+            return false;
         }
 
 
