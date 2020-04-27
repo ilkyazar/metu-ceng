@@ -79,13 +79,112 @@ void* generatePeople(void * personPtr) {
     
     Person *p = (Person *) personPtr;
 
-    //int i = p->getId();
+    while (p->getStatus() != FINISHED) {
 
-    elevMonitor->personTryToMakeRequest(p);
+        if (p->getStatus() != INSIDE) {
+
+            /* 
+            If the elevator is Idle, a person will make request.
+            
+            If the elevator is Moving up/down, a person will make a request if 
+            direction and location conditions are satisfied.
+
+            But if the capacity conditions are not eligible, the person will be rejected.
+
+            So, it won't be able to make requests unless the elevator is Idle again.
+        
+            If the request is accepted, add it to the destination queue.
+            */
+            elevMonitor->personTryToMakeRequest(p);
+            
+            elevMonitor->personMakeReq(p);
+
+            if (p->getStatus() != ACCEPTED) {
+                if (!elevMonitor->capacityCond(p)) {
+                    p->setRejected();
+                    cout << p->getId() << " IS REJECTED. " << endl;
+                } 
+                else {
+                    p->setAccepted();
+
+                    elevMonitor->acceptReq(p);
+                    
+                }
+            }
+        }
+    }
+
+    cout << p->getId() << " IS OUT" << endl;
+    
+}
+
+bool allPeopleFinished() {
+            for (int i = 0; i < people.size(); i++) {
+                if (people[i]->getStatus() != FINISHED) {
+                    return false;
+                }
+            }
+
+            return true;
+        }
+
+void setPersonLeftFinished(int id) {
+    for (int i = 0; i < people.size(); i++) {
+        if (people[i]->getId() == id) {
+            people[i]->setFinished();
+        }
+    }
+}
+
+void setPersonRejectedStatus(int id) {
+    for (int i = 0; i < people.size(); i++) {
+        if (people[i]->getId() == id) {
+            people[i]->setRejected();
+        }
+    }
 }
 
 void* elevatorController(void *) {
-    elevMonitor->elevatorController(people);
+    while (!allPeopleFinished()) {
+                while (elevMonitor->getState() == IDLE) {
+                    usleep(IDLE_TIME);
+                    if (elevMonitor->isThereDestination())
+                        break;
+                }
+                int elevDestFloor = elevMonitor->getDestination();
+
+                if (elevMonitor->getState() == STATIONARY && elevMonitor->getCurrentFloor() == elevDestFloor) {
+                    usleep(IN_OUT_TIME);
+
+                    elevMonitor->deleteFromDestQueue();
+
+                    vector<Person*> peopleLeft = elevMonitor->makePeopleLeave();
+                    cout << peopleLeft.size() << " PEOPLE HAVE LEFT." << endl;
+                    if (peopleLeft.size() > 0) {
+                        for (int i = 0; i < peopleLeft.size(); i++) {
+                            setPersonLeftFinished(peopleLeft[i]->getId());
+                        }
+                    }
+
+                    vector<Person*> personCouldNotEnter = elevMonitor->makePeopleEnter(people);
+                    if (personCouldNotEnter.size() > 0) {
+                        for (int i = 0; i < personCouldNotEnter.size(); i++) {
+                            setPersonRejectedStatus(personCouldNotEnter[i]->getId());
+                        }
+                    }
+                }
+
+                if (elevMonitor->getCurrentFloor() > elevDestFloor) {
+                    usleep(TRAVEL_TIME);
+                    elevMonitor->moveDown();
+                }
+                else if (elevMonitor->getCurrentFloor() < elevDestFloor) {
+                    usleep(TRAVEL_TIME);
+                    elevMonitor->moveUp();
+                }
+
+                                    
+            }
 }
 
 

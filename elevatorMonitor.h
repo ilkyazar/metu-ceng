@@ -173,127 +173,86 @@ class ElevatorMonitor:public Monitor {
 
         void personTryToMakeRequest(Person* p) {
 
+            while (!isPersonEligible(p) || p->getStatus() == REJECTED) {
+
+                // After moving up/down, if there are no requests, 
+                // set state as idle and notify all
+
+                canMakeRequests.wait();    
+                p->setWaiting();           
+            }
+
+        }
+
+        void personMakeReq(Person* p) {
+
             __synchronized__;
 
-            while (p->getStatus() != FINISHED) {
+            if (p->getStatus() != ACCEPTED) {
 
-                if (p->getStatus() != INSIDE) {
+                p->printMadeReq();
 
-                    /* 
-                    If the elevator is Idle, a person will make request.
-                    
-                    If the elevator is Moving up/down, a person will make a request if 
-                    direction and location conditions are satisfied.
-
-                    But if the capacity conditions are not eligible, the person will be rejected.
-
-                    So, it won't be able to make requests unless the elevator is Idle again.
-                
-                    If the request is accepted, add it to the destination queue.
-                    */
-
-                    while (!isPersonEligible(p) || p->getStatus() == REJECTED) {
-
-                        // After moving up/down, if there are no requests, 
-                        // set state as idle and notify all
-
-                        canMakeRequests.wait();
-                        p->setWaiting();
-                    }
-
-                    if (p->getStatus() != ACCEPTED) {
-
-                        p->printMadeReq();
-                        cout << p->getId() << " IS NOT FINISHED :(" << endl;
-
-                        if (p->isMovingUp()) this->setState(MOVING_UP);
-                        else this->setState(MOVING_DOWN);
-                        
-                        
-
-                        if (!capacityCond(p)) {
-                            p->setRejected();
-                            cout << p->getId() << " IS REJECTED. " << endl;
-                        } 
-                        else {
-                            p->setAccepted();
-                            
-                            int getPersonFrom = p->getInitialFloor();
-                            addDestination(getPersonFrom);    
-                            printElevInfo();
-                        }
-                    }
-                    
-                } 
+                if (p->isMovingUp()) this->setState(MOVING_UP);
+                else this->setState(MOVING_DOWN);
+              
             }
 
+        } 
+
+        void acceptReq(Person* p) {      
+
+            __synchronized__;
+
+            int getPersonFrom = p->getInitialFloor();
+            addDestination(getPersonFrom);    
+            printElevInfo();
         }
 
-        void makePeopleLeave() {
+        void deleteFromDestQueue() {
+            this->destQueue.erase(this->destQueue.begin());
+        }
+
+        vector<Person*> makePeopleLeave() {
+
+            vector<Person*> peopleLeft;
+            
+            printPeopleIn();
+
+            cout << this->peopleInside.size() << endl;
+
             for (int i = 0; i < this->peopleInside.size(); i++) {
+                
+                cout << i << " : " << this->currentFloor << " " << this->peopleInside[i]->getDestFloor() << endl;
+
                 if (this->currentFloor == this->peopleInside[i]->getDestFloor()) {
                     removePerson(this->peopleInside[i]);
-                    this->peopleInside[i]->setFinished();
-                    cout << peopleInside[i]->getId() << " IS FINISHED!"  << endl;
+                    cout << "REMOVED" << endl;
+                    peopleLeft.push_back(peopleInside[i]);
                 }
+                cout << "here?" << endl;
             }
+            return peopleLeft;
         }
 
-        void makePeopleEnter(vector<Person*> people) {
+        vector<Person*> makePeopleEnter(vector<Person*> people) {
+
+            vector<Person*> peopleRejected;
+
             for (int i = 0; i < people.size(); i++) {
                 if (this->currentFloor == people[i]->getInitialFloor()
                     && people[i]->getStatus() == ACCEPTED) {
 
                         if (capacityCond(people[i])) {
                             insertPerson(people[i]);
-                            people[i]->setInside();
+                            //people[i]->setInside();
                         }
                         else
-                            people[i]->setRejected();                        
+                            peopleRejected.push_back(people[i]);
                 }
 
             }
-        }
 
-
-        void elevatorController(vector<Person*> people) {
-
-            while (!allPeopleFinished(people)) {
-                while (this->getState() == IDLE) {
-                    usleep(this->idle_time);
-                    if (isThereDestination())
-                        break;
-                }
-                int elevDestFloor = this->destQueue[0];
-
-                if (this->getState() == STATIONARY && this->currentFloor == elevDestFloor) {
-                    usleep(this->in_out_time);
-                    this->destQueue.erase(this->destQueue.begin());
-                    makePeopleLeave();
-                    makePeopleEnter(people);
-                }
-
-                if (this->currentFloor > elevDestFloor) {
-                    usleep(this->travel_time);
-                    this->moveDown();
-                }
-                else if (this->currentFloor < elevDestFloor) {
-                    usleep(this->travel_time);
-                    this->moveUp();
-                }
-
-                                    
-            }
-        }
-
-        bool allPeopleFinished(vector<Person*> people) {
-            for (int i = 0; i < people.size(); i++) {
-                if (people[i]->getStatus() != FINISHED) {
-                    return false;
-                }
-            }
-
-            return true;
+            return peopleRejected;
         }
 
         bool isPersonEligible(Person* p) {
