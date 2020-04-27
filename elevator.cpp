@@ -6,7 +6,6 @@
 
 #include "elevatorMonitor.h"
 #include "person.h"
-#include "monitor.h"
 
 using namespace std;
 
@@ -17,7 +16,7 @@ int weight_capacity, person_capacity;
 int TRAVEL_TIME, IDLE_TIME, IN_OUT_TIME;
 
 vector<Person*> people;
-ElevatorMonitor elevMonitor;
+ElevatorMonitor* elevMonitor;
 
 void printInpInfo() {
     cout << "number of floors = " << num_floors << endl;
@@ -27,6 +26,12 @@ void printInpInfo() {
     cout << "travel time = " << TRAVEL_TIME << endl;
     cout << "idle time = " << IDLE_TIME << endl;
     cout << "in out time = " << IN_OUT_TIME << endl;
+}
+
+void printPeopleVec() {
+    for (int i = 0; i < people.size(); i++) {
+        cout << "ID: " << people[i]->getId() << " STATUS: " << people[i]->getStatus() << endl;
+    }
 }
 
 void readInpFile(string filename) {
@@ -70,164 +75,19 @@ void readInpFile(string filename) {
     }
 }
 
-void printPeopleVec() {
-    for (int i = 0; i < people.size(); i++) {
-        cout << "ID: " << people[i]->getId() << " STATUS: " << people[i]->getStatus() << endl;
-    }
-}
-
-bool isTherePersonWaiting() {
-    for (int i = 0; i < people.size(); i++) {
-        if (people[i]->getStatus() == WAITING) {
-            return true;
-        }
-    }
-    return false;
-}
-
-bool allPeopleFinished() {
-    for (int i = 0; i < people.size(); i++) {
-        if (people[i]->getStatus() != FINISHED) {
-            return false;
-        }
-    }
-    return true;
-}
-
-void waitInterval(int t) {
-    /* E.g: 
-    *  IDLE_TIME --> sleep for a fixed time + release the lock
-    *                so that person threads can acquire
-    *                & make requests
-    */
-    usleep(t);
-}
-
 void* generatePeople(void * personPtr) {
+    
     Person *p = (Person *) personPtr;
 
-    int i = p->getId();
+    //int i = p->getId();
 
-    while (people[i]->getStatus() != FINISHED) {
-        while (people[i]->getStatus() == WAITING && people[i]->hasRequested() == false
-               && !elevMonitor.isPersonIn(people[i]->getId())) {  
-            elevMonitor.personMakeReq(people[i], weight_capacity, person_capacity, num_floors);
-        }
-        /*
-        if (people[i]->getStatus() == FINISHED) {
-            cout << "Breaking for " << people[i]->getId() << endl;
-            break;
-        }
-        */
-            
-    }
-
-    // printPeopleVec();
-    // elevMonitor.printPeopleIn();
-    
-}
-
-Person* getPeopleAtFloor() {
-    vector<Person*> peopleAtTheFloor;
-
-    for (int i = 0; i < people.size(); i++) {
-        if (people[i]->getInitialFloor() == elevMonitor.getCurrentFloor()
-            && people[i]->getStatus() != FINISHED
-            && people[i]->getStatus() != INSIDE) {
-
-                peopleAtTheFloor.push_back(people[i]);
-        }
-    }
-
-    if (peopleAtTheFloor.size() > 0) {
-        for (const auto &i: peopleAtTheFloor)
-            std::sort(peopleAtTheFloor.begin(), peopleAtTheFloor.end());
-
-        return peopleAtTheFloor[0];
-    }
-    return NULL;
-}
-
-vector<Person*> getPeopleToLeave() {
-    vector<Person*> peopleWillLeave;
-
-    for (int i = 0; i < people.size(); i++) {
-        if (people[i]->getDestFloor() == elevMonitor.getCurrentFloor()
-            && elevMonitor.isPersonIn(people[i]->getId())) {
-            peopleWillLeave.push_back(people[i]);
-        }
-    }
-    return peopleWillLeave;
+    elevMonitor->personMakeRequest(p);
 }
 
 void* elevatorController(void *) {
-    //__synchronized__;
-
-    while (!allPeopleFinished()) {
-
-        while (elevMonitor.getState() == IDLE) {
-            waitInterval(IDLE_TIME);
-            //elevMonitor.intervalWait(IDLE_TIME);
-        }
-
-        if (elevMonitor.isThereDestination()) {
-            int currFl = elevMonitor.getCurrentFloor();
-            int destFl = elevMonitor.getDestination();
-
-            if (currFl < destFl) {
-                waitInterval(TRAVEL_TIME);
-                //elevMonitor.intervalWait(TRAVEL_TIME);
-                elevMonitor.moveUp(num_floors);
-            }
-            else if (currFl > destFl) {
-                //cout << "going to wait for travel time " << endl;
-                waitInterval(TRAVEL_TIME);
-                //elevMonitor.intervalWait(TRAVEL_TIME);
-                elevMonitor.moveDown();
-            }
-            else {
-                // Checking priority in this function, multiple can try to enter, hp will
-                Person* p = getPeopleAtFloor();
-
-                // If p is NULL, this means the elevator reached the destination
-                // and this destination is not to get a person
-                // but to leave a person at the floor
-
-                waitInterval(IN_OUT_TIME);
-                //elevMonitor.intervalWait(IN_OUT_TIME);
-                if (p) {
-                    //cout << "set reached dest to get person " << endl;
-                    elevMonitor.setReachedDestToGet(p, weight_capacity, person_capacity);
-                    
-                }
-                else {
-                    vector<Person*> ps = getPeopleToLeave();
-                    //cout << "got people to leave" << endl;
-                    if (ps.size() > 0) {
-                        for (int i = 0; i < ps.size(); i++) {
-                            elevMonitor.setReachedDestToLeave(ps[i]);
-                            
-                        }
-                        //cout << "check Idle" << endl;
-                        people = elevMonitor.checkIdle(people);
-                    }
-                    
-                }
-
-                
-               
-            }   
-        
-            elevMonitor.printElevInfo();   
-        }
-
-        //cout << elevMonitor.getState() << endl;
-
-        if (allPeopleFinished())
-            break;
-        
-    }    
+    elevMonitor->elevatorController();
 }
+
 
 int main(int argc, char** argv) {
     string filename = "";
@@ -240,6 +100,11 @@ int main(int argc, char** argv) {
         cout << "Usage: ./Elevator inp.txt\n";
         return 0;
     }
+
+    elevMonitor = new ElevatorMonitor(weight_capacity, person_capacity, 
+                                        TRAVEL_TIME, IDLE_TIME, IN_OUT_TIME);
+
+    cout << elevMonitor->getState() << endl;
 
     pthread_t elevatorControllerThread;
     pthread_create(&elevatorControllerThread, NULL, elevatorController, NULL);

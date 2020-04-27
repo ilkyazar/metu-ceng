@@ -1,6 +1,7 @@
 #ifndef __PERSON_H
 #define __PERSON_H
 
+#define REJECTED -1
 #define WAITING 0
 #define INSIDE 1
 #define FINISHED 2
@@ -12,7 +13,6 @@ class Person {
         int initial_floor, dest_floor;
         int priority;
         int status;
-        bool hasReq;
 
     public: 
         Person(int id, int weight, int initial_floor, int dest_floor, int priority) {
@@ -22,9 +22,6 @@ class Person {
 			this->dest_floor = dest_floor;
 			this->priority = priority;
             this->status = WAITING;
-            this->hasReq = false;
-
-            // std::cout << "New Person created with " << id << " " << weight << " " << initial_floor << " " << dest_floor << " " << priority  << "\n" << std::endl;
         }
 
         ~Person();
@@ -69,16 +66,8 @@ class Person {
             this->status = FINISHED;
         }
 
-        void setRequested() {
-            this->hasReq = true;
-        }
-
-        void resetRequested() {
-            this->hasReq = false;
-        }
-
-        bool hasRequested() {
-            return this->hasReq;
+        void setRejected() {
+            this->status = REJECTED;
         }
 
         bool isMovingUp() {
@@ -86,7 +75,9 @@ class Person {
         }
 
         friend bool operator >(Person p1, Person p2) {
-            // priorty == 1 ---> hp, 2---> lp
+            // If the priority is 1, the person has higher priority.
+            // If it is 2, the person has lower priority.
+            
             if (p1.priority < p2.priority) return true;
             return false;
         }
