@@ -2,6 +2,7 @@
 #define __MONITOR_H
 #include<pthread.h>
 
+
 //! A base class to help deriving monitor like classes 
 class Monitor {
     pthread_mutex_t  mut;   // this will protect the monitor
@@ -20,6 +21,9 @@ public:
         void wait() {  pthread_cond_wait(&cond, &owner->mut);}
         void notify() { pthread_cond_signal(&cond);}
         void notifyAll() { pthread_cond_broadcast(&cond);}
+        void timed_wait(struct timespec *t) {
+            pthread_cond_timedwait(&cond, &owner->mut, t); 
+        }
     };
     class Lock {
         Monitor *owner;
