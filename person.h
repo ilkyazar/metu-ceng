@@ -1,18 +1,15 @@
 #ifndef __PERSON_H
 #define __PERSON_H
 
-#define REJECTED -1
-#define WAITING 0
-#define ACCEPTED 1
-#define FINISHED 2
-
 class Person {
     private: 
         int id;
         int weight;
         int initial_floor, dest_floor;
         int priority;
-        int status;
+        bool isIn;
+        bool triedUntilIdle;
+        bool isAccepted;
 
     public: 
         Person(int id, int weight, int initial_floor, int dest_floor, int priority) {
@@ -21,7 +18,9 @@ class Person {
 			this->initial_floor = initial_floor;
 			this->dest_floor = dest_floor;
 			this->priority = priority;
-            this->status = WAITING;
+            this->isIn = false;
+            this->triedUntilIdle = false;
+            this->isAccepted = false;
         }
 
         ~Person();
@@ -50,28 +49,40 @@ class Person {
             return this->priority == 2 ? "lp" : "hp";
         }
 
-        int getStatus() {
-            return this->status;
-        }
-
-        void setWaiting() {
-            this->status = WAITING;
-        }
-
-        void setFinished() {
-            this->status = FINISHED;
-        }
-
-        void setRejected() {
-            this->status = REJECTED;
-        }
-
-        void setAccepted() {
-            this->status = ACCEPTED;
-        }
-
         bool isMovingUp() {
-            return this->dest_floor >= this->initial_floor;
+            return this->dest_floor > this->initial_floor;
+        }
+
+        bool isInside() {
+            return this->isIn;
+        }
+
+        void setInside() {
+            this->isIn = true;
+        }
+
+        bool isReqAccepted() {
+            return this->isAccepted;
+        }
+
+        void acceptRequest() {
+            this->isAccepted = true;
+        }
+
+        void rejectRequest() {
+            this->isAccepted = false;
+        }
+
+        bool didTryUntilIdle() {
+            return this->triedUntilIdle;
+        }
+
+        void setTriedUntilIdle() {
+            this->triedUntilIdle = true;
+        }
+
+        void resetTriedUntilIdle() {
+            this->triedUntilIdle = false;
         }
 
         friend bool operator >(Person p1, Person p2) {
