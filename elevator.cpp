@@ -4,7 +4,6 @@
 #include <unistd.h>
 #include <algorithm>
 
-#include "elevatorMonitor.h"
 #include "person.h"
 #include "monitor.h"
 
@@ -17,17 +16,11 @@ int weight_capacity, person_capacity;
 int TRAVEL_TIME, IDLE_TIME, IN_OUT_TIME;
 
 vector<Person*> people;
-ElevatorMonitor elevMonitor;
 
-void printInpInfo() {
-    cout << "number of floors = " << num_floors << endl;
-    cout << "number of people = " << num_people << endl;
-    cout << "weight capacity = " << weight_capacity << endl;
-    cout << "person capacity = " << person_capacity << endl;
-    cout << "travel time = " << TRAVEL_TIME << endl;
-    cout << "idle time = " << IDLE_TIME << endl;
-    cout << "in out time = " << IN_OUT_TIME << endl;
-}
+
+#define IDLE 0
+#define MOVING_UP 1
+#define MOVING_DOWN 2
 
 void readInpFile(string filename) {
     ifstream file(filename.c_str());
@@ -70,163 +63,302 @@ void readInpFile(string filename) {
     }
 }
 
-void printPeopleVec() {
-    for (int i = 0; i < people.size(); i++) {
-        cout << "ID: " << people[i]->getId() << " STATUS: " << people[i]->getStatus() << endl;
-    }
-}
+class Elevator: public Monitor {
+    private:
+        vector<int> destQueue;
+        int currentFloor;
+        int currentWeight;
+        int currentPeopleCount;
+        int numOfPeopleServed;
+        int state;
 
-bool isTherePersonWaiting() {
-    for (int i = 0; i < people.size(); i++) {
-        if (people[i]->getStatus() == WAITING) {
+        Condition requestsActive;
+        Condition canEnter, canLeave;
+
+    public:
+        Elevator():requestsActive(this), canEnter(this), canLeave(this) {
+            this->currentFloor = 0; 
+            this->currentWeight = 0;
+            this->currentPeopleCount = 0;
+            this->numOfPeopleServed = 0;
+            this->state = IDLE;
+        }
+
+        ~Elevator() {};
+
+        int getState() {
+            return this->state;
+        }
+
+        string getStateStr() {
+            if (this->state == MOVING_UP)
+                return "Moving-up";
+            else if (this->state == MOVING_DOWN)
+                return "Moving-down";
+            else
+                return "Idle";           
+        }
+
+        int getNumOfPeopleServed() {
+            return this->numOfPeopleServed;
+        }
+
+        void sortDestQueue() {
+            if (this->destQueue.size() > 0) {
+                for (const auto &i: this->destQueue)
+                    sort(this->destQueue.begin(), this->destQueue.end());
+                this->destQueue.erase(unique(this->destQueue.begin(), this->destQueue.end()), this->destQueue.end());
+            }
+            
+        }
+
+        string getDestQueueStr() {
+            string q = "";
+
+            for (int i = 0; i < this->destQueue.size(); i++) {
+                string i_str = to_string(this->destQueue[i]);
+                q += i_str;
+
+                if (i != this->destQueue.size() - 1)
+                    q += ",";
+            }
+
+            return q;
+        }
+
+        void printElevInfo() {
+            cout << "Elevator (" << this->getStateStr() << ", " << this->currentWeight << ", " 
+                      << this->currentPeopleCount << ", "
+                      << this->currentFloor
+                      << " -> "
+                      << this->getDestQueueStr()
+                      << ")" << endl;
+        }
+
+        void waitForRequests() {
+            while (state == IDLE && destQueue.size() == 0) {
+                
+                requestsActive.notifyAll();
+                usleep(IDLE_TIME);
+            }
+        }
+
+        void move() {
+            __synchronized__;
+            if (destQueue.size() > 0) {
+                int destFloor = destQueue[0];
+                if (destFloor > currentFloor) {
+                    this->state = MOVING_UP;
+                    usleep(TRAVEL_TIME);
+                    currentFloor++;
+
+                    if (currentFloor == destFloor) {
+                        destQueue.erase(destQueue.begin());
+                        if (destQueue.size() == 0) {
+                            state = IDLE;
+                            requestsActive.notifyAll();
+                            for (int person = 0; person < people.size(); person++) {
+                                people[person]->resetTriedUntilIdle();
+                            }
+                        }  
+                        
+                    }
+                    printElevInfo();
+                    canLeave.notifyAll();
+                    canEnter.notifyAll();
+                    usleep(IN_OUT_TIME);
+                }
+                else if (destFloor < currentFloor) {
+                    this->state = MOVING_DOWN;
+                    usleep(TRAVEL_TIME);
+                    currentFloor--;
+
+                    if (currentFloor == destFloor) {
+                        destQueue.erase(destQueue.begin());
+                        if (destQueue.size() == 0) {
+                            state = IDLE;
+                            requestsActive.notifyAll();
+                            for (int person = 0; person < people.size(); person++) {
+                                people[person]->resetTriedUntilIdle();
+                            }
+                        }  
+                        
+                    }
+                    printElevInfo();
+                    canLeave.notifyAll();
+                    canEnter.notifyAll();
+                    usleep(IN_OUT_TIME);
+                }
+                else {
+                    canLeave.notifyAll();
+                    canEnter.notifyAll();
+                    usleep(IN_OUT_TIME);
+                }
+            }
+            if (destQueue.size() == 0) {
+                state = IDLE;
+                for (int person = 0; person < people.size(); person++) {
+                    people[person]->resetTriedUntilIdle();
+                }
+            }
+        }
+
+        void makeRequestSync(Person* p) {
+            __synchronized__;
+
+            p->printMadeReq();
+                
+            p->setTriedUntilIdle();
+
+            if (state == IDLE) {
+                if (p->getInitialFloor() < currentFloor) state = MOVING_DOWN;
+                else state = MOVING_UP;
+            }
+
+            destQueue.push_back(p->getInitialFloor());
+            sortDestQueue();
+            printElevInfo();
+
+            enterPerson(p); 
+                      
+        }
+
+        void makeRequest(Person* p) {
+
+            
+            while (1) {
+
+                while ((!directionCond(p) || !locationCond(p))
+                         || p->didTryUntilIdle()) {
+                    cout << "Person: " << p->getId() << " is waiting" << endl;         
+                    if (p->isReqAccepted()) break;
+                    
+                    else 
+                        cout << p->getId() << " : direction = " << directionCond(p) << " location = " << locationCond(p) << " tried before = " << p->didTryUntilIdle() << " ===> " << "waiting for condition" << endl;
+
+                    requestsActive.wait();
+                }
+
+                if (!p->isReqAccepted())
+                    makeRequestSync(p);
+
+                //enterPerson(p); 
+                
+                if (p->isInside()) break;
+
+
+            }
+            
+            leavePerson(p);
+            
+        }
+
+        void enterPerson(Person* p) {
+            while (currentFloor != p->getInitialFloor()) {
+                cout << "current floor = " << currentFloor << endl;
+                cout << p->getId() << " : waiting to enter at floor "<< p->getInitialFloor() << endl;
+                if (state == IDLE) {
+                    p->rejectRequest();
+                    cout << p->getId() << " is rejected" << endl;
+                    return;
+                }
+                canEnter.wait();
+            }
+
+            if (currentFloor == p->getInitialFloor()) {
+
+                if (capacityCond(p) == false) {
+                    cout << "curr people count = " << currentPeopleCount << ", people capacity = " << person_capacity << endl; 
+                    cout << "capacity not available" << endl;
+                    p->rejectRequest();
+                    cout << p->getId() << " is rejected: " << p->isReqAccepted() << endl;
+                    return;
+                }
+
+                else {
+                    cout << "current floor is: " << currentFloor << endl; 
+                    p->setInside();
+                    p->acceptRequest();
+                    destQueue.push_back(p->getDestFloor());
+                    sortDestQueue();
+                    currentWeight += p->getWeight();
+                    currentPeopleCount++;
+                    p->printEntered();
+                    printElevInfo();
+                }
+            }
+            
+        }
+
+        void leavePerson(Person* p) {
+            __synchronized__;
+            
+            while (currentFloor != p->getDestFloor()) {
+                canLeave.wait();
+            }
+
+            if (currentFloor == p->getDestFloor()) {
+                cout << "current floor is: " << currentFloor << endl;
+                cout << "arrived to the floor to leave person " << p->getId() << endl;
+
+                numOfPeopleServed++;
+                currentWeight -= p->getWeight();
+                currentPeopleCount--;
+                cout << "served people count = " << numOfPeopleServed << endl;
+                p->printLeft();
+                printElevInfo();
+            }
+            
+        }
+
+        bool directionCond(Person* p) {
+            if (state == IDLE) return true;
+            if (p->isMovingUp() && this->state == MOVING_UP)
+                return true;
+            else if (!p->isMovingUp() && this->state == MOVING_DOWN)
+                return true;
+            else {
+                return false; 
+            } 
+        }
+
+        bool locationCond(Person* p) {
+            if (state == IDLE) return true;
+            if (this->state == MOVING_UP && p->getInitialFloor() < this->currentFloor) {
+                return false;
+            }
+            if (this->state == MOVING_DOWN && p->getInitialFloor() > this->currentFloor) {
+                return false;
+            }               
             return true;
         }
-    }
-    return false;
-}
 
-bool allPeopleFinished() {
-    for (int i = 0; i < people.size(); i++) {
-        if (people[i]->getStatus() != FINISHED) {
-            return false;
+        bool capacityCond(Person* p) {
+            if (weight_capacity < p->getWeight() + this->currentWeight) return false;
+            if (person_capacity < currentPeopleCount + 1) return false;
+            return true;
         }
-    }
-    return true;
-}
 
-void waitInterval(int t) {
-    /* E.g: 
-    *  IDLE_TIME --> sleep for a fixed time + release the lock
-    *                so that person threads can acquire
-    *                & make requests
-    */
-    usleep(t);
-}
+};
+
+Elevator* elev;
 
 void* generatePeople(void * personPtr) {
     Person *p = (Person *) personPtr;
 
-    int i = p->getId();
+    elev->makeRequest(p);
 
-    while (people[i]->getStatus() != FINISHED) {
-        while (people[i]->getStatus() == WAITING && people[i]->hasRequested() == false
-               && !elevMonitor.isPersonIn(people[i]->getId())) {  
-            elevMonitor.personMakeReq(people[i], weight_capacity, person_capacity, num_floors);
-        }
-        /*
-        if (people[i]->getStatus() == FINISHED) {
-            cout << "Breaking for " << people[i]->getId() << endl;
-            break;
-        }
-        */
-            
-    }
-
-    // printPeopleVec();
-    // elevMonitor.printPeopleIn();
-    
-}
-
-Person* getPeopleAtFloor() {
-    vector<Person*> peopleAtTheFloor;
-
-    for (int i = 0; i < people.size(); i++) {
-        if (people[i]->getInitialFloor() == elevMonitor.getCurrentFloor()
-            && people[i]->getStatus() != FINISHED
-            && people[i]->getStatus() != INSIDE) {
-
-                peopleAtTheFloor.push_back(people[i]);
-        }
-    }
-
-    if (peopleAtTheFloor.size() > 0) {
-        for (const auto &i: peopleAtTheFloor)
-            std::sort(peopleAtTheFloor.begin(), peopleAtTheFloor.end());
-
-        return peopleAtTheFloor[0];
-    }
-    return NULL;
-}
-
-vector<Person*> getPeopleToLeave() {
-    vector<Person*> peopleWillLeave;
-
-    for (int i = 0; i < people.size(); i++) {
-        if (people[i]->getDestFloor() == elevMonitor.getCurrentFloor()
-            && elevMonitor.isPersonIn(people[i]->getId())) {
-            peopleWillLeave.push_back(people[i]);
-        }
-    }
-    return peopleWillLeave;
 }
 
 void* elevatorController(void *) {
-    //__synchronized__;
-
-    while (!allPeopleFinished()) {
-
-        while (elevMonitor.getState() == IDLE) {
-            waitInterval(IDLE_TIME);
-            //elevMonitor.intervalWait(IDLE_TIME);
-        }
-
-        if (elevMonitor.isThereDestination()) {
-            int currFl = elevMonitor.getCurrentFloor();
-            int destFl = elevMonitor.getDestination();
-
-            if (currFl < destFl) {
-                waitInterval(TRAVEL_TIME);
-                //elevMonitor.intervalWait(TRAVEL_TIME);
-                elevMonitor.moveUp(num_floors);
-            }
-            else if (currFl > destFl) {
-                //cout << "going to wait for travel time " << endl;
-                waitInterval(TRAVEL_TIME);
-                //elevMonitor.intervalWait(TRAVEL_TIME);
-                elevMonitor.moveDown();
-            }
-            else {
-                // Checking priority in this function, multiple can try to enter, hp will
-                Person* p = getPeopleAtFloor();
-
-                // If p is NULL, this means the elevator reached the destination
-                // and this destination is not to get a person
-                // but to leave a person at the floor
-
-                waitInterval(IN_OUT_TIME);
-                //elevMonitor.intervalWait(IN_OUT_TIME);
-                if (p) {
-                    //cout << "set reached dest to get person " << endl;
-                    elevMonitor.setReachedDestToGet(p, weight_capacity, person_capacity);
-                    
-                }
-                else {
-                    vector<Person*> ps = getPeopleToLeave();
-                    //cout << "got people to leave" << endl;
-                    if (ps.size() > 0) {
-                        for (int i = 0; i < ps.size(); i++) {
-                            elevMonitor.setReachedDestToLeave(ps[i]);
-                            
-                        }
-                        //cout << "check Idle" << endl;
-                        people = elevMonitor.checkIdle(people);
-                    }
-                    
-                }
-
-                
-               
-            }   
-        
-            elevMonitor.printElevInfo();   
-        }
-
-        //cout << elevMonitor.getState() << endl;
-
-        if (allPeopleFinished())
+    while (1) {
+        elev->waitForRequests(); 
+        elev->move();
+        if (elev->getNumOfPeopleServed() == people.size()) {
+            cout << "ELEV CONTROLLER OUT" << endl;
             break;
-        
-    }    
+        }
+    }
 }
 
 int main(int argc, char** argv) {
@@ -241,8 +373,7 @@ int main(int argc, char** argv) {
         return 0;
     }
 
-    pthread_t elevatorControllerThread;
-    pthread_create(&elevatorControllerThread, NULL, elevatorController, NULL);
+    elev = new Elevator();
 
     pthread_t *personThreads;
     personThreads = new pthread_t[num_people];
@@ -251,14 +382,15 @@ int main(int argc, char** argv) {
         pthread_create(&personThreads[i], NULL, generatePeople, (void*)people[i]);
     }
 
-    pthread_join(elevatorControllerThread, NULL);
+    pthread_t elevatorControllerThread;
+    pthread_create(&elevatorControllerThread, NULL, elevatorController, NULL);
 
     for (int i = 0; i < num_people; i++) {
         pthread_join(personThreads[i], NULL);
     }
 
+    pthread_join(elevatorControllerThread, NULL);
 
-    delete [] personThreads;
 
     return 0;
 }

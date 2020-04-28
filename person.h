@@ -1,18 +1,15 @@
 #ifndef __PERSON_H
 #define __PERSON_H
 
-#define WAITING 0
-#define INSIDE 1
-#define FINISHED 2
-
 class Person {
     private: 
         int id;
         int weight;
         int initial_floor, dest_floor;
         int priority;
-        int status;
-        bool hasReq;
+        bool isIn;
+        bool triedUntilIdle;
+        bool isAccepted;
 
     public: 
         Person(int id, int weight, int initial_floor, int dest_floor, int priority) {
@@ -21,10 +18,9 @@ class Person {
 			this->initial_floor = initial_floor;
 			this->dest_floor = dest_floor;
 			this->priority = priority;
-            this->status = WAITING;
-            this->hasReq = false;
-
-            // std::cout << "New Person created with " << id << " " << weight << " " << initial_floor << " " << dest_floor << " " << priority  << "\n" << std::endl;
+            this->isIn = false;
+            this->triedUntilIdle = false;
+            this->isAccepted = false;
         }
 
         ~Person();
@@ -53,40 +49,46 @@ class Person {
             return this->priority == 2 ? "lp" : "hp";
         }
 
-        int getStatus() {
-            return this->status;
+        bool isMovingUp() {
+            return this->dest_floor > this->initial_floor;
+        }
+
+        bool isInside() {
+            return this->isIn;
         }
 
         void setInside() {
-            this->status = INSIDE;
+            this->isIn = true;
         }
 
-        void setWaiting() {
-            this->status = WAITING;
+        bool isReqAccepted() {
+            return this->isAccepted;
         }
 
-        void setFinished() {
-            this->status = FINISHED;
+        void acceptRequest() {
+            this->isAccepted = true;
         }
 
-        void setRequested() {
-            this->hasReq = true;
+        void rejectRequest() {
+            this->isAccepted = false;
         }
 
-        void resetRequested() {
-            this->hasReq = false;
+        bool didTryUntilIdle() {
+            return this->triedUntilIdle;
         }
 
-        bool hasRequested() {
-            return this->hasReq;
+        void setTriedUntilIdle() {
+            this->triedUntilIdle = true;
         }
 
-        bool isMovingUp() {
-            return this->dest_floor >= this->initial_floor;
+        void resetTriedUntilIdle() {
+            this->triedUntilIdle = false;
         }
 
         friend bool operator >(Person p1, Person p2) {
-            // priorty == 1 ---> hp, 2---> lp
+            // If the priority is 1, the person has higher priority.
+            // If it is 2, the person has lower priority.
+            
             if (p1.priority < p2.priority) return true;
             return false;
         }
