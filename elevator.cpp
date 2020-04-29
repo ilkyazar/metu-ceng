@@ -120,9 +120,20 @@ class Elevator: public Monitor {
         }
 
         void sortDestQueue() {
+            cout << "SORTING THE QUEUE ACCORDING TO " << this->getStateStr() << endl;
             if (this->destQueue.size() > 0) {
-                for (const auto &i: this->destQueue)
-                    sort(this->destQueue.begin(), this->destQueue.end());
+                if (state == MOVING_UP) {
+                    for (const auto &i: this->destQueue) {                    
+                        sort(this->destQueue.begin(), this->destQueue.end());
+                    }
+                }
+                
+                else if (state == MOVING_DOWN) {
+                    cout << "STATE IS MOVING DOWN, SORTING BACKWARDS......" << endl;
+                    for (const auto &i: this->destQueue) {
+                        sort(this->destQueue.begin(), this->destQueue.end(), greater<int>()); 
+                    }
+                }
                 this->destQueue.erase(unique(this->destQueue.begin(), this->destQueue.end()), this->destQueue.end());
             }
             
@@ -152,7 +163,8 @@ class Elevator: public Monitor {
         }
 
         void waitForRequests() {
-            while (state == IDLE && destQueue.size() == 0) {
+            
+            while (/*state == IDLE && destQueue.size() == 0*/isStationary) {
                 
                 requestsActive.notifyAll();
                 //usleep(IDLE_TIME);
@@ -164,8 +176,8 @@ class Elevator: public Monitor {
             //__synchronized__;
             this->state = MOVING_UP;
             this->isStationary = false;
-            usleep(TRAVEL_TIME);
-            //intervalWait(TRAVEL_TIME);
+            //usleep(TRAVEL_TIME);
+            intervalWait(TRAVEL_TIME);
             currentFloor++;
         }
 
@@ -173,17 +185,17 @@ class Elevator: public Monitor {
             //__synchronized__;
             this->state = MOVING_DOWN;
             this->isStationary = false;
-            usleep(TRAVEL_TIME);
-            //intervalWait(TRAVEL_TIME);
+            //usleep(TRAVEL_TIME);
+            intervalWait(TRAVEL_TIME);
             currentFloor--; 
         }
 
         void move() {
-            while (destQueue.size() > 0) {
+            //if (destQueue.size() > 0) {
 
-                cout << "is stationary? " << isStationary << endl;
+                //cout << "is stationary? " << isStationary << endl;
                 while (isStationary) {
-                    cout << "waiting the cond" << endl;
+                    //cout << "waiting the cond" << endl;
                     canMove.wait();
                 }
 
@@ -203,7 +215,7 @@ class Elevator: public Monitor {
 
                 else if (destFloor == currentFloor) {
                     isStationary = true;
-                    cout << "ARRIVED DEST" << endl;
+                    //cout << "ARRIVED DEST" << endl;
                     canEnter.notifyAll();
                     canLeave.notifyAll();
                     //usleep(IN_OUT_TIME);        
@@ -211,18 +223,23 @@ class Elevator: public Monitor {
                     //printElevInfo();
                 }
                 
-            }
-                       
+            //}
+
+            cout << "ELEVATOR CONTROLLER --> OUT OF MOVE" << endl;
+            /*           
             isStationary = true;
             state = IDLE;
             requestsActive.notify();
+            cout << endl;
+            cout << "NOTIFIED: requestsActive" << endl;
+            cout << endl;*/
             
         }
 
         void makeRequestSync(Person* p) {
             __synchronized__;
 
-            cout << "MAKE REQ SYNC HAS THE LOCK for person: " << p->getId() << endl;
+            //cout << "MAKE REQ SYNC HAS THE LOCK for person: " << p->getId() << endl;
 
             p->printMadeReq();
                 
@@ -240,8 +257,8 @@ class Elevator: public Monitor {
 
             //enterPerson(p); 
 
-            cout << "MAKE REQ SYNC RELEASED THE LOCK for person: " << p->getId() << endl;
-            cout << endl;
+            //cout << "MAKE REQ SYNC RELEASED THE LOCK for person: " << p->getId() << endl;
+            //cout << endl;
                       
         }
 
@@ -256,12 +273,16 @@ class Elevator: public Monitor {
                     requestsActive.wait();
                 }
 
-                //cout << "person " << p->getId() << " GOT NOTIFICATION TO MAKE REQ" << endl;
+                cout << "person " << p->getId() << " GOT NOTIFICATION TO MAKE REQ" << endl;
 
                 if (!p->isReqAccepted()) {
-                    cout << "going to make req sync" << endl;
+                    cout << "going to make req sync " << p->getId() << endl;
                     makeRequestSync(p);
                     enterPerson(p);
+                    cout << endl;
+                    cout << "returned from enter person for person " << p->getId() << endl;
+                    cout << "did try until idle? person: " << p->getId() << " === " << p->didTryUntilIdle() << endl; 
+                    cout << endl;
                 }
                     
                 //enterPerson(p); 
@@ -308,34 +329,38 @@ class Elevator: public Monitor {
         void enterRejectedPersonSync(Person* p) {
             //__synchronized__;
             //cout << "ENTER PERSON REJECTED HAS THE LOCK for person: " << p->getId() << endl;
-            cout << "curr people count = " << currentPeopleCount << ", people capacity = " << person_capacity << endl; 
-            cout << "capacity not available" << endl;
+
+            //cout << "curr people count = " << currentPeopleCount << ", people capacity = " << person_capacity << endl; 
+            //cout << "capacity not available" << endl;
             p->rejectRequest();
-            cout << p->getId() << " is rejected: " << p->isReqAccepted() << endl;
+            //cout << p->getId() << " is rejected: " << p->isReqAccepted() << endl;
         }
 
         void enterPerson(Person* p) {
             __synchronized__;
 
-            cout << "ENTER PERSON HAS THE LOCK for person: " << p->getId() << endl;
+            //cout << "ENTER PERSON HAS THE LOCK for person: " << p->getId() << endl;
 
             while (currentFloor != p->getInitialFloor()) {
-                cout << "current floor = " << currentFloor << endl;
-                cout << p->getId() << " : waiting to enter at floor "<< p->getInitialFloor() << endl;
+                //cout << "current floor = " << currentFloor << endl;
+                //cout << p->getId() << " : waiting to enter at floor "<< p->getInitialFloor() << endl;
                 if (state == IDLE) {
                     p->rejectRequest();
-                    cout << p->getId() << " is rejected" << endl;
-                    cout << "ENTER PERSON RELEASED THE LOCK for person: " << p->getId() << endl;
-                    cout << endl;
+                    cout << "request rejected for person " << p->getId() << endl;
+                    //cout << p->getId() << " is rejected" << endl;
+                    //cout << "ENTER PERSON RELEASED THE LOCK for person: " << p->getId() << endl;
+                    //cout << endl;
                     return;
                 }
-                canEnter.wait();
+                else {
+                    canEnter.wait();
+                }
             }
 
             if (currentFloor == p->getInitialFloor()) {
                 
 
-                if (capacityCond(p) == false) {
+                if (capacityCond(p) == false/* || directionCond(p) == false*/) {
                     enterRejectedPersonSync(p);
                 }
 
@@ -347,8 +372,8 @@ class Elevator: public Monitor {
             }
             canMove.notifyAll();
             isStationary = false;
-            cout << "ENTER PERSON RELEASED THE LOCK for person: " << p->getId() << endl;
-            cout << endl;
+            //cout << "ENTER PERSON RELEASED THE LOCK for person: " << p->getId() << endl;
+            //cout << endl;
 
             
         }
@@ -363,8 +388,7 @@ class Elevator: public Monitor {
 
             if (destQueue.size() == 0) {
                 state = IDLE;
-                
-                requestsActive.notifyAll();
+
                 for (int person = 0; person < people.size(); person++) {
                     people[person]->resetTriedUntilIdle();
                 }
@@ -372,33 +396,39 @@ class Elevator: public Monitor {
             numOfPeopleServed++;
             currentWeight -= p->getWeight();
             currentPeopleCount--;
-            cout << "served people count = " << numOfPeopleServed << endl;
+            //cout << "served people count = " << numOfPeopleServed << endl;
             p->printLeft();
             printElevInfo();
+            /*
+            requestsActive.notifyAll();
+            cout << endl;
+            cout << "NOTIFIED: requestsActive" << endl;
+            cout << endl;
+            */
 
         }
 
         void leavePerson(Person* p) {
             __synchronized__;
 
-            cout << "LEAVE PERSON HAS THE LOCK for person: " << p->getId() << endl;
+            //cout << "LEAVE PERSON HAS THE LOCK for person: " << p->getId() << endl;
             
             while (currentFloor != p->getDestFloor()) {
-                cout << currentFloor << ", dest: " << p->getDestFloor() << endl;
+                //cout << currentFloor << ", dest: " << p->getDestFloor() << endl;
                 canLeave.wait();
             }
 
-            cout << "got can leave notification" << endl;
+            //cout << "got can leave notification" << endl;
 
             if (currentFloor == p->getDestFloor()) {
-                cout << "going into leave person sync for person " << p->getId() << endl; 
+                //cout << "going into leave person sync for person " << p->getId() << endl; 
                 leavePersonSync(p);
                 canMove.notifyAll();
                 
             }
             isStationary = false;
-            cout << "LEAVE PERSON RELEASED THE LOCK for person: " << p->getId() << endl;
-            cout << endl;
+            //cout << "LEAVE PERSON RELEASED THE LOCK for person: " << p->getId() << endl;
+            //cout << endl;
 
             
         }
