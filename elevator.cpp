@@ -163,12 +163,12 @@ class Elevator: public Monitor {
         }
 
         void waitForRequests() {
-            
-            while (/*state == IDLE && destQueue.size() == 0*/isStationary) {
-                
-                requestsActive.notifyAll();
-                //usleep(IDLE_TIME);
-                intervalWait(IDLE_TIME);
+            if (isStationary) {
+                while (destQueue.size() == 0) {
+                    requestsActive.notifyAll();
+                    intervalWait(IDLE_TIME);
+
+                }
             }
         }
 
@@ -191,7 +191,7 @@ class Elevator: public Monitor {
         }
 
         void move() {
-            //if (destQueue.size() > 0) {
+            if (destQueue.size() > 0) {
 
                 //cout << "is stationary? " << isStationary << endl;
                 while (isStationary) {
@@ -216,14 +216,15 @@ class Elevator: public Monitor {
                 else if (destFloor == currentFloor) {
                     isStationary = true;
                     //cout << "ARRIVED DEST" << endl;
-                    canEnter.notifyAll();
                     canLeave.notifyAll();
+                    canEnter.notifyAll();
+                    
                     //usleep(IN_OUT_TIME);        
                     intervalWait(IN_OUT_TIME);            
                     //printElevInfo();
                 }
                 
-            //}
+            }
 
             cout << "ELEVATOR CONTROLLER --> OUT OF MOVE" << endl;
             /*           
@@ -240,7 +241,7 @@ class Elevator: public Monitor {
             __synchronized__;
 
             //cout << "MAKE REQ SYNC HAS THE LOCK for person: " << p->getId() << endl;
-
+            destQueue.push_back(p->getInitialFloor());
             p->printMadeReq();
                 
             p->setTriedUntilIdle();
@@ -251,7 +252,7 @@ class Elevator: public Monitor {
                 this->isStationary = false;
             }
 
-            destQueue.push_back(p->getInitialFloor());
+            
             sortDestQueue();
             printElevInfo();
 
