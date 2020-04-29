@@ -3,6 +3,7 @@
 #include <vector>
 #include <unistd.h>
 #include <algorithm>
+ #include <sys/time.h>
 
 #include "person.h"
 #include "monitor.h"
@@ -91,12 +92,14 @@ class Elevator: public Monitor {
 
         ~Elevator() {};
 
-        struct timespec getTimeSpec(int t) {
+        void intervalWait(int t) {
             struct timespec timeSpec;
-            timeSpec.tv_nsec = 1000 * t;
-            timeSpec.tv_sec = 0;
-            return timeSpec;
-            //sleepCond.timed_wait(&timeSpec);
+            struct timeval timeValNow;
+            gettimeofday(&timeValNow, NULL);
+            timeSpec.tv_nsec = (1000 * t) + (1000 * timeValNow.tv_usec);
+            timeSpec.tv_sec = timeValNow.tv_sec;
+            
+            sleepCond.timed_wait(&timeSpec);
         }
 
         int getState() {
@@ -152,8 +155,8 @@ class Elevator: public Monitor {
             while (state == IDLE && destQueue.size() == 0) {
                 
                 requestsActive.notifyAll();
-                usleep(IDLE_TIME);
-                //intervalWait(IDLE_TIME);
+                //usleep(IDLE_TIME);
+                intervalWait(IDLE_TIME);
             }
         }
 
@@ -176,35 +179,44 @@ class Elevator: public Monitor {
         }
 
         void move() {
-            while (isStationary) {
-                canMove.wait();
-            }
+            while (destQueue.size() > 0) {
 
-            if (destQueue.size() > 0) {
+                cout << "is stationary? " << isStationary << endl;
+                while (isStationary) {
+                    cout << "waiting the cond" << endl;
+                    canMove.wait();
+                }
+
+            
                 int destFloor = destQueue[0];
 
                 //cout << "destination: " << destFloor << " --- " << "current: " << currentFloor << endl;
 
                 if (destFloor > currentFloor) {
                     moveUp();
-                    
+                    printElevInfo();
                 }
                 else if (destFloor < currentFloor) {
-                    moveDown();           
+                    moveDown();    
+                    printElevInfo();       
                 }
 
                 else if (destFloor == currentFloor) {
+                    isStationary = true;
                     cout << "ARRIVED DEST" << endl;
                     canEnter.notifyAll();
                     canLeave.notifyAll();
-                    usleep(IN_OUT_TIME);                    
+                    //usleep(IN_OUT_TIME);        
+                    intervalWait(IN_OUT_TIME);            
                     //printElevInfo();
                 }
                 
-
             }
-
-
+                       
+            isStationary = true;
+            state = IDLE;
+            requestsActive.notify();
+            
         }
 
         void makeRequestSync(Person* p) {
@@ -244,11 +256,15 @@ class Elevator: public Monitor {
                     requestsActive.wait();
                 }
 
+                //cout << "person " << p->getId() << " GOT NOTIFICATION TO MAKE REQ" << endl;
+
                 if (!p->isReqAccepted()) {
+                    cout << "going to make req sync" << endl;
                     makeRequestSync(p);
+                    enterPerson(p);
                 }
                     
-                enterPerson(p); 
+                //enterPerson(p); 
                 
                 if (p->isInside()) break;
 
@@ -261,18 +277,25 @@ class Elevator: public Monitor {
 
         void enterPersonSync(Person *p) {
             //__synchronized__;
+            //cout << "ENTER PERSON HAS THE LOCK for person: " << p->getId() << endl;
+            this->isStationary = true;
 
             p->setInside();
             p->acceptRequest();
             destQueue.erase(destQueue.begin());
-            if (destQueue.size() == 0) {
+            /*if (destQueue.size() == 0) {
                 state = IDLE;
-                this->isStationary = true;
+                
                 requestsActive.notifyAll();
                 for (int person = 0; person < people.size(); person++) {
                     people[person]->resetTriedUntilIdle();
                 }
+            }*/
+            if (destQueue.size() == 0) {
+                if (p->isMovingUp()) state = MOVING_UP;
+                else state = MOVING_DOWN;
             }
+
             destQueue.push_back(p->getDestFloor());
             sortDestQueue();
             currentWeight += p->getWeight();
@@ -280,6 +303,15 @@ class Elevator: public Monitor {
             p->printEntered();
             printElevInfo();
 
+        }
+
+        void enterRejectedPersonSync(Person* p) {
+            //__synchronized__;
+            //cout << "ENTER PERSON REJECTED HAS THE LOCK for person: " << p->getId() << endl;
+            cout << "curr people count = " << currentPeopleCount << ", people capacity = " << person_capacity << endl; 
+            cout << "capacity not available" << endl;
+            p->rejectRequest();
+            cout << p->getId() << " is rejected: " << p->isReqAccepted() << endl;
         }
 
         void enterPerson(Person* p) {
@@ -293,31 +325,57 @@ class Elevator: public Monitor {
                 if (state == IDLE) {
                     p->rejectRequest();
                     cout << p->getId() << " is rejected" << endl;
+                    cout << "ENTER PERSON RELEASED THE LOCK for person: " << p->getId() << endl;
+                    cout << endl;
                     return;
                 }
                 canEnter.wait();
             }
 
             if (currentFloor == p->getInitialFloor()) {
-                canMove.notifyAll();
+                
 
                 if (capacityCond(p) == false) {
-                    cout << "curr people count = " << currentPeopleCount << ", people capacity = " << person_capacity << endl; 
-                    cout << "capacity not available" << endl;
-                    p->rejectRequest();
-                    cout << p->getId() << " is rejected: " << p->isReqAccepted() << endl;
-                    return;
+                    enterRejectedPersonSync(p);
                 }
 
                 else {   
                     enterPersonSync(p);
                 }
-            }
 
+                
+            }
+            canMove.notifyAll();
+            isStationary = false;
             cout << "ENTER PERSON RELEASED THE LOCK for person: " << p->getId() << endl;
             cout << endl;
 
             
+        }
+
+        void leavePersonSync(Person* p) {
+            //__synchronized__;
+
+            //cout << "LEAVE PERSON HAS THE LOCK for person: " << p->getId() << endl;
+            this->isStationary = true;
+            if (destQueue.size() != 0 && p->getDestFloor() == destQueue[0])
+                destQueue.erase(destQueue.begin());
+
+            if (destQueue.size() == 0) {
+                state = IDLE;
+                
+                requestsActive.notifyAll();
+                for (int person = 0; person < people.size(); person++) {
+                    people[person]->resetTriedUntilIdle();
+                }
+            }
+            numOfPeopleServed++;
+            currentWeight -= p->getWeight();
+            currentPeopleCount--;
+            cout << "served people count = " << numOfPeopleServed << endl;
+            p->printLeft();
+            printElevInfo();
+
         }
 
         void leavePerson(Person* p) {
@@ -326,31 +384,19 @@ class Elevator: public Monitor {
             cout << "LEAVE PERSON HAS THE LOCK for person: " << p->getId() << endl;
             
             while (currentFloor != p->getDestFloor()) {
+                cout << currentFloor << ", dest: " << p->getDestFloor() << endl;
                 canLeave.wait();
             }
 
+            cout << "got can leave notification" << endl;
+
             if (currentFloor == p->getDestFloor()) {
-
+                cout << "going into leave person sync for person " << p->getId() << endl; 
+                leavePersonSync(p);
                 canMove.notifyAll();
-                if (destQueue.size() != 0 && p->getDestFloor() == destQueue[0])
-                    destQueue.erase(destQueue.begin());
-
-                if (destQueue.size() == 0) {
-                    state = IDLE;
-                    this->isStationary = true;
-                    requestsActive.notifyAll();
-                    for (int person = 0; person < people.size(); person++) {
-                        people[person]->resetTriedUntilIdle();
-                    }
-                }
-                numOfPeopleServed++;
-                currentWeight -= p->getWeight();
-                currentPeopleCount--;
-                cout << "served people count = " << numOfPeopleServed << endl;
-                p->printLeft();
-                printElevInfo();
+                
             }
-
+            isStationary = false;
             cout << "LEAVE PERSON RELEASED THE LOCK for person: " << p->getId() << endl;
             cout << endl;
 
