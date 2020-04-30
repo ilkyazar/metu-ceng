@@ -173,7 +173,8 @@ class Elevator: public Monitor {
                 }
                 cout << "REQUEST CAME" << endl;
                 this->isStationary = false;
-            
+
+                
             }
             else {
                 cout << "ELEVATOR IS NOT STATIONARY" << endl;
@@ -200,10 +201,10 @@ class Elevator: public Monitor {
         void move() {
             cout << "IN MOVE" << endl;
             if (destQueue.size() > 0) {
-
+                /*
                 while (isStationary) {
                     canMove.wait();
-                }
+                }*/
 
             
                 int destFloor = destQueue[0];
