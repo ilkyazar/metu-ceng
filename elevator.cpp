@@ -163,7 +163,7 @@ class Elevator: public Monitor {
         }
 
         void waitForRequests() {
-            //__synchronized__;
+            __synchronized__;
 
             //cout << "IN WAIT REQUESTS" << endl;
             if (/*isStationary*/ state == IDLE) {
@@ -205,6 +205,7 @@ class Elevator: public Monitor {
         }
 
         void move() {
+            __synchronized__;
             //cout << "IN MOVE" << endl;
             if (destQueue.size() > 0) {
                 /*
@@ -247,7 +248,7 @@ class Elevator: public Monitor {
             destQueue.push_back(p->getInitialFloor());
             p->printMadeReq();
 
-            requestCame.notify();
+            requestCame.notifyAll();
                 
             p->setTriedUntilIdle();
 
@@ -335,7 +336,7 @@ class Elevator: public Monitor {
         void leavePersonSync(Person* p) {
             //__synchronized__;
            
-            if (destQueue.size() != 0 && p->getDestFloor() == destQueue[0])
+            if (destQueue.size() != 0/* && p->getDestFloor() == destQueue[0]*/)
                 destQueue.erase(destQueue.begin());
 
             if (destQueue.size() == 0) {
