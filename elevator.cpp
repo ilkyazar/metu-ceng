@@ -274,16 +274,16 @@ class Elevator: public Monitor {
                     requestsActive.wait();
                 }
 
-                cout << "person " << p->getId() << " GOT NOTIFICATION TO MAKE REQ" << endl;
+                //cout << "person " << p->getId() << " GOT NOTIFICATION TO MAKE REQ" << endl;
 
                 if (!p->isReqAccepted()) {
-                    cout << "going to make req sync " << p->getId() << endl;
+                    //cout << "going to make req sync " << p->getId() << endl;
                     makeRequestSync(p);
                     enterPerson(p);
-                    cout << endl;
-                    cout << "returned from enter person for person " << p->getId() << endl;
-                    cout << "did try until idle? person: " << p->getId() << " === " << p->didTryUntilIdle() << endl; 
-                    cout << endl;
+                    //cout << endl;
+                    //cout << "returned from enter person for person " << p->getId() << endl;
+                    //cout << "did try until idle? person: " << p->getId() << " === " << p->didTryUntilIdle() << endl; 
+                    //cout << endl;
                 }
                     
                 //enterPerson(p); 
@@ -424,10 +424,12 @@ class Elevator: public Monitor {
             if (currentFloor == p->getDestFloor()) {
                 //cout << "going into leave person sync for person " << p->getId() << endl; 
                 leavePersonSync(p);
-                canMove.notifyAll();
+                
                 
             }
+            
             isStationary = false;
+            canMove.notifyAll();
             //cout << "LEAVE PERSON RELEASED THE LOCK for person: " << p->getId() << endl;
             //cout << endl;
 
