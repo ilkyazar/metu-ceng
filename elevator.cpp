@@ -3,7 +3,7 @@
 #include <vector>
 #include <unistd.h>
 #include <algorithm>
- #include <sys/time.h>
+#include <sys/time.h>
 
 #include "person.h"
 #include "monitor.h"
@@ -74,6 +74,8 @@ class Elevator: public Monitor {
         int state;
         bool isStationary;
 
+        vector<int> peopleLeftAtFloors;
+
         Condition requestsActive, requestCame;
         Condition canEnter, canLeave;
         Condition canMove;
@@ -88,6 +90,10 @@ class Elevator: public Monitor {
             this->numOfPeopleServed = 0;
             this->state = IDLE;
             this->isStationary = true;
+
+            for (int i = 0; i < num_floors; i++) {
+                peopleLeftAtFloors.push_back(0);
+            }
         }
 
         ~Elevator() {};
@@ -232,7 +238,12 @@ class Elevator: public Monitor {
                 else if (destFloor == currentFloor) {
                     isStationary = true;
                     canLeave.notifyAll();
-                    canEnter.notifyAll();                    
+                    /*
+                    intervalWait(IN_OUT_TIME/2);  
+                    std::cout<<"notifying enter"<<std::endl;
+                    */
+                    canEnter.notifyAll();       
+                    //intervalWait(IN_OUT_TIME/2);             
                     intervalWait(IN_OUT_TIME);   
                     //isStationary = false;         
                 }
@@ -333,10 +344,27 @@ class Elevator: public Monitor {
             
         }
 
+        int getPeopleLeaveAt(int floor) {
+            int numOfPeopleLeave = 0;
+
+            for (int i = 0; i < people.size(); i++) {
+                if (people[i]->getDestFloor() == floor) {
+                    numOfPeopleLeave++;
+                }
+            }
+
+            return numOfPeopleLeave;
+        }
+
         void leavePersonSync(Person* p) {
             //__synchronized__;
-           
-            if (destQueue.size() != 0/* && p->getDestFloor() == destQueue[0]*/)
+            
+            int total = getPeopleLeaveAt(p->getDestFloor());
+            //cout << total << " people should leave at this floor (Floor = " << currentFloor << ")" << endl;
+            int peopleLeftTilNow = peopleLeftAtFloors[p->getDestFloor()];
+            cout << peopleLeftTilNow << " people left til now" << endl; 
+
+            if (destQueue.size() != 0 && peopleLeftTilNow == 0/*total*/)
                 destQueue.erase(destQueue.begin());
 
             if (destQueue.size() == 0) {
@@ -352,6 +380,8 @@ class Elevator: public Monitor {
 
             }
             numOfPeopleServed++;
+            peopleLeftAtFloors[p->getDestFloor()]++;
+
             currentWeight -= p->getWeight();
             currentPeopleCount--;
 
