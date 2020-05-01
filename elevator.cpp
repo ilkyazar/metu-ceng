@@ -179,9 +179,10 @@ class Elevator: public Monitor {
                     //intervalWait(IDLE_TIME);
                     requestCame.wait();
                     intervalWait(IDLE_TIME);
+                    cout << "OUT FROM IDLE TIME " << endl;
 
                 }
-                //cout << "REQUEST CAME" << endl;
+                cout << "REQUEST CAME" << endl;
                 
             }
             //else {
@@ -254,11 +255,13 @@ class Elevator: public Monitor {
 
                     printElevInfo();
 
+                    //intervalWait(IN_OUT_TIME);
                     canLeave.notifyAll();
                     
                     //intervalWait(IN_OUT_TIME/2);  
                     
-                    canEnter.notifyAll();       
+                    canEnter.notifyAll();
+
                     //intervalWait(IN_OUT_TIME/2);             
                     intervalWait(IN_OUT_TIME);   
                     cout << "out of interval wait when dest arrived.. " << endl;
@@ -269,12 +272,13 @@ class Elevator: public Monitor {
         }
 
         void makeRequestSync(Person* p) {
-            __synchronized__;
+            //__synchronized__;
 
             destQueue.push_back(p->getInitialFloor());
             p->printMadeReq();
 
             requestCame.notifyAll();
+            cout << "NOTIFIED REQUESTS CAME" << endl;
                 
             p->setTriedUntilIdle();
 
@@ -289,9 +293,10 @@ class Elevator: public Monitor {
         }
 
         void makeRequest(Person* p) {
+            __synchronized__;
             
             while (!p->isInside()) {
-
+ 
                 while ((!directionCond(p) || !locationCond(p))
                          || p->didTryUntilIdle()) {
                     if (p->isReqAccepted()) break;
@@ -310,7 +315,7 @@ class Elevator: public Monitor {
                 }
             }
             
-            leavePerson(p);
+            //leavePerson(p);
 
             //cout << "PERSON " << p->getId() << " DONE" << endl;
             
@@ -339,15 +344,17 @@ class Elevator: public Monitor {
 
 
         void enterPerson(Person* p) {
-            __synchronized__;
+            //__synchronized__;
 
             isStationary = true;
+
+            cout << "PERSON " << p->getId() << " WAITING TO ENTER" << endl;
 
             while (currentFloor != p->getInitialFloor()) {
                 canEnter.wait();
             }
 
-            //cout << "PERSON " << p->getId() << " GOT THE NOTIFICATION TO ENTER" << endl;
+            cout << "PERSON " << p->getId() << " GOT THE NOTIFICATION TO ENTER" << endl;
 
             if (capacityCond(p) == false || (directionCond(p) == false && currentPeopleCount != 0)) {
                 //cout << "REJECTED " << p->getId() << endl;
@@ -460,6 +467,11 @@ void* generatePeople(void * personPtr) {
     Person *p = (Person *) personPtr;
 
     elev->makeRequest(p);
+    //cout << endl;
+    //cout <<"here" <<endl;
+    //cout << endl;
+    //elev->enterPerson(p);
+    elev->leavePerson(p);
 
 }
 
