@@ -180,6 +180,7 @@ class Elevator: public Monitor {
                         }
                     }
                     requestsActive.notifyAll();
+                    //cout << "NOTIFIED THAT REQ ACTIVE" << endl;    
                     intervalWait(IDLE_TIME);
                 }                
             }
@@ -245,6 +246,17 @@ class Elevator: public Monitor {
                     canEnter.notifyAll();
                     intervalWait(IN_OUT_TIME);   
 
+                    if (getPeopleLeaveAt(currentFloor) != peopleLeftAtFloors[currentFloor]) {
+                        cout << endl;
+                        cout << "SOMETHING BAAAD HAPPENED X(" << endl;
+                        cout << getPeopleLeaveAt(currentFloor) << " people should have left but ---> " << peopleLeftAtFloors[currentFloor] << " did." << endl;
+                        cout << endl;
+
+                        destQueue.push_back(currentFloor);
+                        sortDestQueue();
+                        removeDuplicates();
+                    }
+
                     if (numOfPeopleServed != people.size()) {
                         requestsActive.notifyAll();
                     }
@@ -261,11 +273,13 @@ class Elevator: public Monitor {
                 canEnter.notifyAll();
                 intervalWait(IN_OUT_TIME);
 
-                if (numOfPeopleServed != people.size()) {
+                /*if (numOfPeopleServed != people.size()) {
                         requestsActive.notifyAll();
-                    }
+                    }*/
                 
             }
+
+            isStationary = true;
         
         }
 
@@ -312,6 +326,8 @@ class Elevator: public Monitor {
                 if (!p->isReqAccepted()) {
                     makeRequestSync(p);
                     enterPerson(p);
+                    if (p->isInside())
+                        leavePerson(p);
                 }
             }            
         }
@@ -408,9 +424,9 @@ class Elevator: public Monitor {
         }
 
         void leavePerson(Person* p) {
-            __synchronized__;
+            //__synchronized__;
             
-            while (currentFloor != p->getDestFloor()) {
+            while (this->currentFloor != p->getDestFloor() && p->isInside()) {
                 canLeave.wait();
             }
 
@@ -462,7 +478,7 @@ void* generatePeople(void * personPtr) {
     Person *p = (Person *) personPtr;
 
     elev->makeRequest(p);
-    elev->leavePerson(p);
+    //elev->leavePerson(p);
 
 }
 
