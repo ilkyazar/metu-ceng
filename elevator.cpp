@@ -239,7 +239,9 @@ class Elevator: public Monitor {
 
         void makeRequestSync(Person* p) {
 
-            destQueue.push_back(p->getInitialFloor());
+            if (p->getInitialFloor() != currentFloor)
+                destQueue.push_back(p->getInitialFloor());
+            
             p->printMadeReq();
                 
             p->setTriedUntilIdle();
@@ -303,7 +305,6 @@ class Elevator: public Monitor {
 
             if (state == IDLE) {
                 p->rejectRequest();
-                cout << p->getId() << " REJECTED" << endl;
                 for (int person = 0; person < people.size(); person++) {
                     people[person]->resetTriedUntilIdle();
                 }
@@ -314,7 +315,6 @@ class Elevator: public Monitor {
 
             if (capacityCond(p) == false || (directionCond(p) == false && currentPeopleCount != 0)) {
                 p->rejectRequest();
-                //isStationary = false;
 
                 requestsActive.notifyAll();
                 return;
@@ -322,7 +322,7 @@ class Elevator: public Monitor {
             
             enterPersonSync(p);
             
-            //requestsActive.notifyAll();
+            requestsActive.notifyAll();
             
         }
 
@@ -357,9 +357,7 @@ class Elevator: public Monitor {
 
             printElevInfo();
 
-            //if (numOfPeopleServed != people.size()) {
-                requestsActive.notifyAll();
-            //}
+            requestsActive.notifyAll();
             
         }
 
