@@ -79,6 +79,8 @@ class Elevator: public Monitor {
 
         Condition sleepCond;
 
+        bool personCouldNotLeave = false;
+
     public:
         Elevator():requestsActive(this), canEnter(this), canLeave(this), sleepCond(this) {
             this->currentFloor = 0; 
@@ -240,21 +242,21 @@ class Elevator: public Monitor {
                         }
                     }
 
-                    printElevInfo();
+                    if (!personCouldNotLeave) {
+                        printElevInfo();
+                    }
+                    personCouldNotLeave = false;
 
                     canLeave.notifyAll();   
                     canEnter.notifyAll();
                     intervalWait(IN_OUT_TIME);   
 
                     if (getPeopleLeaveAt(currentFloor) != peopleLeftAtFloors[currentFloor]) {
-                        cout << endl;
-                        cout << "SOMETHING BAAAD HAPPENED X(" << endl;
-                        cout << getPeopleLeaveAt(currentFloor) << " people should have left but ---> " << peopleLeftAtFloors[currentFloor] << " did." << endl;
-                        cout << endl;
-
+                        //cout << getPeopleLeaveAt(currentFloor) << " people should have left but ---> " << peopleLeftAtFloors[currentFloor] << " did." << endl;
                         destQueue.push_back(currentFloor);
                         sortDestQueue();
                         removeDuplicates();
+                        personCouldNotLeave = true;
                     }
 
                     if (numOfPeopleServed != people.size()) {
@@ -487,7 +489,6 @@ void* elevatorController(void *) {
         elev->checkForRequests(); 
         elev->move();
         if (elev->getNumOfPeopleServed() == people.size()) {
-            cout << "ELEV CONTROLLER OUT" << endl;
             break;
         }
     }
