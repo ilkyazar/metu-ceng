@@ -174,6 +174,12 @@ class Elevator: public Monitor {
 
             if (isStationary) {
                 while (destQueue.size() == 0 && !allHasBeenIn()) {
+                    if (state == IDLE) {
+                        for (int person = 0; person < people.size(); person++) {
+                            people[person]->resetTriedUntilIdle();
+                        }
+                    }
+                    requestsActive.notifyAll();
                     intervalWait(IDLE_TIME);
                 }                
             }
@@ -227,22 +233,40 @@ class Elevator: public Monitor {
 
                     if (destQueue.size() == 0) {
                         state = IDLE;
+                        for (int person = 0; person < people.size(); person++) {
+                            people[person]->resetTriedUntilIdle();
+
+                        }
                     }
 
                     printElevInfo();
 
-                    //intervalWait(IN_OUT_TIME);
-
                     canLeave.notifyAll();   
-                    //intervalWait(IN_OUT_TIME);
-
                     canEnter.notifyAll();
                     intervalWait(IN_OUT_TIME);   
 
                     if (numOfPeopleServed != people.size()) {
                         requestsActive.notifyAll();
                     }
-            }            
+            }
+
+            /*
+                Elevator (Idle, 70, 1, 9 -> )
+                Person (7, hp, 9 -> 3, 100) made a request
+                Elevator (Moving-down, 70, 1, 9 -> )
+                ...
+            */
+            
+            else if (destQueue.size() == 0 && state != IDLE) {
+                canEnter.notifyAll();
+                intervalWait(IN_OUT_TIME);
+
+                if (numOfPeopleServed != people.size()) {
+                        requestsActive.notifyAll();
+                    }
+                
+            }
+        
         }
 
         void makeRequestSync(Person* p) {
@@ -256,7 +280,14 @@ class Elevator: public Monitor {
 
             if (state == IDLE) {
                 if (p->getInitialFloor() < currentFloor) state = MOVING_DOWN;
+                
+                else if (p->getInitialFloor() == currentFloor) {
+                    if (p->isMovingUp()) state = MOVING_UP;
+                    else state = MOVING_DOWN;
+                }
+
                 else state = MOVING_UP;
+                
             }
 
             
@@ -327,30 +358,27 @@ class Elevator: public Monitor {
         void enterPerson(Person* p) {
 
             while (currentFloor != p->getInitialFloor()) {
+                
+                if (state == IDLE) {
+                    p->rejectRequest();
+                    return;
+                }
                 canEnter.wait();
             }
 
             if (state == IDLE) {
                 p->rejectRequest();
-                for (int person = 0; person < people.size(); person++) {
-                    people[person]->resetTriedUntilIdle();
-                }
-
-                requestsActive.notifyAll();
                 return;
             }
 
             if (capacityCond(p) == false || (directionCond(p) == false && currentPeopleCount != 0)) {
                 p->rejectRequest();
 
-                requestsActive.notifyAll();
                 return;
             }
             
             enterPersonSync(p);
-            
-            requestsActive.notifyAll();
-            
+                        
         }
 
         int getPeopleLeaveAt(int floor) {
@@ -369,13 +397,6 @@ class Elevator: public Monitor {
             
             p->printLeft();
 
-            if (state == IDLE) {
-                for (int person = 0; person < people.size(); person++) {
-                    people[person]->resetTriedUntilIdle();
-
-                }
-            }
-
             numOfPeopleServed++;
 
             peopleLeftAtFloors[p->getDestFloor()]++;
@@ -383,8 +404,6 @@ class Elevator: public Monitor {
             currentPeopleCount--;
 
             printElevInfo();
-
-            requestsActive.notifyAll();
             
         }
 
