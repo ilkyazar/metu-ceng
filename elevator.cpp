@@ -152,6 +152,8 @@ class Elevator: public Monitor {
         string getDestQueueStr() {
             string q = "";
 
+            if (destQueue.size() > 0) q = " ";
+
             for (int i = 0; i < this->destQueue.size(); i++) {
                 string i_str = to_string(this->destQueue[i]);
                 q += i_str;
@@ -167,7 +169,7 @@ class Elevator: public Monitor {
             cout << "Elevator (" << this->getStateStr() << ", " << this->currentWeight << ", " 
                       << this->currentPeopleCount << ", "
                       << this->currentFloor
-                      << " -> "
+                      << " ->"
                       << this->getDestQueueStr() << ")" << endl;
         }
 
@@ -182,7 +184,6 @@ class Elevator: public Monitor {
                         }
                     }
                     requestsActive.notifyAll();
-                    //cout << "NOTIFIED THAT REQ ACTIVE" << endl;    
                     intervalWait(IDLE_TIME);
                 }                
             }
@@ -210,7 +211,8 @@ class Elevator: public Monitor {
                 if (destQueue[0] > currentFloor) {
                     while (destQueue[0] != currentFloor) {
                         isStationary = false;
-                        moveUp();
+                        if (currentFloor != num_floors)
+                            moveUp();
                         isStationary = true;
                         if (destQueue[0] != currentFloor) {
                             printElevInfo();
@@ -220,7 +222,8 @@ class Elevator: public Monitor {
                 else if (destQueue[0] < currentFloor) {
                     while (destQueue[0] != currentFloor) {
                         isStationary = false;
-                        moveDown();    
+                        if (currentFloor != 0)
+                            moveDown();    
                         isStationary = true;
                         if (destQueue[0] != currentFloor)
                             printElevInfo();
@@ -252,7 +255,6 @@ class Elevator: public Monitor {
                     intervalWait(IN_OUT_TIME);   
 
                     if (getPeopleLeaveAt(currentFloor) != peopleLeftAtFloors[currentFloor]) {
-                        //cout << getPeopleLeaveAt(currentFloor) << " people should have left but ---> " << peopleLeftAtFloors[currentFloor] << " did." << endl;
                         destQueue.push_back(currentFloor);
                         sortDestQueue();
                         removeDuplicates();
@@ -274,11 +276,6 @@ class Elevator: public Monitor {
             else if (destQueue.size() == 0 && state != IDLE) {
                 canEnter.notifyAll();
                 intervalWait(IN_OUT_TIME);
-
-                /*if (numOfPeopleServed != people.size()) {
-                        requestsActive.notifyAll();
-                    }*/
-                
             }
 
             isStationary = true;
@@ -375,13 +372,16 @@ class Elevator: public Monitor {
 
         void enterPerson(Person* p) {
 
-            while (currentFloor != p->getInitialFloor()) {
+            while (currentFloor != p->getInitialFloor() &&
+                  ( p->getPriority() == 2 && gethpPeopleEnterAt(p->getInitialFloor()) > 0
+                   || p->getPriority() == 1 )) {
                 
                 if (state == IDLE) {
                     p->rejectRequest();
                     return;
                 }
-                canEnter.wait();
+                
+                canEnter.wait();                        
             }
 
             if (state == IDLE) {
@@ -411,6 +411,19 @@ class Elevator: public Monitor {
             return numOfPeopleLeave;
         }
 
+        int gethpPeopleEnterAt(int floor) {
+            int numPeople = 0;
+
+            for (int i = 0; i < people.size(); i++) {
+                if (people[i]->getInitialFloor() == floor && !people[i]->isInside() 
+                    && people[i]->getPriority() == 1) { // high priority
+                    numPeople++;
+                }
+            }
+
+            return numPeople;
+        }
+
         void leavePersonSync(Person* p) {
             
             p->printLeft();
@@ -425,15 +438,12 @@ class Elevator: public Monitor {
             
         }
 
-        void leavePerson(Person* p) {
-            //__synchronized__;
-            
+        void leavePerson(Person* p) {            
             while (this->currentFloor != p->getDestFloor() && p->isInside()) {
                 canLeave.wait();
             }
 
             leavePersonSync(p);           
-
         }
 
         bool directionCond(Person* p) {
