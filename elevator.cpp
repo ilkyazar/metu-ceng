@@ -226,9 +226,12 @@ class Elevator: public Monitor {
 
                     printElevInfo();
 
-                    canLeave.notifyAll();                    
-                    canEnter.notifyAll();
+                    //intervalWait(IN_OUT_TIME);
 
+                    canLeave.notifyAll();   
+                    //intervalWait(IN_OUT_TIME);
+
+                    canEnter.notifyAll();
                     intervalWait(IN_OUT_TIME);   
 
                     if (numOfPeopleServed != people.size()) {
@@ -288,6 +291,9 @@ class Elevator: public Monitor {
 
             destQueue.push_back(p->getDestFloor());
             sortDestQueue();
+
+            if (destQueue[0] > currentFloor) state = MOVING_UP;
+            else if (destQueue[0] < currentFloor) state = MOVING_DOWN;
             
             currentWeight += p->getWeight();
             currentPeopleCount++;
