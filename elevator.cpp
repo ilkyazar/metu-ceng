@@ -137,9 +137,14 @@ class Elevator: public Monitor {
                     }
                 }
                 
-                this->destQueue.erase(unique(this->destQueue.begin(), this->destQueue.end()), this->destQueue.end());
+                
             }
             
+        }
+
+        void removeDuplicates() {
+            if (this->destQueue.size() > 0)
+                this->destQueue.erase(unique(this->destQueue.begin(), this->destQueue.end()), this->destQueue.end());
         }
 
         string getDestQueueStr() {
@@ -256,6 +261,7 @@ class Elevator: public Monitor {
 
             
             sortDestQueue();
+            removeDuplicates();
             printElevInfo();
         }
 
@@ -289,12 +295,27 @@ class Elevator: public Monitor {
                 else state = MOVING_DOWN;
             }
 
+
             destQueue.push_back(p->getDestFloor());
             sortDestQueue();
+            removeDuplicates();
+            /*
+                Elev (Idle, 2 ->)
+                Person1 (0 -> 8) made a req
+                Elev (Moving-down, 2 -> 0)
+                Person2 (2 -> 6) made a req
+                Elev (Moving-down, 2 -> 0)
+                Person2 (2 -> 6) entered
+
+                NO: Elev (Moving-down, 2 -> 6,0)
+                NO: Elev (Moving-down, 2 -> 0,6)
+                YES: Elev (Moving-up, 2 -> 6,0)
+            */
 
             if (destQueue[0] > currentFloor) state = MOVING_UP;
             else if (destQueue[0] < currentFloor) state = MOVING_DOWN;
-            
+            //sortDestQueue();
+
             currentWeight += p->getWeight();
             currentPeopleCount++;
             p->printEntered();
