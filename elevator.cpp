@@ -79,10 +79,12 @@ class Elevator: public Monitor {
 
         Condition sleepCond;
 
+        Condition hpEntered;
+
         bool personCouldNotLeave = false;
 
     public:
-        Elevator():requestsActive(this), canEnter(this), canLeave(this), sleepCond(this) {
+        Elevator():requestsActive(this), canEnter(this), canLeave(this), sleepCond(this), hpEntered(this) {
             this->currentFloor = 0; 
             this->currentWeight = 0;
             this->currentPeopleCount = 0;
@@ -372,16 +374,14 @@ class Elevator: public Monitor {
 
         void enterPerson(Person* p) {
 
-            while (currentFloor != p->getInitialFloor() &&
-                  ( p->getPriority() == 2 && gethpPeopleEnterAt(p->getInitialFloor()) > 0
-                   || p->getPriority() == 1 )) {
+            while (currentFloor != p->getInitialFloor()) {
                 
                 if (state == IDLE) {
                     p->rejectRequest();
                     return;
                 }
-                
-                canEnter.wait();                        
+
+                canEnter.wait();        
             }
 
             if (state == IDLE) {
@@ -389,13 +389,21 @@ class Elevator: public Monitor {
                 return;
             }
 
+            if (p->getPriority() == 2 && gethpPeopleEnterAt(p->getInitialFloor()) > 0) {
+                hpEntered.wait();
+            }
+
             if (capacityCond(p) == false || (directionCond(p) == false && currentPeopleCount != 0)) {
                 p->rejectRequest();
 
                 return;
             }
-            
+
             enterPersonSync(p);
+
+            if (p->getPriority() == 1) {
+                hpEntered.notifyAll();
+            }
                         
         }
 
