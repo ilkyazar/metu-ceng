@@ -168,11 +168,20 @@ class Elevator: public Monitor {
         }
 
         void printElevInfo() {
-            cout << "Elevator (" << this->getStateStr() << ", " << this->currentWeight << ", " 
+            if (state == IDLE) {
+                cout << "Elevator (" << this->getStateStr() << ", " << this->currentWeight << ", " 
                       << this->currentPeopleCount << ", "
                       << this->currentFloor
                       << " ->"
-                      << this->getDestQueueStr() << ")" << endl;
+                      << ")" << endl;
+            }
+            else {
+                cout << "Elevator (" << this->getStateStr() << ", " << this->currentWeight << ", " 
+                        << this->currentPeopleCount << ", "
+                        << this->currentFloor
+                        << " ->"
+                        << this->getDestQueueStr() << ")" << endl;
+            }
         }
 
         void checkForRequests() {
