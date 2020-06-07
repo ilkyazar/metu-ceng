@@ -63,7 +63,17 @@ struct file_system_type *initialize_ext2(const char *image_path) {
 
 // s_op
 void my_read_inode(struct inode *i) {
-    struct super_block* super_block;
+
+    int fd = myfs.file_descriptor;
+
+    struct ext2_super_block sb;
+    int block_size = 1024 << sb.s_log_block_size;
+
+    struct ext2_group_desc* group_desc;
+    int absolute_offset = BASE_OFFSET + (group_desc->bg_inode_table - 1) * block_size;
+    
+    lseek(fd, absolute_offset + (i->i_ino - 1)*sizeof(struct ext2_inode), SEEK_SET);
+    read(fd, i, sizeof(i));
     
 }
 

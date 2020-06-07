@@ -9,7 +9,16 @@ struct file_system_type myfs;
 
 struct file_system_type *initialize_ext2(const char *image_path);
 
+/** This function assumes that only the inode number field
+*   ( i_ino ) of the passed in inode i is valid and the function
+*   reads and populates the remaining fields of i.
+**/
 void my_read_inode(struct inode *i);
+
+/** This function fills in the fields of kstatfs struct stats with
+ * the information from the superblock sb . Returns zero for
+ * successful operations.
+ */
 int my_statfs(struct super_block *sb, struct kstatfs *stats);
 
 /** This function repositions the offset of the file f to o bytes
