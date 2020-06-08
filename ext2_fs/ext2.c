@@ -8,6 +8,7 @@
 #include <unistd.h>
 
 #define BASE_OFFSET 1024 /* location of the superblock in the first group */
+#define BLOCK_OFFSET(block) (BASE_OFFSET + (block-1)*block_size)
 
 struct super_operations s_op;
 struct inode_operations i_op;
@@ -50,7 +51,6 @@ struct file_system_type *initialize_ext2(const char *image_path) {
 
   myfs.name = fs_name;
   myfs.file_descriptor = open(image_path, O_RDONLY);
-
   /* assign get_superblock function
      for example:
         myfs.get_superblock = your_get_superblock;
@@ -295,12 +295,22 @@ int my_getattr(struct dentry *dir, struct kstat *stats) {
 struct super_block* my_get_superblock(struct file_system_type *current_fs) {
   printf("this is my get superblock function\n");
 
+  int fd = current_fs->file_descriptor;
+  printf("fd = %d\n", fd);
   struct ext2_super_block ext2_sb;
-  // Position head above ext2_sb
-  lseek(current_fs->file_descriptor, BASE_OFFSET, SEEK_SET);
-  read(current_fs->file_descriptor, &ext2_sb, sizeof(ext2_sb));
-
+  
   struct super_block* sb;
+  sb = malloc(sizeof(struct super_block*));
+
+  struct ext2_group_desc group_desc;
+
+  struct ext2_inode root_inode;
+
+  struct dentry dir_entry;
+
+  /* Read super block */
+  lseek(fd, BASE_OFFSET, SEEK_SET);
+  read(fd, &ext2_sb, sizeof(struct ext2_super_block));
 
   sb->s_inodes_count = ext2_sb.s_inodes_count;
   sb->s_blocks_count = ext2_sb.s_blocks_count;
@@ -308,8 +318,8 @@ struct super_block* my_get_superblock(struct file_system_type *current_fs) {
   sb->s_free_inodes_count = ext2_sb.s_free_inodes_count;
   sb->s_first_data_block = ext2_sb.s_first_data_block;
 
+  
   sb->s_blocksize = ext2_sb.s_log_block_size;
-
   //sb->s_blocksize_bits = ext2_sb.
   
   sb->s_blocks_per_group = ext2_sb.s_blocks_per_group;
@@ -330,8 +340,33 @@ struct super_block* my_get_superblock(struct file_system_type *current_fs) {
 
   sb->s_magic = ext2_sb.s_magic;
 
-  //sb->s_root = 
+  printf("setting s_root\n");
+
+  int block_size = 1024 << ext2_sb.s_log_block_size;
+
+  /* Read group descriptor */
+  lseek(fd, BASE_OFFSET + block_size, SEEK_SET);
+  read(fd, &group_desc, sizeof(group_desc));
+
+  /* Read root inode, always number 2 */
+  lseek(fd, BLOCK_OFFSET(group_desc.bg_inode_table)+(2-1)*sizeof(struct ext2_inode), SEEK_SET);
+  read(fd, &root_inode, sizeof(struct ext2_inode));
+
+  /* Construct dentry for the root inode */
+
+  printf("root inode size: %d\n", root_inode.i_size);
+  //dir_entry.d_flags = 
+  dir_entry.d_inode = &root_inode;
+  //dir_entry.d_parent = 
+  //dir_entry.d_name = 
+  dir_entry.d_sb = sb;
+  //dir_entry.d_fsdata = 
+  
+  sb->s_root = &dir_entry;
+
   //sb->s_fs_info =
+
+  printf("set all of sb in get superblock function\n");
 
   return sb;
 }
