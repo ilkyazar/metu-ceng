@@ -62,5 +62,9 @@ int my_readdir(struct inode *i, filldir_t callback);
 **/
 int my_getattr(struct dentry *dir, struct kstat *stats);
 
+/** This function allocates and fills the fields of the superblock 
+*   of the file system fs returning a pointer to the
+*   allocated struct super_block .
+**/
 struct super_block* my_get_superblock(struct file_system_type *current_fs);
 #endif

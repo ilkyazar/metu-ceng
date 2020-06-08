@@ -78,7 +78,24 @@ void my_read_inode(struct inode *i) {
 }
 
 int my_statfs(struct super_block *sb, struct kstatfs *stats) {
+    //stats->name;
+    stats->f_magic = sb->s_magic;
+    stats->f_bsize = sb->s_blocksize;
 
+    // not sure: 
+    stats->f_blocks = sb->s_blocks_count;
+    stats->f_bfree = sb->s_free_blocks_count;
+    stats->f_inodes = sb->s_inodes_count;
+    stats->f_finodes = sb->s_free_inodes_count;
+
+    stats->f_inode_size = sb->s_inode_size;
+    stats->f_minor_rev_level = sb->s_minor_rev_level;
+    stats->f_rev_level = sb->s_rev_level;
+    
+    //stats->f_namelen;
+
+    printf("need to check if successful");
+    return 0;
 }
 
 // f_op
@@ -143,10 +160,63 @@ ssize_t my_read(struct file *f, char *buf, size_t len, loffset_t *o) {
 }
 
 int my_open(struct inode *i, struct file *f) {
+
+    f->f_inode->i_ino = i->i_ino;
+    f->f_inode->i_mode = i->i_mode;
+    f->f_inode->i_nlink = i->i_nlink;
+
+    f->f_inode->i_uid = i->i_uid;
+    f->f_inode->i_gid = i->i_gid;
+    f->f_inode->i_size = i->i_size;
+
+    f->f_inode->i_atime = i->i_atime;
+    f->f_inode->i_mtime = i->i_mtime;
+    f->f_inode->i_ctime = i->i_ctime;
+
+    f->f_inode->i_blocks = i->i_blocks;
+    f->f_inode->i_block[15] = i->i_block;
+
+    f->f_inode->i_op = i->i_op;
+    f->f_inode->f_op = i->f_op;
+    f->f_inode->i_sb = i->i_sb;
+
+    f->f_inode->i_state = i->i_state;
+    f->f_inode->i_flags = i->i_flags;
+
+    printf("need to check if successful");
     return 0;
 }
 
 int my_release(struct inode *i, struct file *f) {
+    // You should deallocate any memory you allocated if you can
+    // (i.e. it not relevant after the file is closed)
+
+    // not sure
+
+    free(f->f_inode->i_ino);
+    free(f->f_inode->i_mode);
+    free(f->f_inode->i_nlink);
+
+    free(f->f_inode->i_uid);
+    free(f->f_inode->i_gid);
+    free(f->f_inode->i_size);
+
+    free(f->f_inode->i_atime);
+    free(f->f_inode->i_mtime);
+    free(f->f_inode->i_ctime);
+
+    free(f->f_inode->i_blocks);
+    free(f->f_inode->i_block);
+
+    free(f->f_inode->i_op);
+    free(f->f_inode->f_op);
+    free(f->f_inode->i_sb);
+
+    free(f->f_inode->i_state);
+    free(f->f_inode->i_flags);
+
+    free(f->f_inode);
+
     return 0;
 }
 
@@ -190,20 +260,78 @@ int my_readdir(struct inode *i, filldir_t callback) {
 }
 
 int my_getattr(struct dentry *dir, struct kstat *stats) {
-    stats->uid = getuid();
-    stats->gid = getgid();
-    stats->atime = time(NULL);
-    stats->mtime = time(NULL);
 
-    printf("set nlinks mode etc");
+    stats->ino = dir->d_inode->i_ino;
+    stats->mode = dir->d_inode->i_mode;
+    stats->nlink = dir->d_inode->i_nlink;
+
+    //stats->uid = getuid();
+    stats->uid = dir->d_inode->i_uid;
+    //stats->gid = getgid();
+    stats->gid = dir->d_inode->i_gid;
+    stats->size = dir->d_inode->i_size;
+
+    //stats->atime = time(NULL);
+    stats->atime = dir->d_inode->i_atime;
+    //stats->mtime = time(NULL);
+    stats->mtime = dir->d_inode->i_mtime;
+    stats->ctime = dir->d_inode->i_ctime;
+
+    /*struct ext2_super_block sb;
+    int block_size = 1024 << sb.s_log_block_size;
+
+    stats->blksize = block_size;*/
+
+    //stats->blksize = dir->d_inode->i_size / dir->d_inode->i_blocks;
+
+    stats->blksize = dir->d_sb->s_blocksize;
+
+    stats->blocks = dir->d_inode->i_blocks;
+
+    printf("should check if successful and block size");
     return 0;
 }
 
 struct super_block* my_get_superblock(struct file_system_type *current_fs) {
   printf("this is my get superblock function\n");
-  printf(current_fs->name);
-  printf("\n");
-  //printf(current_fs->file_descriptor);
-  printf("\n");
-  return current_fs->get_superblock;
+
+  struct ext2_super_block ext2_sb;
+  // Position head above ext2_sb
+  lseek(current_fs->file_descriptor, BASE_OFFSET, SEEK_SET);
+  read(current_fs->file_descriptor, &ext2_sb, sizeof(ext2_sb));
+
+  struct super_block* sb;
+
+  sb->s_inodes_count = ext2_sb.s_inodes_count;
+  sb->s_blocks_count = ext2_sb.s_blocks_count;
+  sb->s_free_blocks_count = ext2_sb.s_free_blocks_count;
+  sb->s_free_inodes_count = ext2_sb.s_free_inodes_count;
+  sb->s_first_data_block = ext2_sb.s_first_data_block;
+
+  sb->s_blocksize = ext2_sb.s_log_block_size;
+
+  //sb->s_blocksize_bits = ext2_sb.
+  
+  sb->s_blocks_per_group = ext2_sb.s_blocks_per_group;
+  sb->s_inodes_per_group = ext2_sb.s_inodes_per_group;
+  sb->s_minor_rev_level = ext2_sb.s_minor_rev_level;
+  sb->s_rev_level = ext2_sb.s_rev_level;
+
+  //sb->s_first_ino =
+  //sb->s_inode_size = 
+  //sb->s_block_group_nr = 
+  //sb->s_maxbytes = 
+
+  sb->s_type = current_fs;
+
+  //sb->s_op = 
+
+  //sb->s_flags = 
+
+  sb->s_magic = ext2_sb.s_magic;
+
+  //sb->s_root = 
+  //sb->s_fs_info =
+
+  return sb;
 }
