@@ -137,21 +137,48 @@ ssize_t my_read(struct file *f, char *buf, size_t len, loffset_t *o) {
     // update the offset of file
     f->f_pos += bytes_read;
 
+    printf("should read into buffer");
+
     return bytes_read;
 }
 
 int my_open(struct inode *i, struct file *f) {
-
+    return 0;
 }
 
 int my_release(struct inode *i, struct file *f) {
-
+    return 0;
 }
 
 // i_op
 
 struct dentry *my_lookup(struct inode *i, struct dentry *dir) {
+    struct inode *inode = NULL;
+    int inode_nr = -1;
+    const char* dentry_name = dir->d_name;
 
+    switch(i->i_ino) {
+        case 0: /* root directory */
+            if (strcmp("a", dentry_name) == 0)
+                inode_nr = 1;
+            if (strcmp("b", dentry_name) == 0)
+                inode_nr = 2;
+            break;
+        case 2: /* B directory */
+            if (strcmp("c", dentry_name) == 0)
+                inode_nr = 3;
+            break;
+    }
+
+    // name is found
+    if (inode_nr >= 0) {
+        // set inode to the inode nr of that file
+        
+        printf("name is found, do sth");
+        return inode;
+    }
+
+    return NULL;
 }
 
 int my_readlink(struct dentry *dir, char *buf, int len) {
@@ -163,7 +190,13 @@ int my_readdir(struct inode *i, filldir_t callback) {
 }
 
 int my_getattr(struct dentry *dir, struct kstat *stats) {
+    stats->uid = getuid();
+    stats->gid = getgid();
+    stats->atime = time(NULL);
+    stats->mtime = time(NULL);
 
+    printf("set nlinks mode etc");
+    return 0;
 }
 
 struct super_block* my_get_superblock(struct file_system_type *current_fs) {
