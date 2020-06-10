@@ -54,6 +54,10 @@ int my_release(struct inode *i, struct file *f);
 struct dentry *my_lookup(struct inode *i, struct dentry *dir);
 
 int my_readlink(struct dentry *dir, char *buf, int len);
+
+/** This function calls the callback for every directory entry 
+*   in inode i. It returns the total number of entries in the directory.
+**/
 int my_readdir(struct inode *i, filldir_t callback);
 
 /** This function fills in the fields of kstat structure, 

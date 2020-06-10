@@ -9,6 +9,7 @@
 
 #define BASE_OFFSET 1024 /* location of the superblock in the first group */
 #define BLOCK_OFFSET(block) (BASE_OFFSET + (block-1)*block_size)
+#define INODE_OFFSET(inode_offset, inode) (inode_offset + ((inode)-1)*INODE_SIZE)
 
 struct super_operations s_op;
 struct inode_operations i_op;
@@ -63,7 +64,8 @@ struct file_system_type *initialize_ext2(const char *image_path) {
 
 // s_op
 void my_read_inode(struct inode *i) {
-
+    struct ext2_inode ext2_i;
+    printf("in my read inode\n");
     int fd = myfs.file_descriptor;
 
     struct ext2_super_block sb;
@@ -72,13 +74,32 @@ void my_read_inode(struct inode *i) {
     read(fd, &sb, sizeof(sb));
     int block_size = 1024 << sb.s_log_block_size;
     struct ext2_group_desc group_desc;
+    printf("read super\n");
     
     /* Read group descriptor */
     lseek(fd, BASE_OFFSET + block_size, SEEK_SET);
     read(fd, &group_desc, sizeof(group_desc));
+    printf("read group\n");
 
     lseek(fd, BLOCK_OFFSET(group_desc.bg_inode_table) + (i->i_ino - 1)*sizeof(struct ext2_inode), SEEK_SET);
-    read(fd, i, sizeof(i));
+    read(fd, &ext2_i, sizeof(struct ext2_inode));
+
+    i->i_mode = ext2_i.i_mode;
+    i->i_nlink = ext2_i.i_links_count;
+    i->i_uid = ext2_i.i_uid;
+    i->i_gid = ext2_i.i_gid;
+    i->i_size = ext2_i.i_size;
+    i->i_atime = ext2_i.i_atime;
+    i->i_mtime = ext2_i.i_mtime;
+    i->i_ctime = ext2_i.i_mtime;
+    i->i_blocks = ext2_i.i_blocks;
+    memcpy(&i->i_block, &ext2_i.i_block, sizeof i->i_block);
+    i->i_op = &i_op;
+    i->f_op = &f_op;
+    //i->i_sb = 
+    //i->i_state =
+    i->i_flags = ext2_i.i_flags;
+    printf("read to i\n");
     
 }
 
@@ -238,6 +259,7 @@ struct dentry *my_lookup(struct inode *i, struct dentry *dir) {
     void *block;
     int block_size;
     struct inode* inode;
+    inode = malloc(sizeof(struct inode));
 
     /* Read super block */
     lseek(fd, BASE_OFFSET, SEEK_SET);
@@ -256,17 +278,23 @@ struct dentry *my_lookup(struct inode *i, struct dentry *dir) {
 
         if (strcmp(ext2_dir_entry->name, dir->d_name) == 0) {
             printf("name found\n");
+            printf("ext2 dentry inode: %d\n", ext2_dir_entry->inode);
             inode->i_ino = ext2_dir_entry->inode;
+            printf("set inode nr: %d\n", inode->i_ino);
             my_read_inode(inode);
 
             //dir->d_flags = ext2_dir_entry->
+            printf("gonna set d inode\n");
             dir->d_inode = inode;
+            printf("d inode is set\n");
+            printf("d inode nr is: %d\n", dir->d_inode->i_ino);
             //dir->d_parent will be filled in pathwalk
             //dir->d_sb = 
             //dir->d_fsdata = ??
 
             //free(name);
             free(block);
+            printf("returning dir\n");
             return dir;
         }
     }
@@ -280,7 +308,38 @@ int my_readlink(struct dentry *dir, char *buf, int len) {
 }
 
 int my_readdir(struct inode *i, filldir_t callback) {
+    printf("in my readdir\n");
+    struct ext2_super_block ext2_sb;
+    struct ext2_dir_entry *ext2_dir_entry;
+    int fd = myfs.file_descriptor;
+    void *block;
+    int block_size;
+    struct inode* inode;
+    inode = malloc(sizeof(struct inode));
+    int total_nr_of_entries = 0;
 
+    /* Read super block */
+    lseek(fd, BASE_OFFSET, SEEK_SET);
+    read(fd, &ext2_sb, sizeof(ext2_sb));
+
+    block_size = 1024 << ext2_sb.s_log_block_size;
+    block = malloc(block_size);
+
+    for (int inode_block_nr = 0; inode_block_nr < 15; inode_block_nr++) {
+        
+        lseek(fd, BLOCK_OFFSET(i->i_block[inode_block_nr]), SEEK_SET);
+		    read(fd, block, block_size);
+
+        /* set the entry in the directory */
+        ext2_dir_entry = (struct ext2_dir_entry *) block;
+
+        if (ext2_dir_entry->name_len > 0) {
+          callback(ext2_dir_entry->name, ext2_dir_entry->name_len, i->i_ino);
+          total_nr_of_entries++;
+        }
+        
+    }
+    return total_nr_of_entries;
 }
 
 int my_getattr(struct dentry *dir, struct kstat *stats) {

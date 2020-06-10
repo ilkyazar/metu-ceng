@@ -93,9 +93,11 @@ struct dentry *pathwalk(char *path) {
 
   dentry->d_name = dir;
   dentry = my_lookup(root_inode, dentry);
+  printf("returned from lookup for root inode\n");
   dir = strtok(NULL, "/");
 
   while (dir != NULL) {
+    printf("in while of pathwalk\n");
     dentry->d_name = dir;
     dentry->d_parent = dentry;
     dentry = my_lookup(dentry->d_inode, dentry);
@@ -103,6 +105,14 @@ struct dentry *pathwalk(char *path) {
   }
 
   //dentry->d_inode filled in lookup
+  if (dentry) {
+    printf("dentry inode nr is: %d\n", dentry->d_inode->i_ino);
+  }
+  else
+  {
+    printf("dentry is null\n");
+  }
+  
   //dentry->d_name = path; :S
   //dentry->d_flags = 
 
@@ -111,7 +121,15 @@ struct dentry *pathwalk(char *path) {
   //dentry->d_sb = 
   //dentry->d_fsdata = ??
   printf("returning dentry\n");
-  //printf("name of parent: %s\n", dentry->d_parent->d_name);
+  if (dentry && dentry->d_parent) {
+      printf("name of parent: %s\n", dentry->d_parent->d_name);
+  }
+  else if (dentry) {
+    printf("parent is null\n");
+    dentry->d_parent = dentry;
+    printf("name of parent: %s\n", dentry->d_parent->d_name);
+  }
+  
   return dentry;
 }
 
