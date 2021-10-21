@@ -1,0 +1,1 @@
+{"boardName": "board1", "x": 800, "y": 600, "gravity": [0.0, 0.0], "balls": [], "blocks": [{"id": "1", "type": "dominoBlock", "center": [50.0, 50.0]}, {"id": "2", "type": "bookBlock", "center": [80.0, 100.0]}], "segments": [{"id": "3", "type": "rotatingSegment", "rotationCenter": [70, 90], "length": 100, "radius": 5.0, "orientation": "horizontal"}], "connectors": []}
