@@ -1,0 +1,8 @@
+<p>Wilkommen</p>
+<p align="right">{{ username }}<a href="/logout">Logout</a></p>    
+
+<form enctype="multipart/form-data" method="post">
+    {% csrf_token %}
+    {{form.as_p}}
+         <button type="submit" value="Select" style="color:black">Select Board</button>
+</form>

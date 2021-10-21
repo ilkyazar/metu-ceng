@@ -1,0 +1,8 @@
+{{message}}
+<form enctype="multipart/form-data" method="post">
+    {% csrf_token %}
+   {{form.as_p}}
+         <button type="submit" value="Login" style="color:black">Login</button>
+</form>
+   
+<p>{{ username }}<a href="/register">Not A Member?</a></p> 

@@ -1,0 +1,144 @@
+{
+    "boardName": "board1",
+    "x": 800,
+    "y": 600,
+    "gravity": [0, 900],
+    "balls": [
+        {
+            "id": "1",
+            "type": "bowlingBall",
+            "center": [100, 160]
+        },
+        {
+            "id": "2",
+            "type": "bowlingBall",
+            "center": [150, 160]
+        },
+        {
+            "id": "3",
+            "type": "bowlingBall",
+            "center": [100, 360]
+        },
+        {
+            "id": "4",
+            "type": "bowlingBall",
+            "center": [150, 360]
+        },
+        {
+            "id": "5",
+            "type": "tennisBall",
+            "center": [305, 283]
+        },  
+        {
+            "id": "6",
+            "type": "tennisBall",
+            "center": [305, 283]
+        },                
+        {
+            "id": "7",
+            "type": "tennisBall",
+            "center": [305, 283]
+        },                
+        {
+            "id": "8",
+            "type": "bowlingBall",
+            "center": [305, 283]
+        },
+        {
+            "id": "9",
+            "type": "bowlingBall",
+            "center": [305, 283]
+        },  
+        {
+            "id": "10",
+            "type": "bowlingBall",
+            "center": [305, 283]
+        },                
+        {
+            "id": "11",
+            "type": "bowlingBall",
+            "center": [305, 283]
+        },                
+        {
+            "id": "12",
+            "type": "bowlingBall",
+            "center": [305, 283]
+        },            
+        {
+            "id": "13",
+            "type": "tennisBall",
+            "center": [305, 283]
+        },  
+        {
+            "id": "14",
+            "type": "tennisBall",
+            "center": [305, 283]
+        },                
+        {
+            "id": "15",
+            "type": "tennisBall",
+            "center": [305, 283]
+        },                
+        {
+            "id": "16",
+            "type": "bowlingBall",
+            "center": [305, 283]
+        },
+        {
+            "id": "17",
+            "type": "bowlingBall",
+            "center": [305, 283]
+        },  
+        {
+            "id": "18",
+            "type": "bowlingBall",
+            "center": [305, 283]
+        },                
+        {
+            "id": "19",
+            "type": "bowlingBall",
+            "center": [305, 283]
+        },                
+        {
+            "id": "20",
+            "type": "bowlingBall",
+            "center": [305, 283]
+        }                          
+    ],
+    "blocks": [
+        {
+            "id": "5",
+            "type": "bookBlock",
+            "center": [300, 160]
+        }
+    ],
+    "segments": [
+        {
+            "id": "6",
+            "type": "rotatingSegment",
+            "rotationCenter": [500, 160],
+            "length": 100,
+            "radius": 5,
+            "orientation": "horizontal"
+        },
+        {
+            "id": "7",
+            "type": "rotatingSegment",
+            "rotationCenter": [680, 330],
+            "length": 100,
+            "radius": 5,
+            "orientation": "vertical"
+        },
+        {
+            "id": "8",
+            "type": "segment",
+            "mass": 10,
+            "p1": [450,360],
+            "p2": [540,360],
+            "radius": 5
+        }
+    ],
+    "connectors": [
+    ]
+
+}

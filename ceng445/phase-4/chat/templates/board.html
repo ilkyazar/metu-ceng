@@ -1,0 +1,95 @@
+<p style="font-size: 30px">Board {{board_id}}</p>
+<p align="right">Logged in as {{ username }} <a href="/logout">Logout</a></p>
+<p align="right"> <a href="/admin">Admin</a></p>
+<p align="right"> <a href="/chat/board{{board_id}}/">Chat Room</a></p>
+
+<p>{{msg}}</p>
+
+<body>
+        <textarea id="chat-log" cols="100" rows="10"></textarea><br/>
+        <form enctype="multipart/form-data" method="post">
+            {% csrf_token %}
+            {{form.as_p}}
+                <button onclick="func()" type="submit" name="add" value="Shape" style="color: black">Add Shape</button>
+                <button onclick="func()" type="submit" name="remove" value="Remove" style="color: black">Remove Shape</button>
+                <button onclick="func()" type="submit" name="move" value="Move" style="color: black">Move Shape</button>
+                <button onclick="func()" type="submit" name="connect" value="Connect" style="color: black">Connect Shapes</button>
+                <button onclick="func()" type="submit" name="disconnect" value="Disconnect" style="color: black">Disconnect Shapes</button>
+                <button onclick="func()" type="submit" name="pick" value="Pick" style="color: black">Pick</button>
+        </form>
+        
+</body>
+
+
+<button><a href="/home">Select Another Board</a></button>
+<button><a href="/board/{{board_id}}/game">Start Game</a></button>
+
+<table cellspacing="10">
+    <tr>
+        <th>Shape ID</th>
+        <th>Shape Name</th>
+        <th>Coordinate</th>
+    </tr>
+    {% for key,value in state.items %}
+        {% if key == "balls" or key == "blocks" %}
+            {% for shape in value %}
+                <tr>
+                    <td>{{shape.id}}</td>
+                    <td>{{shape.type}}</td>
+                    <td>{{shape.center}}</td>
+                </tr>
+            {% endfor %}
+
+        {% elif key == "segments"%}
+            {% for shape in value %}
+                {% if shape.type == "segment"%}
+                    <tr>
+                        <td>{{shape.id}}</td>
+                        <td>{{shape.type}}</td>
+                        <td>{{shape.p1}}</td>
+                    </tr>
+                {% else %}
+                    <tr>
+                        <td>{{shape.id}}</td>
+                        <td>{{shape.type}}</td>
+                        <td>{{shape.rotationCenter}}</td>
+                    </tr>
+                {% endif %}
+            {% endfor %}
+        {% endif %}
+    {% endfor %}
+</table>
+
+
+
+<script>
+    var board_id = "{{ board_id }}";
+
+    var chatSocket = new WebSocket(
+        'ws://' + window.location.host +
+        '/ws/chat/' + board_id + '/');
+
+    chatSocket.onmessage = function(e) {
+        console.log("buna klik oldu");
+        var data = JSON.parse(e.data);
+        var message = data['message'];
+        document.querySelector('#chat-log').value += (message + '\n');
+    };
+
+    chatSocket.onclose = function(e) {
+        console.error('Chat socket closed unexpectedly');
+    };
+
+    function func(e) {
+        console.log("in fungi alemi")
+        var message = "{{msg}}";
+        chatSocket.send(JSON.stringify({
+            'message': message
+        }));
+        document.querySelector('#chat-message-submit').click();
+    };
+
+
+</script>
+
+

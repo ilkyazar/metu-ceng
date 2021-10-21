@@ -1,0 +1,55 @@
+{
+    "boardName": "board1",
+    "x": 1200,
+    "y": 800,
+    "gravity": [0, 0],
+    "balls": [
+        {
+            "id": "1",
+            "type": "bowlingBall",
+            "center": [250, 250]
+        },
+        {
+            "id": "2",
+            "type": "bowlingBall",
+            "center": [300, 300]
+        }
+    ],
+    "blocks": [
+        {
+            "id": "3",
+            "type": "bookBlock",
+            "center": [100, 100]
+        }
+    ],
+    "segments": [
+        {
+            "id": "4",
+            "type": "rotatingSegment",
+            "rotationCenter": [400, 400],
+            "length": 200,
+            "radius": 5,
+            "orientation": "horizontal"
+        },
+        {
+            "id": "5",
+            "type": "rotatingSegment",
+            "rotationCenter": [800, 400],
+            "length": 200,
+            "radius": 5,
+            "orientation": "vertical"
+        },
+        {
+            "id": "6",
+            "type": "segment",
+            "mass": 10,
+            "p1": [50,150],
+            "p2": [200,150],
+            "radius": 5
+        }
+    ],
+    "connectors": [
+
+    ]
+
+}
