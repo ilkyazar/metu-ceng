@@ -1,4 +1,0 @@
-0 5 3
-./bidder 1 5
-./bidder 1 10
-./different_bidder 2 1 5
